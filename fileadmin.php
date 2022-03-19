@@ -200,10 +200,12 @@
 			<button onclick="zipCurrentDir()">打包</button>
 		</div>
 		<div class="menu" data-menu="files-singleselect">
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="renameFile();">改名</button>
 		</div>
 		<div class="menu" data-menu="files-multiselect">
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 		</div>
 		
@@ -294,6 +296,7 @@
 			request("files","name="+dir,function(code,data){
 				if(code==200){
 					fileListArr=JSON.parse(decodeURIComponent(data));
+					fileListOperating=[];
 					fileListHtml="";
 					fileListArr.forEach(addToFileListHtml);
 					document.getElementById("fileList").innerHTML=fileListHtml;
@@ -308,6 +311,7 @@
 		}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
+			    fileListOperating.push(data.name);
 				fileListHtml=fileListHtml+`<div class="file" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
 					<div class="fileName">`+data.name+`</div>
 					<div class="size">`+Math.round(data.size*100)/100+`KB</div>
