@@ -86,6 +86,13 @@
 			}elseif($ACT=="mkdir"){
 				mkdir(".".$_POST["name"]);
 				echo "200";
+			}elseif($ACT=="rename"){
+			    if(!file_exists(".".$_POST["dir"].$_POST["new"])){
+			        rename(".".$_POST["dir"].$_POST["old"],".".$_POST["dir"].$_POST["new"]);
+    			    echo "200";
+			    }else{
+			        echo "1002";
+			    }
 			}
 		}else{echo "1000";}
 	}else{
@@ -194,6 +201,7 @@
 		</div>
 		<div class="menu" data-menu="files-singleselect">
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
+			<button onclick="renameFile();">改名</button>
 		</div>
 		<div class="menu" data-menu="files-multiselect">
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
@@ -425,6 +433,19 @@
 				}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
 			}
 		}
+//========================================单选中操作
+        function renameFile(){
+            let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
+            if(newName){
+                if(newName.indexOf("/")==-1&&newName.indexOf("&")==-1){
+                    showModule("loading");
+                    request("rename","dir="+dirOperating+"&old="+fileSelected[0]+"&new="+newName,function(c){
+                        if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
+                        loadFileList(dirOperating)
+                    });
+                }else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
+            }
+        }
 //========================================文本编辑器
 		function saveFile(){
 			document.getElementById("saveBtn").innerText="······";
