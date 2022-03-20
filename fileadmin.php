@@ -1,10 +1,9 @@
-<?php
-    $PASSWORD="simsoft";
+<?php $PASSWORD="simsoft";
+
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
+    
 	error_reporting(0);
-	
-	
 	function scandirAll($dir,$first=false){	
 		$files = [];
 		$child_dirs = scandir($dir);
@@ -110,6 +109,9 @@
 			    }
 			}
 		}else{echo "1000";}
+	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
+	    header("Content-Disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
+		echo file_get_contents(".".$_GET["name"]);
 	}else{
 ?>
 
@@ -171,6 +173,8 @@
 		contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
 		contextmenu button:hover{background:rgba(0,0,0,.05);}
 		contextmenu button:active{background:rgba(0,0,0,.1);}
+		.imgviewer{background:transparent;}
+		#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
 		@media screen and (min-width:600px) {
 			.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
 			.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
@@ -208,20 +212,21 @@
 			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="上级目录" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
 			<br><div id="fileList" onclick="event.stopPropagation();"></div>
 		</div>
-		<div class="menu" data-menu="files-noselect">
+		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="loadFileList(dirOperating)">刷新</button>
 			<button onclick="newDir()" class="big">新建目录</button>
 			<button onclick="newFile()" class="big">新建文件</button>
 			<button onclick="zipCurrentDir()">打包</button>
 		</div>
-		<div class="menu" data-menu="files-singleselect">
+		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="renameFile();">改名</button>
+			<button onclick="downCurrFile();">下载</button>
 			<button onclick="delFile();">删除</button>
 		</div>
-		<div class="menu" data-menu="files-multiselect">
+		<div class="menu" data-menu="files-multiselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="delFile();">删除</button>
@@ -237,6 +242,13 @@
 			<button onclick="setWrap(this)">换行</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="loadFileList(dirOperating)">返回</button>
+		</div>
+		
+		<!--图片预览器-->
+		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
+		<div class="menu" data-menu="imgviewer">
+			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
+			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
 		</div>
 		
 	</body>
@@ -382,6 +394,13 @@
     					}
     				}}
     				else if(fileType=="rar"||fileType=="7z"){alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");}
+    				else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"){
+    				    showModule("imgviewer");
+    				    showMenu("imgviewer");
+    				    imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
+    				    document.getElementById("imgviewer").src=imageViewingUrl;
+    				}
+    				else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
     				if(textMode){
     					showModule("loading");
     					request("getfile","name="+dirOperating+fileName,function(c,d,file){
@@ -473,6 +492,12 @@
                 }else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
             }
         }
+        function downCurrFile(){
+            if(document.querySelector(".file.selected").getAttribute("data-isdir")=="true"){alert("不支持直接下载文件夹捏..")}else{
+                downUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileSelected[0]);
+                location=downUrl;
+            }
+        }
 //========================================单多选通用操作
         function delFile(){
             let fileDelStr=JSON.stringify(fileSelected);
@@ -514,7 +539,7 @@
                     let menuElem=document.createElement("contextmenu");
                     menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
                     menuElem.onmousedown=function(){event.stopPropagation();}
-                    menuElem.onclick=function(){hideContextMenu();}
+                    menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
                     menuElem.style.top=event.pageY+"px";
                     menuElem.style.left=event.pageX+"px";
                     if(event.pageX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.pageX-100+"px";}
