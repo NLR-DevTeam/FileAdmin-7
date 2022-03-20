@@ -1,11 +1,10 @@
 <?php
-    $PASSWORD="fileadmin";
+    $PASSWORD="simsoft";
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
 	error_reporting(0);
 	
 	
-    //=============================一些找来的轮子
 	function scandirAll($dir,$first=false){	
 		$files = [];
 		$child_dirs = scandir($dir);
@@ -41,6 +40,15 @@
 			}else{return '1001';}
 		}
 	}
+    function unlinkDir($dir){
+        $files=scandir($dir);
+        foreach ($files as $key => $filename) {
+            if($filename!="."&&$filename!=".."){
+                if(is_dir($dir."/".$filename)){unlinkDir($dir."/".$filename);}else{unlink($dir."/".$filename);}
+            }
+        }
+        rmdir($dir);
+    }
 
 	$ACT=$_POST["a"];
 	$PWD=$_POST["pwd"];
@@ -65,7 +73,7 @@
 							"size"=>$filesize
 						));
 					}
-					echo "200||".urlencode(json_encode($fileArrayModified));
+					echo "200||".rawurlencode(json_encode($fileArrayModified));
 				}else{
 					echo "1001";
 				}
@@ -93,14 +101,21 @@
 			    }else{
 			        echo "1002";
 			    }
+			}elseif($ACT=="del"){
+			    $delFiles=json_decode(rawurldecode($_POST["files"]));
+			    foreach($delFiles as $filename){
+			        $trueFileName=".".$_POST["dir"].$filename;
+			        if(is_dir($trueFileName)){unlinkDir($trueFileName);}else{unlink($trueFileName);}
+			        echo "200";
+			    }
 			}
 		}else{echo "1000";}
 	}else{
 ?>
 
 <!--
-	SimSoft FileAdmin
-	A light php file manager written by YanJi.
+	SimSoft FileAdmin 前端部分
+	由盐鸡开发的一款轻量级文件管理器
 	© 2022 SimSoft
 -->
 
@@ -108,7 +123,7 @@
 <!DOCTYPE html>
 <html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()">
 	<head>
-		<title>FileAdmin | 轻量级文件管理</title>
+	    <title>FileAdmin</title>
 		<meta name="viewport" content="width=device-width">
 		<link rel="icon" href="//asset.simsoft.top/fileadmin.png">
 	</head>
@@ -152,7 +167,7 @@
 		#textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
 		#textEditor *::-webkit-scrollbar{display:block;width:10px;height:10px;background:#ebebeb;}
 		#textEditor *::-webkit-scrollbar-thumb{border-radius:5px;background:#dcdcdc;}
-		contextmenu{transition:opacity .2s;opacity:0;z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;height:fit-content;background:white;border-radius:5px;overflow:hidden;box-shadow:0 0 5px 0 rgba(0,0,0,.2);}
+		contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
 		contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
 		contextmenu button:hover{background:rgba(0,0,0,.05);}
 		contextmenu button:active{background:rgba(0,0,0,.1);}
@@ -194,6 +209,7 @@
 			<br><div id="fileList"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect">
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="loadFileList(dirOperating)">刷新</button>
 			<button onclick="newDir()" class="big">新建目录</button>
 			<button onclick="newFile()" class="big">新建文件</button>
@@ -203,10 +219,12 @@
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="renameFile();">改名</button>
+			<button onclick="delFile();">删除</button>
 		</div>
 		<div class="menu" data-menu="files-multiselect">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
+			<button onclick="delFile();">删除</button>
 		</div>
 		
 		<!--纯文本编辑器-->
@@ -262,6 +280,7 @@
 			.catch(err=>{alert(err)})
 		}
 		function showModule(name){
+		    document.title="FileAdmin | 轻量级文件管理";
 			hideMenu();
 			if(document.querySelector(".module.shown")){document.querySelector(".module.shown").classList.remove("shown");}
 			document.querySelector(".module[data-module^='"+name+"']").classList.add("shown");
@@ -373,6 +392,7 @@
     						textEditor.session.setMode("ace/mode/"+textMode);
     						showModule("texteditor");
     						showMenu("texteditor");
+    						document.title=fileName+" | FileAdmin"
     					});
     				}
     			}
@@ -413,7 +433,7 @@
 		function zipCurrentDir(){
 			if(confirm("您确实想将当前目录打包为Zip文件嘛 (⊙_⊙)？\nTip: 部分环境可能不支持此功能")){
 				showModule("loading")
-				request("zip","name="+dirOperating,function(code){
+				request("zip","name="+encodeURIComponent(dirOperating),function(code){
 					if(code==1001){alert("文件打包失败..（＞人＜；）")}
 					loadFileList(dirOperating);
 				})
@@ -424,7 +444,7 @@
 			if(filename){
 				showModule("loading")
 				if(filename.indexOf("/")==-1){
-					request("save","name="+dirOperating+filename,function(){loadFileList(dirOperating)});
+					request("save","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating)});
 				}else{alert("文件名不能包含特殊字符呐 (；′⌒`)");}
 			}
 		}
@@ -433,7 +453,7 @@
 			if(filename){
 				showModule("loading")
 				if(filename.indexOf("/")==-1){
-					request("mkdir","name="+dirOperating+filename,function(){loadFileList(dirOperating)});
+					request("mkdir","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating)});
 				}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
 			}
 		}
@@ -443,11 +463,19 @@
             if(newName){
                 if(newName.indexOf("/")==-1&&newName.indexOf("&")==-1){
                     showModule("loading");
-                    request("rename","dir="+dirOperating+"&old="+fileSelected[0]+"&new="+newName,function(c){
+                    request("rename","dir="+encodeURIComponent(dirOperating)+"&old="+encodeURIComponent(fileSelected[0])+"&new="+encodeURIComponent(newName),function(c){
                         if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
                         loadFileList(dirOperating)
                     });
                 }else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
+            }
+        }
+//========================================单多选通用操作
+        function delFile(){
+            let fileDelStr=JSON.stringify(fileSelected);
+            if(confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")){
+                showModule("loading");
+                request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating)});
             }
         }
 //========================================文本编辑器
@@ -484,11 +512,10 @@
                     menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
                     menuElem.onmousedown=function(){event.stopPropagation();}
                     menuElem.onclick=function(){hideContextMenu();}
-                    menuElem.style.top=event.pageY-2+"px";
-                    menuElem.style.left=event.pageX-2+"px";
-                    if(event.pageX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.pageX-98+"px";}
+                    menuElem.style.top=event.pageY+"px";
+                    menuElem.style.left=event.pageX+"px";
+                    if(event.pageX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.pageX-100+"px";}
                     document.body.appendChild(menuElem);
-                    setTimeout(function(){if(document.querySelector("contextmenu")){document.querySelector("contextmenu").style.opacity="1"}},50)
                 }
             }
         }
