@@ -121,7 +121,7 @@
 
 
 <!DOCTYPE html>
-<html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()">
+<html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="fileSelected=[];loadFileSelected();">
 	<head>
 	    <title>FileAdmin</title>
 		<meta name="viewport" content="width=device-width">
@@ -206,7 +206,7 @@
 		<!--文件列表页-->
 		<div class="module files" data-module="files">
 			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="上级目录" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
-			<br><div id="fileList"></div>
+			<br><div id="fileList" onclick="event.stopPropagation();"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
@@ -257,6 +257,9 @@
 			}else if(event.keyCode==27){
 				if(document.querySelector(".texteditor.shown")){loadFileList(dirOperating);}
 				else if(document.querySelector(".files.shown")){previousDir();}
+			}else if(event.ctrlKey==true&&event.keyCode==65){
+				event.preventDefault();
+				if(document.querySelector(".files.shown")){fileSelected=fileListOperating;loadFileSelected();}
 			}
 		}
 //=========================================公共函数
