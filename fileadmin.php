@@ -1,6 +1,5 @@
 <?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION="6.0.22";
 
-
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
     
@@ -104,6 +103,20 @@
 			        if(is_dir($trueFileName)){unlinkDir($trueFileName);}else{unlink($trueFileName);}
 			        echo "200";
 			    }
+			}elseif($ACT=="chkupd"){
+			    $latest=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/latest?stamp=".time());
+			    if($latest && $latest!=$VERSION){
+			        $updinfo=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updinfo?stamp=".time());
+                    if($updinfo){
+                        echo $updinfo;
+                    }else{echo "1002";}
+			    }else{echo "1001";}
+			}elseif($ACT=="applyversion"){
+			    $updater=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updater?stamp=".time());
+			    if($updater){
+			        file_put_contents("./FileAdminUpdater.php",$updater);
+			        header("location: ./FileAdminUpdater.php?famain=".end(explode("/",$_SERVER['PHP_SELF'])));
+			    }else{echo "1001";}
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
@@ -172,6 +185,8 @@
 		contextmenu button:active{background:rgba(0,0,0,.1);}
 		.imgviewer{background:transparent;}
 		#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
+		.updinfo{margin:10px;padding:10px;}
+		#updinfo{padding:10px;}
 		@media screen and (min-width:600px) {
 			.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
 			.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
@@ -193,7 +208,7 @@
 	</style>
 	<body>
 		<div class="title">
-			<div class="appName">File<b>Admin</b></div>
+			<div class="appName" onclick="chkupd()">File<b>Admin</b></div>
 			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
 		<div class="module loading shown" data-module="loading">正在请求...</div>
@@ -248,6 +263,18 @@
 			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
 		</div>
 		
+			
+		<!--更新信息-->
+		<div class="module updinfo" data-module="updinfo">
+		    <div style="font-size:1.5em;border-bottom:1px solid #f5f5f5;text-align:center;padding:10px;">检测到更新</div>
+		    <div id="updinfo"></div>
+		</div>
+		<div class="menu" data-menu="updinfo">
+			<button onclick="applupd()" class="big">应用更新</button>
+			<button onclick="dirOperating='/';loadFileList('/');">取消</button>
+		</div>
+		
+
 	</body>
 	
 	<script>
@@ -557,6 +584,25 @@
             }else{
                 showContextMenu();
             }
+        }
+//========================================检查更新
+        function chkupd(){
+            showModule("loading")
+            request("chkupd",null,function(c,d,o){
+                if(o=="1001"){dirOperating="/";loadFileList("/");alert("您的FileAdmin已是最新版啦~");}
+                else if(o=="1002"){dirOperating="/";loadFileList("/");alert("获取更新失败，您的服务器网络环境可能无法访问GitHub (；′⌒`)");}
+                else{
+                    showModule("updinfo");showMenu("updinfo")
+                    document.getElementById("updinfo").innerHTML=o;
+                }
+            })
+        }
+        function applupd(){
+            showModule("loading");
+            request("applyversion",null,function(c){
+                if(c==200){location.reload();}
+                else{alert("更新失败惹..");showModule("updinfo");showMenu("updinfo")}
+            })
         }
 //========================================退出登录
 		function logout(){
