@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE";
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION="6.0.22";
 
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
