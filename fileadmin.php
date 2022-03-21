@@ -1,4 +1,4 @@
-<?php $PASSWORD="simsoft";
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE";
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
