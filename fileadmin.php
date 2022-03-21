@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION="6.0.22";
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.023;
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -294,8 +294,7 @@
 				if(document.querySelector(".texteditor.shown")){loadFileList(dirOperating);}
 				else if(document.querySelector(".files.shown")){previousDir();}
 			}else if(event.ctrlKey==true&&event.keyCode==65){
-				event.preventDefault();
-				if(document.querySelector(".files.shown")){fileSelected=fileListOperating;loadFileSelected();}
+				if(document.querySelector(".files.shown")){event.preventDefault();fileSelected=fileListOperating;loadFileSelected();}
 			}
 		}
 //=========================================公共函数
