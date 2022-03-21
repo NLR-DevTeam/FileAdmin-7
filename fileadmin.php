@@ -127,7 +127,7 @@
 	</head>
 	<style>
 		*{box-sizing:border-box;}
-		body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;}
+		body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:calc(100vh - 50px);}
 		::-webkit-scrollbar{display:none;}
 		.title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;}
 		.appName{font-size:1.5em;position:absolute;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
@@ -531,14 +531,15 @@
             if(navigator.maxTouchPoints==0){
                 hideContextMenu();
                 if(document.querySelector(".menu.shown")){
+                    console.log(event)
                     event.preventDefault();
                     let menuElem=document.createElement("contextmenu");
                     menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
                     menuElem.onmousedown=function(){event.stopPropagation();}
                     menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
-                    menuElem.style.top=event.pageY+"px";
-                    menuElem.style.left=event.pageX+"px";
-                    if(event.pageX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.pageX-100+"px";}
+                    menuElem.style.top=event.clientY+"px";
+                    menuElem.style.left=event.clientX+"px";
+                    if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.clientX-100+"px";}
                     document.body.appendChild(menuElem);
                 }
             }
