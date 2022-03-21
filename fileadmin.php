@@ -79,12 +79,8 @@
 			}elseif($ACT=="getfile"){
 				echo file_get_contents(".".$_POST["name"]);
 			}elseif($ACT=="save"){
-				if(realpath("./".$_SERVER['PHP_SELF'])==realpath(".".$_POST["name"])){
-					echo "1001";
-				}else{
-					file_put_contents(".".$_POST["name"],$_POST["data"]);
-					echo "200";
-				}
+				file_put_contents(".".$_POST["name"],$_POST["data"]);
+				echo "200";
 			}elseif($ACT=="zip"){
 				$zipResult=create_zip(scandirAll(realpath(".".$_POST["name"]),true),"./FileAdmin_".time().".zip",false);
 				if($zipResult){echo "200";}else{echo "1001";}
@@ -292,7 +288,7 @@
 					if(callback){callback(code,msg,txt);}
 				}
 			})
-			.catch(err=>{alert(err)})
+			.catch(err=>{alert(err);dirOperating="/";loadFileList("/")})
 		}
 		function showModule(name){
 		    document.title="FileAdmin | 轻量级文件管理";
@@ -513,8 +509,8 @@
 				if(code==200){
 					document.getElementById("saveBtn").innerText="完成";
 					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
-				}else if(code==1001){
-					alert("由于安全原因，FileAdmin 无法修改本体文件。如需修改请自行使用主机控制面板修改~ ");
+				}else{
+					alert("出现未知错误（＞人＜；）");
 					document.getElementById("saveBtn").innerText="保存";
 				}
 			})
