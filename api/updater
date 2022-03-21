@@ -1,2 +1,14 @@
 <?php
-  echo "placeholder text."
+    error_reporting(0);
+    $famain=$_GET["famain"];
+    $famainphp=file_get_contents($famain);
+    $currpwd=explode('<?php $PASSWORD="',$famainphp)[1];
+    $currpwd=explode('"; $VERSION=',$currpwd)[0];
+    $newver=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/fileadmin.php");
+    if($newver){
+        $rplcode=str_replace($newver,"TYPE-YOUR-PASSWORD-HERE",$currpwd);
+        file_put_contents("fa.php",$rplcode);
+        echo "200";
+    }else{
+        echo "1001";
+    }
