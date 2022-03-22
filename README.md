@@ -17,3 +17,7 @@ FileAdmin为用户定义了多种方便使用的快捷键。
 - 在文件管理页面按下“/”以编辑路径。
 - 在文件管理页面按下“Ctrl+A”以选中所有文件。
 - 在文本编辑器按下“Ctrl+S”以保存文件。
+
+## 感谢
+- [星辰云](https://starxn.com)提供开发环境支持
+- [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
