@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.027;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.028;
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -138,6 +138,7 @@
 	}elseif($_GET["a"]=="css"){ 
 	    header("content-type: text/css");
 ?>
+/*<style>*/
 *{box-sizing:border-box;}
 body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
 ::-webkit-scrollbar{display:none;}
@@ -175,7 +176,7 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file.selected{background:#1e9fff;color:white;}
 .texteditor{margin:10px;}
 #textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
-#textEditor *::-webkit-scrollbar{display:block;width:10px;height:10px;background:#ebebeb;}
+#textEditor *::-webkit-scrollbar{display:block;width:10px;height:0px;background:#ebebeb;}
 #textEditor *::-webkit-scrollbar-thumb{border-radius:5px;background:#dcdcdc;}
 contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
 contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
@@ -207,10 +208,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	#textEditor{height:calc(100% - 90px)}
 	.loading{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
+/*</style>*/
 <?php
 	}elseif($_GET["a"]=="js"){
 	    header("content-type: text/javascript");
 ?>
+//<script>
 //=========================================初始化
 		window.onload=function(){
 			dirOperating="/";
@@ -265,6 +268,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function hideMenu(){
 			if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
 		}
+        function humanSize(num){
+            bytes=num/102.4;
+            if(bytes==0){return "0.00B";} 
+            var e=Math.floor(Math.log(bytes)/Math.log(1024)); 
+            return(bytes/Math.pow(1024, e)).toFixed(2)+'KMGTP'.charAt(e)+'B'; 
+        }
 //=========================================登录
 		function loginCheckEnter(eve){if(eve.keyCode==13){login()}}
 		function login(){
@@ -311,6 +320,9 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
         		document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
         		document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
         		document.getElementById("uploadText-DestDir").innerText=waitingToUpload[id]["dir"];
+        		document.getElementById("uploadProgressBar").style.display="none";
+        		setTimeout(function(){document.getElementById("uploadProgressBar").style.width="0%";document.getElementById("uploadProgressBar").style.display="block";},50)
+        		document.getElementById("uploadText-CurrProg").innerText="0% (正在连接...)"
         		xhr=new XMLHttpRequest();
         		xhr.onload=function(){id++;uploadFileFromList(id)};
         		xhr.open("POST","?a=upload&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&dir="+encodeURIComponent(waitingToUpload[id]["dir"]),true);
@@ -321,7 +333,8 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
         			loaded=eve.loaded/eve.total;
         			percent=Math.round((loaded * 100))+"%"
         			document.getElementById("uploadProgressBar").style.width=percent;
-        			document.getElementById("uploadText-CurrProg").innerText=percent+" ( "+Math.round(eve.loaded/1024)+"KB / "+Math.round(eve.total/1024)+"KB )";
+        			document.getElementById("uploadText-CurrProg").innerText=percent+" ("+humanSize(eve.loaded/10)+" / "+humanSize(eve.total/10)+")";
+        			if(percent=="100%"){document.getElementById("uploadText-CurrProg").innerText=percent+" (正在处理...)";}
         		}
         		xhr.send(fd);
             }
@@ -352,7 +365,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			    fileListOperating.push(data.name);
 				fileListHtml=fileListHtml+`<div class="file" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
 					<div class="fileName">`+data.name+`</div>
-					<div class="size">`+Math.round(data.size*100)/100+`KB</div>
+					<div class="size">`+humanSize(data.size*100)+`</div>
 				</div>`;
 			}
 		}
@@ -590,6 +603,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				showModule("login");
 			}
 		}
+//</script>
 <?php
     }else{
 ?>
