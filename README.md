@@ -21,3 +21,4 @@ FileAdmin为用户定义了多种方便使用的快捷键。
 ## 感谢
 - [星辰云](https://starxn.com)提供开发环境支持
 - [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
+- [AdminX](https://github.com/1689295608/AdminX)提供部分函数实现
