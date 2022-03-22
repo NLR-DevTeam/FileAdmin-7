@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.023;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.026;
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -47,6 +47,15 @@
             }
         }
         rmdir($dir);
+    }
+    function nbMkdir($pathname){
+        $paths = explode("/", $pathname);
+        $nowp = "";
+        foreach($paths as $key=>$value) {
+            $nowp .= $value . "/";
+            if ($value == "." || $value == ".." || $value == "") continue;
+            mkdir($nowp);
+        }
     }
 
 	$ACT=$_POST["a"];
@@ -122,6 +131,10 @@
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
 	    header("Content-Disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
 		echo file_get_contents(".".$_GET["name"]);
+	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="upload"){
+	    $destDir=".".$_GET["dir"];
+	    if(!is_dir($destDir)){nbMkdir($destDir);}
+	    move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
 	}else{
 ?>
 
@@ -141,7 +154,7 @@
 	</head>
 	<style>
 		*{box-sizing:border-box;}
-		body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:calc(100vh - 50px);}
+		body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
 		::-webkit-scrollbar{display:none;}
 		.title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;}
 		.appName{font-size:1.5em;position:absolute;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
@@ -187,6 +200,10 @@
 		#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
 		.updinfo{margin:10px;padding:10px;}
 		#updinfo{padding:10px;}
+		.upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
+		.uploadProgress{height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;margin:10px 0;}
+		#uploadProgressBar{height:8px;transition:width .2s;background:#1e9fff;width:0;}
+		.uploadText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.7}
 		@media screen and (min-width:600px) {
 			.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
 			.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
@@ -227,6 +244,7 @@
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="loadFileList(dirOperating)">刷新</button>
+			<button onclick="showMenu('files-upload')">上传</button>
 			<button onclick="newDir()" class="big">新建目录</button>
 			<button onclick="newFile()" class="big">新建文件</button>
 			<button onclick="zipCurrentDir()">打包</button>
@@ -242,6 +260,21 @@
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="delFile();">删除</button>
+		</div>
+		<div class="menu" data-menu="files-upload">
+			<button class="big" onclick="document.getElementById('filesUploadInput').click()">上传文件</button>
+			<button class="big" onclick="document.getElementById('folderUploadInput').click()">上传目录</button>
+			<button onclick="loadFileMenu();">取消</button>
+		</div>
+		
+		<!--文件上传器-->
+		<div class="module upload" data-module="upload">
+		    <div style="font-size:1.5em;text-align:center;">正在上传 ψ(._. )></div>
+		    <div class="uploadProgress"><div id="uploadProgressBar"></div></div>
+		    <div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
+		    <div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
+		    <div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
+		    <div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
 		</div>
 		
 		<!--纯文本编辑器-->
@@ -274,7 +307,10 @@
 			<button onclick="dirOperating='/';loadFileList('/');">取消</button>
 		</div>
 		
-
+		<div style="display:none">
+		    <input type="file" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
+		    <input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
+        </div>
 	</body>
 	
 	<script>
@@ -282,6 +318,7 @@
 		window.onload=function(){
 			dirOperating="/";
 			request("check",null,function(){loadFileList(dirOperating)});
+			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
 		}
 		window.onkeydown=function(){
 			if(event.keyCode==191){
@@ -315,7 +352,7 @@
 					if(callback){callback(code,msg,txt);}
 				}
 			})
-			.catch(err=>{alert(err);dirOperating="/";loadFileList("/")})
+			.catch(err=>{alert(err);})
 		}
 		function showModule(name){
 		    document.title="FileAdmin | 轻量级文件管理";
@@ -345,6 +382,51 @@
 				}
 			})
 		}
+//========================================上传文件
+        function addFilesToUploads(ele){
+            waitingToUpload=[];
+            waitingToUploadCount=0;
+            Array.from(ele.files).forEach(addFileToUploadArr);
+            showModule("upload");
+            uploadFileFromList(0);
+        }
+        function addFileToUploadArr(file){
+            waitingToUpload.push({"file":file,"dir":dirOperating});
+            waitingToUploadCount++;
+        }
+        function addDirToUploads(ele){
+            waitingToUpload=[];
+            waitingToUploadCount=0;
+            Array.from(ele.files).forEach(addDirToUploadArr);
+            showModule("upload");
+            uploadFileFromList(0);
+        }
+        function addDirToUploadArr(file){
+		    let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-2);
+            waitingToUpload.push({"file":file,"dir":dirOperating+relativeDir});
+            waitingToUploadCount++;
+        }
+        function uploadFileFromList(id){
+            if(!waitingToUpload[id]){loadFileList(dirOperating)}else{
+                waitingToUploadCount--;
+        		document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
+        		document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
+        		document.getElementById("uploadText-DestDir").innerText=waitingToUpload[id]["dir"];
+        		xhr=new XMLHttpRequest();
+        		xhr.onload=function(){id++;uploadFileFromList(id)};
+        		xhr.open("POST","?a=upload&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&dir="+encodeURIComponent(waitingToUpload[id]["dir"]),true);
+        		xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+        		var fd=new FormData();
+        		fd.append("file",waitingToUpload[id]["file"]);
+        		xhr.upload.onprogress=function(eve){
+        			loaded=eve.loaded/eve.total;
+        			percent=Math.round((loaded * 100))+"%"
+        			document.getElementById("uploadProgressBar").style.width=percent;
+        			document.getElementById("uploadText-CurrProg").innerText=percent+" ( "+Math.round(eve.loaded/1024)+"KB / "+Math.round(eve.total/1024)+"KB )";
+        		}
+        		xhr.send(fd);
+            }
+        }
 //========================================文件管理器
 		function loadFileList(dir){
 		    fileSelected=[];
@@ -558,7 +640,6 @@
             if(navigator.maxTouchPoints==0){
                 hideContextMenu();
                 if(document.querySelector(".menu.shown")){
-                    console.log(event)
                     event.preventDefault();
                     let menuElem=document.createElement("contextmenu");
                     menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
