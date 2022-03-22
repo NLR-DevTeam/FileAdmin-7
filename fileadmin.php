@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.026;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.027;
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -135,185 +135,82 @@
 	    $destDir=".".$_GET["dir"];
 	    if(!is_dir($destDir)){nbMkdir($destDir);}
 	    move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
-	}else{
+	}elseif($_GET["a"]=="css"){ 
+	    header("content-type: text/css");
 ?>
-
-<!--
-	SimSoft FileAdmin 前端部分
-	由盐鸡开发的一款轻量级文件管理器
-	© 2022 SimSoft
--->
-
-
-<!DOCTYPE html>
-<html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="fileSelected=[];loadFileSelected();">
-	<head>
-	    <title>FileAdmin</title>
-		<meta name="viewport" content="width=device-width">
-		<link rel="icon" href="//asset.simsoft.top/fileadmin.png">
-	</head>
-	<style>
-		*{box-sizing:border-box;}
-		body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
-		::-webkit-scrollbar{display:none;}
-		.title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;}
-		.appName{font-size:1.5em;position:absolute;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
-		.appName b{color:#1e9fff;}
-		.title svg{position:absolute;top:0;bottom:0;right:10px;margin:auto;transform:rotate(180deg)}
-		.module{display:none;background:white;}
-		.module.shown{display:block;}
-		.login{text-align:center;position:fixed;inset:0;margin:auto;padding:10px;height:fit-content;width:fit-content;background:white;border-radius:5px;}
-		.loginTitle{font-size:1.7em;margin-bottom:10px;}
-		#loginPassword{vertical-align:middle;height:35px;border-radius:5px 0 0 5px;border:0;outline:none;padding:5px;border:1px solid rgba(0,0,0,.1);border-right:0;transition:border .2s;}
-		#loginPassword:focus{border:1px solid #1e9fff;border-right:0;}
-		.loginBtn{transition:all .2s;height:35px;width:35px;vertical-align:middle;outline:none;border:0;border-radius:0 5px 5px 0;background:#1e9fff;color:white;font-size:1.2em;}
-		.loginBtn:hover{background:#0092ff;}
-		.loginBtn:active{color:#bae2ff;}
-		.addressBar{margin-top:5px;border-radius:5px;background:white;overflow:hidden;display:inline-block;text-align:left;max-width:500px;width:100%}
-		.addressBar button{font-weight:bold;width:30px;height:32px;border:0;outline:0;background:transparent;border-right:1px solid #f5f5f5;vertical-align:middle;}
-		.addressBar button:hover{background:rgba(0,0,0,.09);}
-		.addressBar button:active{background:rgba(0,0,0,.12);}
-		.addressBar div{vertical-align:middle;display:inline-block;width:calc(100% - 60px);padding:0 10px;overflow-x:scroll;white-space:nowrap}
-		.files{margin:10px;background:transparent;text-align:center;}
-		#fileList{margin-top:5px;border-radius:5px;background:white;overflow:hidden;margin-bottom:10px;display:inline-block;text-align:left;max-width:500px;width:100%}
-		#fileList center{padding:30px 0;opacity:.6}
-		#fileList .file{border-top:1px solid #f5f5f5;padding:10px;text-align:center;}
-		#fileList .file:first-child{border-top:none;}
-		#fileList .file:hover{background:rgba(0,0,0,.09);}
-		#fileList .file:active{background:rgba(0,0,0,.12)}
-		#fileList .file .fileName::before{display:inline-block;margin-right:5px;width:25px;}
-		#fileList .file[data-isdir^=false] .fileName::before{content:"📄"}
-		#fileList .file[data-isdir^=true] .fileName::before{content:"📂"}
-		#fileList .file .fileName{display:inline-block;width:calc(100% - 100px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-		#fileList .file .size{display:inline-block;width:90px;text-align:right;vertical-align:middle;opacity:.5;}
-		#fileList .file[data-isdir^=true] .size{opacity:0;}
-		#fileList .file.selected{background:#1e9fff;color:white;}
-		.texteditor{margin:10px;}
-		#textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
-		#textEditor *::-webkit-scrollbar{display:block;width:10px;height:10px;background:#ebebeb;}
-		#textEditor *::-webkit-scrollbar-thumb{border-radius:5px;background:#dcdcdc;}
-		contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
-		contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
-		contextmenu button:hover{background:rgba(0,0,0,.05);}
-		contextmenu button:active{background:rgba(0,0,0,.1);}
-		.imgviewer{background:transparent;}
-		#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
-		.updinfo{margin:10px;padding:10px;}
-		#updinfo{padding:10px;}
-		.upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
-		.uploadProgress{height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;margin:10px 0;}
-		#uploadProgressBar{height:8px;transition:width .2s;background:#1e9fff;width:0;}
-		.uploadText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.7}
-		@media screen and (min-width:600px) {
-			.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
-			.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
-			.menu button.big{width:70px}
-			.menu button:hover{background:#f9f9f9}
-			.menu button:active{background:#f0f0f0}
-			.menu.shown{top:8px;}
-			.loading{position:fixed;top:0;left:140px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
-		}
-		@media screen and (max-width:600px) {
-			body{margin-bottom:50px;}
-			.menu{bottom:-35px;transition:bottom .2s;box-shadow:0 0 5px 0 rgba(0,0,0,.4);background:white;position:fixed;z-index:10;right:0;left:0;height:30px;text-align:center;overflow-y:scroll;white-space:nowrap}
-			.menu button{outline:none;border:0;height:100%;width:fit-content;background:transparent;width:30px;padding:0;}
-			.menu button.big{width:60px}
-			.menu.shown{bottom:0;}
-			#textEditor{height:calc(100% - 90px)}
-			.loading{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
-		}
-	</style>
-	<body>
-		<div class="title">
-			<div class="appName" onclick="chkupd()">File<b>Admin</b></div>
-			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-		</div>
-		<div class="module loading shown" data-module="loading">正在请求...</div>
-
-		<!--登录页-->
-		<div class="module login" data-module="login">
-			<div class="loginTitle">登录 FileAdmin</div>
-			<input autofocus id="loginPassword" placeholder="请输入密码 (/▽＼)" type="password" onkeydown="loginCheckEnter(event)"><button onclick="login()" class="loginBtn">→</button>
-		</div>
-		
-		<!--文件列表页-->
-		<div class="module files" data-module="files">
-			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="上级目录" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
-			<br><div id="fileList" onclick="event.stopPropagation();"></div>
-		</div>
-		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
-			<button onclick="loadFileList(dirOperating)">刷新</button>
-			<button onclick="showMenu('files-upload')">上传</button>
-			<button onclick="newDir()" class="big">新建目录</button>
-			<button onclick="newFile()" class="big">新建文件</button>
-			<button onclick="zipCurrentDir()">打包</button>
-		</div>
-		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
-			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
-			<button onclick="renameFile();">改名</button>
-			<button onclick="downCurrFile();">下载</button>
-			<button onclick="delFile();">删除</button>
-		</div>
-		<div class="menu" data-menu="files-multiselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
-			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
-			<button onclick="delFile();">删除</button>
-		</div>
-		<div class="menu" data-menu="files-upload">
-			<button class="big" onclick="document.getElementById('filesUploadInput').click()">上传文件</button>
-			<button class="big" onclick="document.getElementById('folderUploadInput').click()">上传目录</button>
-			<button onclick="loadFileMenu();">取消</button>
-		</div>
-		
-		<!--文件上传器-->
-		<div class="module upload" data-module="upload">
-		    <div style="font-size:1.5em;text-align:center;">正在上传 ψ(._. )></div>
-		    <div class="uploadProgress"><div id="uploadProgressBar"></div></div>
-		    <div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
-		    <div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
-		    <div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
-		    <div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
-		</div>
-		
-		<!--纯文本编辑器-->
-		<div class="module texteditor" data-module="texteditor">
-			<div id="textEditor"></div>
-		</div>
-		<div class="menu" data-menu="texteditor">
-			<button onclick="saveFile()" id="saveBtn">保存</button>
-			<button onclick="viewFile(fileEditing,true)">刷新</button>
-			<button onclick="setWrap(this)">换行</button>
-			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
-			<button onclick="loadFileList(dirOperating)">返回</button>
-		</div>
-		
-		<!--图片预览器-->
-		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
-		<div class="menu" data-menu="imgviewer">
-			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
-			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
-		</div>
-		
-			
-		<!--更新信息-->
-		<div class="module updinfo" data-module="updinfo">
-		    <div style="font-size:1.5em;border-bottom:1px solid #f5f5f5;text-align:center;padding:10px;">检测到更新</div>
-		    <div id="updinfo"></div>
-		</div>
-		<div class="menu" data-menu="updinfo">
-			<button onclick="applupd()" class="big">应用更新</button>
-			<button onclick="dirOperating='/';loadFileList('/');">取消</button>
-		</div>
-		
-		<div style="display:none">
-		    <input type="file" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
-		    <input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
-        </div>
-	</body>
-	
-	<script>
+*{box-sizing:border-box;}
+body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
+::-webkit-scrollbar{display:none;}
+.title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;}
+.appName{font-size:1.5em;position:absolute;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
+.appName b{color:#1e9fff;}
+.title svg{position:absolute;top:0;bottom:0;right:10px;margin:auto;transform:rotate(180deg)}
+.module{display:none;background:white;}
+.module.shown{display:block;}
+.login{text-align:center;position:fixed;inset:0;margin:auto;padding:10px;height:fit-content;width:fit-content;background:white;border-radius:5px;}
+.loginTitle{font-size:1.7em;margin-bottom:10px;}
+#loginPassword{vertical-align:middle;height:35px;border-radius:5px 0 0 5px;border:0;outline:none;padding:5px;border:1px solid rgba(0,0,0,.1);border-right:0;transition:border .2s;}
+#loginPassword:focus{border:1px solid #1e9fff;border-right:0;}
+.loginBtn{transition:all .2s;height:35px;width:35px;vertical-align:middle;outline:none;border:0;border-radius:0 5px 5px 0;background:#1e9fff;color:white;font-size:1.2em;}
+.loginBtn:hover{background:#0092ff;}
+.loginBtn:active{color:#bae2ff;}
+.addressBar{margin-top:5px;border-radius:5px;background:white;overflow:hidden;display:inline-block;text-align:left;max-width:500px;width:100%}
+.addressBar button{font-weight:bold;width:30px;height:32px;border:0;outline:0;background:transparent;border-right:1px solid #f5f5f5;vertical-align:middle;}
+.addressBar button:hover{background:rgba(0,0,0,.09);}
+.addressBar button:active{background:rgba(0,0,0,.12);}
+.addressBar div{vertical-align:middle;display:inline-block;width:calc(100% - 60px);padding:0 10px;overflow-x:scroll;white-space:nowrap}
+.files{margin:10px;background:transparent;text-align:center;}
+#fileList{margin-top:5px;border-radius:5px;background:white;overflow:hidden;margin-bottom:10px;display:inline-block;text-align:left;max-width:500px;width:100%}
+#fileList center{padding:30px 0;opacity:.6}
+#fileList .file{border-top:1px solid #f5f5f5;padding:10px;text-align:center;}
+#fileList .file:first-child{border-top:none;}
+#fileList .file:hover{background:rgba(0,0,0,.09);}
+#fileList .file:active{background:rgba(0,0,0,.12)}
+#fileList .file .fileName::before{display:inline-block;margin-right:5px;width:25px;}
+#fileList .file[data-isdir^=false] .fileName::before{content:"📄"}
+#fileList .file[data-isdir^=true] .fileName::before{content:"📂"}
+#fileList .file .fileName{display:inline-block;width:calc(100% - 100px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#fileList .file .size{display:inline-block;width:90px;text-align:right;vertical-align:middle;opacity:.5;}
+#fileList .file[data-isdir^=true] .size{opacity:0;}
+#fileList .file.selected{background:#1e9fff;color:white;}
+.texteditor{margin:10px;}
+#textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
+#textEditor *::-webkit-scrollbar{display:block;width:10px;height:10px;background:#ebebeb;}
+#textEditor *::-webkit-scrollbar-thumb{border-radius:5px;background:#dcdcdc;}
+contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
+contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
+contextmenu button:hover{background:rgba(0,0,0,.05);}
+contextmenu button:active{background:rgba(0,0,0,.1);}
+.imgviewer{background:transparent;}
+#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
+.updinfo{margin:10px;padding:10px;}
+#updinfo{padding:10px;}
+.upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
+.uploadProgress{height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;margin:10px 0;}
+#uploadProgressBar{height:8px;transition:width .2s;background:#1e9fff;width:0;}
+.uploadText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.7}
+@media screen and (min-width:600px) {
+	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
+	.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
+	.menu button.big{width:70px}
+	.menu button:hover{background:#f9f9f9}
+	.menu button:active{background:#f0f0f0}
+	.menu.shown{top:8px;}
+	.loading{position:fixed;top:0;left:140px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
+}
+@media screen and (max-width:600px) {
+	body{margin-bottom:50px;}
+	.menu{bottom:-35px;transition:bottom .2s;box-shadow:0 0 5px 0 rgba(0,0,0,.4);background:white;position:fixed;z-index:10;right:0;left:0;height:30px;text-align:center;overflow-y:scroll;white-space:nowrap}
+	.menu button{outline:none;border:0;height:100%;width:fit-content;background:transparent;width:30px;padding:0;}
+	.menu button.big{width:60px}
+	.menu.shown{bottom:0;}
+	#textEditor{height:calc(100% - 90px)}
+	.loading{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
+}
+<?php
+	}elseif($_GET["a"]=="js"){
+	    header("content-type: text/javascript");
+?>
 //=========================================初始化
 		window.onload=function(){
 			dirOperating="/";
@@ -389,6 +286,7 @@
             Array.from(ele.files).forEach(addFileToUploadArr);
             showModule("upload");
             uploadFileFromList(0);
+            ele.value='';
         }
         function addFileToUploadArr(file){
             waitingToUpload.push({"file":file,"dir":dirOperating});
@@ -400,9 +298,10 @@
             Array.from(ele.files).forEach(addDirToUploadArr);
             showModule("upload");
             uploadFileFromList(0);
+            ele.value='';
         }
         function addDirToUploadArr(file){
-		    let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-2);
+		    let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-1).join("/")+"/";
             waitingToUpload.push({"file":file,"dir":dirOperating+relativeDir});
             waitingToUploadCount++;
         }
@@ -691,7 +590,115 @@
 				showModule("login");
 			}
 		}
-	</script>
+<?php
+    }else{
+?>
+
+<!--
+	SimSoft FileAdmin 前端部分
+	由盐鸡开发的一款轻量级文件管理器
+	© 2022 SimSoft
+-->
+
+<!DOCTYPE html>
+<html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="fileSelected=[];loadFileSelected();">
+	<head>
+	    <title>FileAdmin</title>
+		<meta name="viewport" content="width=device-width">
+		<link rel="icon" href="//asset.simsoft.top/fileadmin.png">
+		<link rel="stylesheet" href="?a=css">
+	</head>
+	<body>
+		<div class="title">
+			<div class="appName" onclick="chkupd()">File<b>Admin</b></div>
+			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</div>
+		<div class="module loading shown" data-module="loading">正在请求...</div>
+
+		<!--登录页-->
+		<div class="module login" data-module="login">
+			<div class="loginTitle">登录 FileAdmin</div>
+			<input autofocus id="loginPassword" placeholder="请输入密码 (/▽＼)" type="password" onkeydown="loginCheckEnter(event)"><button onclick="login()" class="loginBtn">→</button>
+		</div>
+		
+		<!--文件列表页-->
+		<div class="module files" data-module="files">
+			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="上级目录" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
+			<br><div id="fileList" onclick="event.stopPropagation();"></div>
+		</div>
+		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
+			<button onclick="loadFileList(dirOperating)">刷新</button>
+			<button onclick="showMenu('files-upload')">上传</button>
+			<button onclick="newDir()" class="big">新建目录</button>
+			<button onclick="newFile()" class="big">新建文件</button>
+			<button onclick="zipCurrentDir()">打包</button>
+		</div>
+		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
+			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
+			<button onclick="renameFile();">改名</button>
+			<button onclick="downCurrFile();">下载</button>
+			<button onclick="delFile();">删除</button>
+		</div>
+		<div class="menu" data-menu="files-multiselect" onclick="event.stopPropagation();">
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
+			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
+			<button onclick="delFile();">删除</button>
+		</div>
+		<div class="menu" data-menu="files-upload">
+			<button class="big" onclick="document.getElementById('filesUploadInput').click()">上传文件</button>
+			<button class="big" onclick="document.getElementById('folderUploadInput').click()">上传目录</button>
+			<button onclick="loadFileMenu();">取消</button>
+		</div>
+		
+		<!--文件上传器-->
+		<div class="module upload" data-module="upload">
+		    <div style="font-size:1.5em;text-align:center;">正在上传 ψ(._. )></div>
+		    <div class="uploadProgress"><div id="uploadProgressBar"></div></div>
+		    <div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
+		    <div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
+		    <div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
+		    <div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
+		</div>
+		
+		<!--纯文本编辑器-->
+		<div class="module texteditor" data-module="texteditor">
+			<div id="textEditor"></div>
+		</div>
+		<div class="menu" data-menu="texteditor">
+			<button onclick="saveFile()" id="saveBtn">保存</button>
+			<button onclick="viewFile(fileEditing,true)">刷新</button>
+			<button onclick="setWrap(this)">换行</button>
+			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
+			<button onclick="loadFileList(dirOperating)">返回</button>
+		</div>
+		
+		<!--图片预览器-->
+		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
+		<div class="menu" data-menu="imgviewer">
+			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
+			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
+		</div>
+		
+			
+		<!--更新信息-->
+		<div class="module updinfo" data-module="updinfo">
+		    <div style="font-size:1.5em;border-bottom:1px solid #f5f5f5;text-align:center;padding:10px;">检测到更新</div>
+		    <div id="updinfo"></div>
+		</div>
+		<div class="menu" data-menu="updinfo">
+			<button onclick="applupd()" class="big">应用更新</button>
+			<button onclick="dirOperating='/';loadFileList('/');">取消</button>
+		</div>
+		
+		<div style="display:none">
+		    <input type="file" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
+		    <input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
+        </div>
+	</body>
+	
+	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-javascript.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-html.min.js"></script>
