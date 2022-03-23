@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.028;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.029;
 
     /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
     /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -139,6 +139,7 @@
 	    header("content-type: text/css");
 ?>
 /*<style>*/
+#passwordManagerUsername{display:none}
 *{box-sizing:border-box;}
 body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
 ::-webkit-scrollbar{display:none;}
@@ -219,6 +220,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			dirOperating="/";
 			request("check",null,function(){loadFileList(dirOperating)});
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
+			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
 		}
 		window.onkeydown=function(){
 			if(event.keyCode==191){
@@ -632,6 +634,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		<!--登录页-->
 		<div class="module login" data-module="login">
 			<div class="loginTitle">登录 FileAdmin</div>
+			<input id="passwordManagerUsername">
 			<input autofocus id="loginPassword" placeholder="请输入密码 (/▽＼)" type="password" onkeydown="loginCheckEnter(event)"><button onclick="login()" class="loginBtn">→</button>
 		</div>
 		
