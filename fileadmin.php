@@ -1,8 +1,8 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.029;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.031;
 
-    /* SimSoft FileAdmin       © SimSoft, All rights reserved. */
-    /*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
-    
+	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
+	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
+	
 	error_reporting(0);
 	function scandirAll($dir,$first=false){	
 		$files = [];
@@ -39,24 +39,24 @@
 			}else{return '1001';}
 		}
 	}
-    function unlinkDir($dir){
-        $files=scandir($dir);
-        foreach ($files as $key => $filename) {
-            if($filename!="."&&$filename!=".."){
-                if(is_dir($dir."/".$filename)){unlinkDir($dir."/".$filename);}else{unlink($dir."/".$filename);}
-            }
-        }
-        rmdir($dir);
-    }
-    function nbMkdir($pathname){
-        $paths = explode("/", $pathname);
-        $nowp = "";
-        foreach($paths as $key=>$value) {
-            $nowp .= $value . "/";
-            if ($value == "." || $value == ".." || $value == "") continue;
-            mkdir($nowp);
-        }
-    }
+	function unlinkDir($dir){
+		$files=scandir($dir);
+		foreach ($files as $key => $filename) {
+			if($filename!="."&&$filename!=".."){
+				if(is_dir($dir."/".$filename)){unlinkDir($dir."/".$filename);}else{unlink($dir."/".$filename);}
+			}
+		}
+		rmdir($dir);
+	}
+	function nbMkdir($pathname){
+		$paths = explode("/", $pathname);
+		$nowp = "";
+		foreach($paths as $key=>$value) {
+			$nowp .= $value . "/";
+			if ($value == "." || $value == ".." || $value == "") continue;
+			mkdir($nowp);
+		}
+	}
 
 	$ACT=$_POST["a"];
 	$PWD=$_POST["pwd"];
@@ -99,44 +99,44 @@
 				mkdir(".".$_POST["name"]);
 				echo "200";
 			}elseif($ACT=="rename"){
-			    if(!file_exists(".".$_POST["dir"].$_POST["new"])){
-			        rename(".".$_POST["dir"].$_POST["old"],".".$_POST["dir"].$_POST["new"]);
-    			    echo "200";
-			    }else{
-			        echo "1002";
-			    }
+				if(!file_exists(".".$_POST["dir"].$_POST["new"])){
+					rename(".".$_POST["dir"].$_POST["old"],".".$_POST["dir"].$_POST["new"]);
+					echo "200";
+				}else{
+					echo "1002";
+				}
 			}elseif($ACT=="del"){
-			    $delFiles=json_decode(rawurldecode($_POST["files"]));
-			    foreach($delFiles as $filename){
-			        $trueFileName=".".$_POST["dir"].$filename;
-			        if(is_dir($trueFileName)){unlinkDir($trueFileName);}else{unlink($trueFileName);}
-			        echo "200";
-			    }
+				$delFiles=json_decode(rawurldecode($_POST["files"]));
+				foreach($delFiles as $filename){
+					$trueFileName=".".$_POST["dir"].$filename;
+					if(is_dir($trueFileName)){unlinkDir($trueFileName);}else{unlink($trueFileName);}
+					echo "200";
+				}
 			}elseif($ACT=="chkupd"){
-			    $latest=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/latest?stamp=".time());
-			    if($latest && $latest!=$VERSION){
-			        $updinfo=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updinfo?stamp=".time());
-                    if($updinfo){
-                        echo $updinfo;
-                    }else{echo "1002";}
-			    }else{echo "1001";}
+				$latest=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/latest?stamp=".time());
+				if($latest && $latest!=$VERSION){
+					$updinfo=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updinfo?stamp=".time());
+					if($updinfo){
+						echo $updinfo;
+					}else{echo "1002";}
+				}else{echo "1001";}
 			}elseif($ACT=="applyversion"){
-			    $updater=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updater?stamp=".time());
-			    if($updater){
-			        file_put_contents("./FileAdminUpdater.php",$updater);
-			        header("location: ./FileAdminUpdater.php?famain=".end(explode("/",$_SERVER['PHP_SELF'])));
-			    }else{echo "1001";}
+				$updater=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updater?stamp=".time());
+				if($updater){
+					file_put_contents("./FileAdminUpdater.php",$updater);
+					header("location: ./FileAdminUpdater.php?famain=".end(explode("/",$_SERVER['PHP_SELF'])));
+				}else{echo "1001";}
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
-	    header("Content-Disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
+		header("Content-Disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
 		echo file_get_contents(".".$_GET["name"]);
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="upload"){
-	    $destDir=".".$_GET["dir"];
-	    if(!is_dir($destDir)){nbMkdir($destDir);}
-	    move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
+		$destDir=".".$_GET["dir"];
+		if(!is_dir($destDir)){nbMkdir($destDir);}
+		move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
 	}elseif($_GET["a"]=="css"){ 
-	    header("content-type: text/css");
+		header("content-type: text/css");
 ?>
 /*<style>*/
 #passwordManagerUsername{display:none}
@@ -148,7 +148,9 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 .appName b{color:#1e9fff;}
 .title svg{position:absolute;top:0;bottom:0;right:10px;margin:auto;transform:rotate(180deg)}
 .module{display:none;background:white;}
-.module.shown{display:block;}
+.module.shown{display:block;animation:showModule .3s ease;}
+.loading, .texteditor.shown{animation:none!important;}
+@keyframes showModule{from{transform:translateY(15px);opacity:0;}to{transform:none;opacity:1;}}
 .login{text-align:center;position:fixed;inset:0;margin:auto;padding:10px;height:fit-content;width:fit-content;background:white;border-radius:5px;}
 .loginTitle{font-size:1.7em;margin-bottom:10px;}
 #loginPassword{vertical-align:middle;height:35px;border-radius:5px 0 0 5px;border:0;outline:none;padding:5px;border:1px solid rgba(0,0,0,.1);border-right:0;transition:border .2s;}
@@ -191,6 +193,18 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 .uploadProgress{height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;margin:10px 0;}
 #uploadProgressBar{height:8px;transition:width .2s;background:#1e9fff;width:0;}
 .uploadText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.7}
+.loadingAnimation{position:fixed;inset:0;margin:auto;width:fit-content;height:fit-content;z-index:20}
+.loadingAnimationDot{animation:loadingDot .8s linear 0s infinite;font-weight:bold;font-size:2em;display:inline-block;opacity:.1;}
+#dot2{animation-delay:.1s!important}
+#dot3{animation-delay:.2s!important}
+@keyframes loadingDot{
+    0%{transform:translateY(0px)}
+    15%{transform:translateY(10px)}
+    30%{transform:translateY(-10px)}
+    45%{transform:translateY(5px)}
+    60%{transform:translateY(5px)}
+    75%{transform:translateY(0)}
+}
 @media screen and (min-width:600px) {
 	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
 	.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
@@ -198,7 +212,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	.menu button:hover{background:#f9f9f9}
 	.menu button:active{background:#f0f0f0}
 	.menu.shown{top:8px;}
-	.loading{position:fixed;top:0;left:140px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
+	#loadingText{position:fixed;top:0;left:140px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
 @media screen and (max-width:600px) {
 	body{margin-bottom:50px;}
@@ -207,12 +221,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	.menu button.big{width:60px}
 	.menu.shown{bottom:0;}
 	#textEditor{height:calc(100% - 90px)}
-	.loading{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
+	#loadingText{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
 /*</style>*/
 <?php
 	}elseif($_GET["a"]=="js"){
-	    header("content-type: text/javascript");
+		header("content-type: text/javascript");
 ?>
 //<script>
 //=========================================初始化
@@ -257,9 +271,10 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			.catch(err=>{alert(err);})
 		}
 		function showModule(name){
-		    document.title="FileAdmin | 轻量级文件管理";
+			document.title="FileAdmin | 轻量级文件管理";
 			hideMenu();
 			if(document.querySelector(".module.shown")){document.querySelector(".module.shown").classList.remove("shown");}
+			document.querySelector(".module[data-module^='"+name+"']").classList.remove("hidden");
 			document.querySelector(".module[data-module^='"+name+"']").classList.add("shown");
 			if(name=="login"){document.getElementById("logoutBtn").style.display="none";}else{document.getElementById("logoutBtn").style.display="block";}
 		}
@@ -270,12 +285,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function hideMenu(){
 			if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
 		}
-        function humanSize(num){
-            bytes=num/102.4;
-            if(bytes==0){return "0.00B";} 
-            var e=Math.floor(Math.log(bytes)/Math.log(1024)); 
-            return(bytes/Math.pow(1024, e)).toFixed(2)+'KMGTP'.charAt(e)+'B'; 
-        }
+		function humanSize(num){
+			bytes=num/102.4;
+			if(bytes==0){return "0.00B";} 
+			var e=Math.floor(Math.log(bytes)/Math.log(1024)); 
+			return(bytes/Math.pow(1024, e)).toFixed(2)+'KMGTP'.charAt(e)+'B'; 
+		}
 //=========================================登录
 		function loginCheckEnter(eve){if(eve.keyCode==13){login()}}
 		function login(){
@@ -291,59 +306,59 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			})
 		}
 //========================================上传文件
-        function addFilesToUploads(ele){
-            waitingToUpload=[];
-            waitingToUploadCount=0;
-            Array.from(ele.files).forEach(addFileToUploadArr);
-            showModule("upload");
-            uploadFileFromList(0);
-            ele.value='';
-        }
-        function addFileToUploadArr(file){
-            waitingToUpload.push({"file":file,"dir":dirOperating});
-            waitingToUploadCount++;
-        }
-        function addDirToUploads(ele){
-            waitingToUpload=[];
-            waitingToUploadCount=0;
-            Array.from(ele.files).forEach(addDirToUploadArr);
-            showModule("upload");
-            uploadFileFromList(0);
-            ele.value='';
-        }
-        function addDirToUploadArr(file){
-		    let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-1).join("/")+"/";
-            waitingToUpload.push({"file":file,"dir":dirOperating+relativeDir});
-            waitingToUploadCount++;
-        }
-        function uploadFileFromList(id){
-            if(!waitingToUpload[id]){loadFileList(dirOperating)}else{
-                waitingToUploadCount--;
-        		document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
-        		document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
-        		document.getElementById("uploadText-DestDir").innerText=waitingToUpload[id]["dir"];
-        		document.getElementById("uploadProgressBar").style.display="none";
-        		setTimeout(function(){document.getElementById("uploadProgressBar").style.width="0%";document.getElementById("uploadProgressBar").style.display="block";},50)
-        		document.getElementById("uploadText-CurrProg").innerText="0% (正在连接...)"
-        		xhr=new XMLHttpRequest();
-        		xhr.onload=function(){id++;uploadFileFromList(id)};
-        		xhr.open("POST","?a=upload&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&dir="+encodeURIComponent(waitingToUpload[id]["dir"]),true);
-        		xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
-        		var fd=new FormData();
-        		fd.append("file",waitingToUpload[id]["file"]);
-        		xhr.upload.onprogress=function(eve){
-        			loaded=eve.loaded/eve.total;
-        			percent=Math.round((loaded * 100))+"%"
-        			document.getElementById("uploadProgressBar").style.width=percent;
-        			document.getElementById("uploadText-CurrProg").innerText=percent+" ("+humanSize(eve.loaded/10)+" / "+humanSize(eve.total/10)+")";
-        			if(percent=="100%"){document.getElementById("uploadText-CurrProg").innerText=percent+" (正在处理...)";}
-        		}
-        		xhr.send(fd);
-            }
-        }
+		function addFilesToUploads(ele){
+			waitingToUpload=[];
+			waitingToUploadCount=0;
+			Array.from(ele.files).forEach(addFileToUploadArr);
+			showModule("upload");
+			uploadFileFromList(0);
+			ele.value='';
+		}
+		function addFileToUploadArr(file){
+			waitingToUpload.push({"file":file,"dir":dirOperating});
+			waitingToUploadCount++;
+		}
+		function addDirToUploads(ele){
+			waitingToUpload=[];
+			waitingToUploadCount=0;
+			Array.from(ele.files).forEach(addDirToUploadArr);
+			showModule("upload");
+			uploadFileFromList(0);
+			ele.value='';
+		}
+		function addDirToUploadArr(file){
+			let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-1).join("/")+"/";
+			waitingToUpload.push({"file":file,"dir":dirOperating+relativeDir});
+			waitingToUploadCount++;
+		}
+		function uploadFileFromList(id){
+			if(!waitingToUpload[id]){loadFileList(dirOperating)}else{
+				waitingToUploadCount--;
+				document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
+				document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
+				document.getElementById("uploadText-DestDir").innerText=waitingToUpload[id]["dir"];
+				document.getElementById("uploadProgressBar").style.display="none";
+				setTimeout(function(){document.getElementById("uploadProgressBar").style.width="0%";document.getElementById("uploadProgressBar").style.display="block";},50)
+				document.getElementById("uploadText-CurrProg").innerText="0% (正在连接...)"
+				xhr=new XMLHttpRequest();
+				xhr.onload=function(){id++;uploadFileFromList(id)};
+				xhr.open("POST","?a=upload&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&dir="+encodeURIComponent(waitingToUpload[id]["dir"]),true);
+				xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+				var fd=new FormData();
+				fd.append("file",waitingToUpload[id]["file"]);
+				xhr.upload.onprogress=function(eve){
+					loaded=eve.loaded/eve.total;
+					percent=Math.round((loaded * 100))+"%"
+					document.getElementById("uploadProgressBar").style.width=percent;
+					document.getElementById("uploadText-CurrProg").innerText=percent+" ("+humanSize(eve.loaded/10)+" / "+humanSize(eve.total/10)+")";
+					if(percent=="100%"){document.getElementById("uploadText-CurrProg").innerText=percent+" (正在处理...)";}
+				}
+				xhr.send(fd);
+			}
+		}
 //========================================文件管理器
 		function loadFileList(dir){
-		    fileSelected=[];
+			fileSelected=[];
 			document.getElementById("addressBar").innerText="根目录"+dir.replaceAll("/"," / ");
 			showModule("loading");
 			request("files","name="+dir,function(code,data){
@@ -364,7 +379,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
-			    fileListOperating.push(data.name);
+				fileListOperating.push(data.name);
 				fileListHtml=fileListHtml+`<div class="file" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
 					<div class="fileName">`+data.name+`</div>
 					<div class="size">`+humanSize(data.size*100)+`</div>
@@ -386,65 +401,65 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				fileName=ele.getAttribute("data-filename");
 			}else{fileIsDir=false;fileName=ele;}
 			if(fileSelected.length==0){
-    			fileType=fileName.split(".")[fileName.split(".").length-1].toLowerCase();
-    			fileEditing=fileName;
-    			if(fileIsDir=="true"){
-    				dirOperating=dirOperating+fileName+"/";
-    				loadFileList(dirOperating);
-    			}else{
-    				textMode=null;
-    				if(fileType=="html"||fileType=="htm"){textMode="html";}
-    				else if(fileType=="php"){textMode="php";}
-    				else if(fileType=="json"){textMode="json";}
-    				else if(fileType=="js"){textMode="javascript";}
-    				else if(fileType=="css"){textMode="css";}
-    				else if(fileType=="zip"){if(confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")){
-    					let destDir=prompt("要解压到哪个目录捏 (*^▽^*)",dirOperating);
-    					if(destDir){
-    						if(destDir.split("")[0]!="/"){destDir="/"+destDir;}
-    						if(destDir.split("")[destDir.split("").length-1]!="/"){destDir=destDir+"/";}
-    						showModule("loading");request("unzip","name="+dirOperating+fileName+"&dir="+destDir,function(code){
-    							if(code==1001){alert("您使用的环境貌似不支持此功能（＞人＜；）")}
-    							else if(code==1002){alert("您指定的目录不存在 (´。＿。｀)")}
-    							else if(code==1003){alert("找不到此压缩包，请尝试刷新此页面（＞人＜；）");}
-    							else{alert("可能出现未知错误，请尝试刷新此页面（＞人＜；）");}
-    							loadFileList(dirOperating);
-    						})
-    					}
-    				}}
-    				else if(fileType=="rar"||fileType=="7z"){alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");}
-    				else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"){
-    				    showModule("imgviewer");
-    				    showMenu("imgviewer");
-    				    imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
-    				    document.getElementById("imgviewer").src=imageViewingUrl;
-    				}
-    				else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
-    				if(textMode){
-    					showModule("loading");
-    					request("getfile","name="+dirOperating+fileName,function(c,d,file){
-    						ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
-    						textEditor=ace.edit("textEditor");
-    						textEditor.setOption("enableLiveAutocompletion",true);
-    						textEditor.session.setValue(file);
-    						textEditor.setTheme("ace/theme/chrome");
-    						textEditor.gotoLine(1);
-    						textEditor.setShowPrintMargin(false);
-    						textEditor.session.setMode("ace/mode/"+textMode);
-    						showModule("texteditor");
-    						showMenu("texteditor");
-    						document.title=fileName+" | FileAdmin"
-    					});
-    				}
-    			}
+				fileType=fileName.split(".")[fileName.split(".").length-1].toLowerCase();
+				fileEditing=fileName;
+				if(fileIsDir=="true"){
+					dirOperating=dirOperating+fileName+"/";
+					loadFileList(dirOperating);
+				}else{
+					textMode=null;
+					if(fileType=="html"||fileType=="htm"){textMode="html";}
+					else if(fileType=="php"){textMode="php";}
+					else if(fileType=="json"){textMode="json";}
+					else if(fileType=="js"){textMode="javascript";}
+					else if(fileType=="css"){textMode="css";}
+					else if(fileType=="zip"){if(confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")){
+						let destDir=prompt("要解压到哪个目录捏 (*^▽^*)",dirOperating);
+						if(destDir){
+							if(destDir.split("")[0]!="/"){destDir="/"+destDir;}
+							if(destDir.split("")[destDir.split("").length-1]!="/"){destDir=destDir+"/";}
+							showModule("loading");request("unzip","name="+dirOperating+fileName+"&dir="+destDir,function(code){
+								if(code==1001){alert("您使用的环境貌似不支持此功能（＞人＜；）")}
+								else if(code==1002){alert("您指定的目录不存在 (´。＿。｀)")}
+								else if(code==1003){alert("找不到此压缩包，请尝试刷新此页面（＞人＜；）");}
+								else{alert("可能出现未知错误，请尝试刷新此页面（＞人＜；）");}
+								loadFileList(dirOperating);
+							})
+						}
+					}}
+					else if(fileType=="rar"||fileType=="7z"){alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");}
+					else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"){
+						showModule("imgviewer");
+						showMenu("imgviewer");
+						imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
+						document.getElementById("imgviewer").src=imageViewingUrl;
+					}
+					else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
+					if(textMode){
+						showModule("loading");
+						request("getfile","name="+dirOperating+fileName,function(c,d,file){
+							ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
+							textEditor=ace.edit("textEditor");
+							textEditor.setOption("enableLiveAutocompletion",true);
+							textEditor.session.setValue(file);
+							textEditor.setTheme("ace/theme/chrome");
+							textEditor.gotoLine(1);
+							textEditor.setShowPrintMargin(false);
+							textEditor.session.setMode("ace/mode/"+textMode);
+							showModule("texteditor");
+							showMenu("texteditor");
+							document.title=fileName+" | FileAdmin"
+						});
+					}
+				}
 			}else{
-			    if(fileSelected.indexOf(fileName)==-1){
-    			    fileSelected.push(fileName);
-    			    loadFileSelected();
-			    }else{
-			        fileSelected=fileSelected.filter(item=>item!==fileName);
-			        loadFileSelected();
-			    }
+				if(fileSelected.indexOf(fileName)==-1){
+					fileSelected.push(fileName);
+					loadFileSelected();
+				}else{
+					fileSelected=fileSelected.filter(item=>item!==fileName);
+					loadFileSelected();
+				}
 			}
 		}
 		function previousDir(){
@@ -460,15 +475,15 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			dirName+=item+"/"
 		}
 		function loadFileMenu(){
-		    if(document.querySelector(".files.shown")){
-    		    if(fileSelected.length==0){showMenu("files-noselect")}
-    		    else if(fileSelected.length==1){showMenu("files-singleselect")}
-    		    else{showMenu("files-multiselect")}
-		    }
+			if(document.querySelector(".files.shown")){
+				if(fileSelected.length==0){showMenu("files-noselect")}
+				else if(fileSelected.length==1){showMenu("files-singleselect")}
+				else{showMenu("files-multiselect")}
+			}
 		}
 		function loadFileSelected(){Array.prototype.slice.call(document.getElementsByClassName("file")).forEach(checkFileSelected);loadFileMenu();}
 		function checkFileSelected(ele){
-		    if(fileSelected.indexOf(ele.getAttribute("data-filename"))==-1){ele.classList.remove("selected")}else{ele.classList.add("selected")}
+			if(fileSelected.indexOf(ele.getAttribute("data-filename"))==-1){ele.classList.remove("selected")}else{ele.classList.add("selected")}
 		}
 //========================================无选中操作
 		function zipCurrentDir(){
@@ -499,36 +514,38 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}
 		}
 //========================================单选中操作
-        function renameFile(){
-            let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
-            if(newName){
-                if(newName.indexOf("/")==-1&&newName.indexOf("&")==-1){
-                    showModule("loading");
-                    request("rename","dir="+encodeURIComponent(dirOperating)+"&old="+encodeURIComponent(fileSelected[0])+"&new="+encodeURIComponent(newName),function(c){
-                        if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
-                        loadFileList(dirOperating)
-                    });
-                }else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
-            }
-        }
-        function downCurrFile(){
-            if(document.querySelector(".file.selected").getAttribute("data-isdir")=="true"){alert("不支持直接下载文件夹捏..")}else{
-                downUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileSelected[0]);
-                location=downUrl;
-            }
-        }
+		function renameFile(){
+			let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
+			if(newName){
+				if(newName.indexOf("/")==-1&&newName.indexOf("&")==-1){
+					showModule("loading");
+					request("rename","dir="+encodeURIComponent(dirOperating)+"&old="+encodeURIComponent(fileSelected[0])+"&new="+encodeURIComponent(newName),function(c){
+						if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
+						loadFileList(dirOperating)
+					});
+				}else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
+			}
+		}
+		function downCurrFile(){
+			if(document.querySelector(".file.selected").getAttribute("data-isdir")=="true"){alert("不支持直接下载文件夹捏..")}else{
+				downUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileSelected[0]);
+				location=downUrl;
+			}
+		}
 //========================================单多选通用操作
-        function delFile(){
-            let fileDelStr=JSON.stringify(fileSelected);
-            if(confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")){
-                showModule("loading");
-                request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating)});
-            }
-        }
+		function delFile(){
+			let fileDelStr=JSON.stringify(fileSelected);
+			if(confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")){
+				showModule("loading");
+				request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating)});
+			}
+		}
 //========================================文本编辑器
 		function saveFile(){
 			document.getElementById("saveBtn").innerText="······";
+			document.getElementById("loadingAnimations").style.display="block";
 			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()) ,function(code){
+			    document.getElementById("loadingAnimations").style.display="none";
 				if(code==200){
 					document.getElementById("saveBtn").innerText="完成";
 					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
@@ -550,54 +567,54 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}
 		}
 //========================================右键菜单
-        function showContextMenu(){
-            if(navigator.maxTouchPoints==0){
-                hideContextMenu();
-                if(document.querySelector(".menu.shown")){
-                    event.preventDefault();
-                    let menuElem=document.createElement("contextmenu");
-                    menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
-                    menuElem.onmousedown=function(){event.stopPropagation();}
-                    menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
-                    menuElem.style.top=event.clientY+"px";
-                    menuElem.style.left=event.clientX+"px";
-                    if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.clientX-100+"px";}
-                    document.body.appendChild(menuElem);
-                }
-            }
-        }
-        function hideContextMenu(){
-            if(document.querySelector("contextmenu")){document.querySelector("contextmenu").remove()}
-        }
-        function fileContextMenu(ele){
-            if(fileSelected.length<2){
-                event.stopPropagation();
-                fileSelected=[ele.getAttribute("data-filename")];
-                loadFileSelected();
-                showContextMenu();
-            }else{
-                showContextMenu();
-            }
-        }
+		function showContextMenu(){
+			if(navigator.maxTouchPoints==0){
+				hideContextMenu();
+				if(document.querySelector(".menu.shown")){
+					event.preventDefault();
+					let menuElem=document.createElement("contextmenu");
+					menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
+					menuElem.onmousedown=function(){event.stopPropagation();}
+					menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
+					menuElem.style.top=event.clientY+"px";
+					menuElem.style.left=event.clientX+"px";
+					if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.clientX-100+"px";}
+					document.body.appendChild(menuElem);
+				}
+			}
+		}
+		function hideContextMenu(){
+			if(document.querySelector("contextmenu")){document.querySelector("contextmenu").remove()}
+		}
+		function fileContextMenu(ele){
+			if(fileSelected.length<2){
+				event.stopPropagation();
+				fileSelected=[ele.getAttribute("data-filename")];
+				loadFileSelected();
+				showContextMenu();
+			}else{
+				showContextMenu();
+			}
+		}
 //========================================检查更新
-        function chkupd(){
-            showModule("loading")
-            request("chkupd",null,function(c,d,o){
-                if(o=="1001"){dirOperating="/";loadFileList("/");alert("您的FileAdmin已是最新版啦~");}
-                else if(o=="1002"){dirOperating="/";loadFileList("/");alert("获取更新失败，您的服务器网络环境可能无法访问GitHub (；′⌒`)");}
-                else{
-                    showModule("updinfo");showMenu("updinfo")
-                    document.getElementById("updinfo").innerHTML=o;
-                }
-            })
-        }
-        function applupd(){
-            showModule("loading");
-            request("applyversion",null,function(c){
-                if(c==200){location.reload();}
-                else{alert("更新失败惹..");showModule("updinfo");showMenu("updinfo")}
-            })
-        }
+		function chkupd(){
+			showModule("loading")
+			request("chkupd",null,function(c,d,o){
+				if(o=="1001"){dirOperating="/";loadFileList("/");alert("您的FileAdmin已是最新版啦~");}
+				else if(o=="1002"){dirOperating="/";loadFileList("/");alert("获取更新失败，您的服务器网络环境可能无法访问GitHub (；′⌒`)");}
+				else{
+					showModule("updinfo");showMenu("updinfo")
+					document.getElementById("updinfo").innerHTML=o;
+				}
+			})
+		}
+		function applupd(){
+			showModule("loading");
+			request("applyversion",null,function(c){
+				if(c==200){location.reload();}
+				else{alert("更新失败惹..");showModule("updinfo");showMenu("updinfo")}
+			})
+		}
 //========================================退出登录
 		function logout(){
 			if(confirm("您真的要退出登录嘛？＞﹏＜")){
@@ -607,7 +624,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 //</script>
 <?php
-    }else{
+	}else{
 ?>
 
 <!--
@@ -619,7 +636,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 <!DOCTYPE html>
 <html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="fileSelected=[];loadFileSelected();">
 	<head>
-	    <title>FileAdmin</title>
+		<title>FileAdmin</title>
 		<meta name="viewport" content="width=device-width">
 		<link rel="icon" href="//asset.simsoft.top/fileadmin.png">
 		<link rel="stylesheet" href="?a=css">
@@ -629,7 +646,14 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<div class="appName" onclick="chkupd()">File<b>Admin</b></div>
 			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
-		<div class="module loading shown" data-module="loading">正在请求...</div>
+		<div class="module loading shown" data-module="loading" id="loadingAnimations">
+			<div id="loadingText">正在请求...</div>
+			<div class="loadingAnimation">
+				<div class="loadingAnimationDot" id="dot1">·</div>
+				<div class="loadingAnimationDot" id="dot2">·</div>
+				<div class="loadingAnimationDot" id="dot3">·</div>
+			</div>
+		</div>
 
 		<!--登录页-->
 		<div class="module login" data-module="login">
@@ -671,12 +695,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		
 		<!--文件上传器-->
 		<div class="module upload" data-module="upload">
-		    <div style="font-size:1.5em;text-align:center;">正在上传 ψ(._. )></div>
-		    <div class="uploadProgress"><div id="uploadProgressBar"></div></div>
-		    <div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
-		    <div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
-		    <div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
-		    <div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
+			<div style="font-size:1.5em;text-align:center;">正在上传 ψ(._. )></div>
+			<div class="uploadProgress"><div id="uploadProgressBar"></div></div>
+			<div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
+			<div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
+			<div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
+			<div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
 		</div>
 		
 		<!--纯文本编辑器-->
@@ -701,8 +725,8 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			
 		<!--更新信息-->
 		<div class="module updinfo" data-module="updinfo">
-		    <div style="font-size:1.5em;border-bottom:1px solid #f5f5f5;text-align:center;padding:10px;">检测到更新</div>
-		    <div id="updinfo"></div>
+			<div style="font-size:1.5em;border-bottom:1px solid #f5f5f5;text-align:center;padding:10px;">检测到更新</div>
+			<div id="updinfo"></div>
 		</div>
 		<div class="menu" data-menu="updinfo">
 			<button onclick="applupd()" class="big">应用更新</button>
@@ -710,9 +734,9 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		</div>
 		
 		<div style="display:none">
-		    <input type="file" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
-		    <input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
-        </div>
+			<input type="file" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
+			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
+		</div>
 	</body>
 	
 	<script src="?a=js"></script>
