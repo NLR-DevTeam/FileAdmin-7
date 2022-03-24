@@ -25,6 +25,8 @@ FileAdmin内置了从本仓库获取源码并自动更新本体程序的功能�
 
 密码：SimSoft
 
+Demo已禁用保存文件等功能，非程序Bug
+
 ## 感谢
 - [星辰云](https://starxn.com)提供开发环境支持
 - [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
