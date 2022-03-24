@@ -18,6 +18,8 @@ FileAdmin为用户定义了多种方便使用的快捷键。
 - 在文件管理页面按下“Ctrl+A”以选中所有文件。
 - 在文本编辑器按下“Ctrl+S”以保存文件。
 
+FileAdmin内置了自动更新本体程序的功能。在任意界面点击左上方的“FileAdmin”字样即可检查更新。
+
 ## 感谢
 - [星辰云](https://starxn.com)提供开发环境支持
 - [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
