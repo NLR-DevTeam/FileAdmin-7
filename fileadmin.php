@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.031;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE";  $VERSION=6.032;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -113,15 +113,15 @@
 					echo "200";
 				}
 			}elseif($ACT=="chkupd"){
-				$latest=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/latest?stamp=".time());
+				$latest=file_get_contents("https://fileadmin.vercel.app/latest?stamp=".time());
 				if($latest && $latest!=$VERSION){
-					$updinfo=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updinfo?stamp=".time());
+					$updinfo=file_get_contents("https://fileadmin.vercel.app/updinfo?stamp=".time());
 					if($updinfo){
 						echo $updinfo;
 					}else{echo "1002";}
 				}else{echo "1001";}
 			}elseif($ACT=="applyversion"){
-				$updater=file_get_contents("https://raw.githubusercontent.com/YanJi314/FileAdmin/main/api/updater?stamp=".time());
+				$updater=file_get_contents("https://fileadmin.vercel.app/updater?stamp=".time());
 				if($updater){
 					file_put_contents("./FileAdminUpdater.php",$updater);
 					header("location: ./FileAdminUpdater.php?famain=".end(explode("/",$_SERVER['PHP_SELF'])));
