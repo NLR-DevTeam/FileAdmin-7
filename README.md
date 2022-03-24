@@ -20,6 +20,9 @@ FileAdmin为用户定义了多种方便使用的快捷键。
 
 FileAdmin内置了从本仓库获取源码并自动更新本体程序的功能，在任意界面点击左上方的“FileAdmin”字样即可检查更新。此功能需要您的主机/服务器可以正常连接raw.githubusercontent.com，部分大陆地区的主机/服务器可能不支持此功能。
 
+## Demo
+https://fileadmin-demo.simsoft.top/fileadmin.php
+
 ## 感谢
 - [星辰云](https://starxn.com)提供开发环境支持
 - [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
