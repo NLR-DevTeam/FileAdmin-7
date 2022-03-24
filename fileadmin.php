@@ -1,9 +1,9 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.032;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.035;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
 	
-	error_reporting(0);
+	//error_reporting(0);
 	function scandirAll($dir,$first=false){	
 		$files = [];
 		$child_dirs = scandir($dir);
@@ -57,6 +57,19 @@
 			mkdir($nowp);
 		}
 	}
+    function copyDir($from,$to){
+        if(!is_dir($to)){nbMkdir($to);}
+        echo $from."|md|".$to.PHP_EOL;
+        $currDir=$from;
+        $currFiles=scandir($currDir);
+        foreach($currFiles as $filename){
+            if($filename!="."&&$filename!=".."){
+                $trueFileName=$currDir.$filename;
+                if(is_dir($trueFileName)){copyDir($trueFileName.'/',$to.$filename.'/');}
+                else{copy($trueFileName,$to.$filename);}
+            }
+        }
+    }
 
 	$ACT=$_POST["a"];
 	$PWD=$_POST["pwd"];
@@ -91,7 +104,7 @@
 				file_put_contents(".".$_POST["name"],$_POST["data"]);
 				echo "200";
 			}elseif($ACT=="zip"){
-				$zipResult=create_zip(scandirAll(realpath(".".$_POST["name"]),true),"./FileAdmin_".time().".zip",false);
+				$zipResult=create_zip(scandirAll(realpath(".".$_POST["name"]),true),".".$_POST["name"]."FileAdmin_".time().".zip",false);
 				if($zipResult){echo "200";}else{echo "1001";}
 			}elseif($ACT=="unzip"){
 				echo unzip_file(".".$_POST["name"],".".$_POST["dir"],false);
@@ -126,6 +139,20 @@
 					file_put_contents("./FileAdminUpdater.php",$updater);
 					header("location: ./FileAdminUpdater.php?famain=".end(explode("/",$_SERVER['PHP_SELF'])));
 				}else{echo "1001";}
+			}elseif($ACT=="copy"){
+				$operateFiles=json_decode(rawurldecode($_POST["files"]));
+				foreach($operateFiles as $filename){
+					$fromfile=".".$_POST["from"].$filename;
+					$tofile=".".$_POST["to"].$filename;
+					if(is_dir($fromfile)){copyDir($fromfile.'/',".".$_POST["to"].$filename."/");}else{copy($fromfile,$tofile);}
+				}
+			}elseif($ACT=="move"){
+				$operateFiles=json_decode(rawurldecode($_POST["files"]));
+				foreach($operateFiles as $filename){
+					$fromfile=".".$_POST["from"].$filename;
+					$tofile=".".$_POST["to"].$filename;
+					rename($fromfile,$tofile);
+				}
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
@@ -224,10 +251,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	#loadingText{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
 /*</style>*/
-<?php
-	}elseif($_GET["a"]=="js"){
-		header("content-type: text/javascript");
-?>
+<?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>
 //<script>
 //=========================================初始化
 		window.onload=function(){
@@ -235,6 +259,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			request("check",null,function(){loadFileList(dirOperating)});
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
 			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
+			moveOrCopyMode=null;
 		}
 		window.onkeydown=function(){
 			if(event.keyCode==191){
@@ -248,6 +273,14 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				else if(document.querySelector(".files.shown")){previousDir();}
 			}else if(event.ctrlKey==true&&event.keyCode==65){
 				if(document.querySelector(".files.shown")){event.preventDefault();fileSelected=fileListOperating;loadFileSelected();}
+			}else if(event.keyCode==46){
+				if(document.querySelector(".files.shown")){delFile();}
+			}else if(event.ctrlKey==true&&event.keyCode==67){
+				if(document.querySelector(".files.shown")){setCopyFiles();}
+			}else if(event.ctrlKey==true&&event.keyCode==88){
+				if(document.querySelector(".files.shown")){setMoveFiles();}
+			}else if(event.ctrlKey==true&&event.keyCode==86){
+				if(document.querySelector(".files.shown")){filePaste();}
 			}
 		}
 //=========================================公共函数
@@ -479,6 +512,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				if(fileSelected.length==0){showMenu("files-noselect")}
 				else if(fileSelected.length==1){showMenu("files-singleselect")}
 				else{showMenu("files-multiselect")}
+				if(moveOrCopyMode){document.getElementById("pasteBtn").style.display="inline-block"}else{document.getElementById("pasteBtn").style.display="none"}
 			}
 		}
 		function loadFileSelected(){Array.prototype.slice.call(document.getElementsByClassName("file")).forEach(checkFileSelected);loadFileMenu();}
@@ -539,6 +573,27 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				showModule("loading");
 				request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating)});
 			}
+		}
+		function setMoveFiles(){
+		    moveOrCopyMode="move";
+		    moveOrCopyFromDir=dirOperating;
+		    moveOrCopyFiles=JSON.stringify(fileSelected);
+		    fileSelected=[];loadFileSelected();
+		}
+		function setCopyFiles(){
+		    moveOrCopyMode="copy";
+		    moveOrCopyFromDir=dirOperating;
+		    moveOrCopyFiles=JSON.stringify(fileSelected);
+		    fileSelected=[];loadFileSelected();
+		}
+		function filePaste(){
+		    if(moveOrCopyMode){
+		        showModule("loading");
+		        request(moveOrCopyMode,"files="+moveOrCopyFiles+"&from="+moveOrCopyFromDir+"&to="+dirOperating,function(){
+		            loadFileList(dirOperating);
+		        })
+		        moveOrCopyMode=null;document.getElementById("pasteBtn").style.display="none";
+		    }
 		}
 //========================================文本编辑器
 		function saveFile(){
@@ -623,9 +678,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}
 		}
 //</script>
-<?php
-	}else{
-?>
+<?php }else{ ?>
 
 <!--
 	SimSoft FileAdmin 前端部分
@@ -674,17 +727,22 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="newDir()" class="big">新建目录</button>
 			<button onclick="newFile()" class="big">新建文件</button>
 			<button onclick="zipCurrentDir()">打包</button>
+			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴</button>
 		</div>
 		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="renameFile();">改名</button>
 			<button onclick="downCurrFile();">下载</button>
+			<button onclick="setMoveFiles();">剪切</button>
+			<button onclick="setCopyFiles();">复制</button>
 			<button onclick="delFile();">删除</button>
 		</div>
 		<div class="menu" data-menu="files-multiselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
+			<button onclick="setMoveFiles();">剪切</button>
+			<button onclick="setCopyFiles();">复制</button>
 			<button onclick="delFile();">删除</button>
 		</div>
 		<div class="menu" data-menu="files-upload">
