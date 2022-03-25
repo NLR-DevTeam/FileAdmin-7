@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.036;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.037;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -256,6 +256,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 //<script>
 //=========================================初始化
 		window.onload=function(){
+		    fileHoverSelecting=false;
 			dirOperating="/";
 			request("check",null,function(){loadFileList(dirOperating)});
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
@@ -414,7 +415,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
 				fileListOperating.push(data.name);
-				fileListHtml=fileListHtml+`<div class="file" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
+				fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
 					<div class="fileName">`+data.name+`</div>
 					<div class="size">`+humanSize(data.size*100)+`</div>
 				</div>`;
@@ -428,6 +429,13 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				dirOperating=newDir;
 				loadFileList(dirOperating);
 			}
+		}
+		function hoverSelect(ele){
+		    if(fileHoverSelecting){
+    		    fileName=ele.getAttribute("data-filename");
+    			fileSelected.push(fileName);
+    			loadFileSelected();
+		    }
 		}
 		function viewFile(ele,byname){
 			if(!byname){
@@ -693,7 +701,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 -->
 
 <!DOCTYPE html>
-<html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="fileSelected=[];loadFileSelected();">
+<html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="if(!fileHoverSelecting){fileSelected=[];loadFileSelected();}" onmouseup="setTimeout(function(){fileHoverSelecting=false;},50)">
 	<head>
 		<title>FileAdmin</title>
 		<meta name="viewport" content="width=device-width">
@@ -724,7 +732,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		<!--文件列表页-->
 		<div class="module files" data-module="files">
 			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="上级目录" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
-			<br><div id="fileList" onclick="event.stopPropagation();"></div>
+			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){fileHoverSelecting=true}"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
