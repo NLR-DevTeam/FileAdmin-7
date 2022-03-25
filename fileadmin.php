@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.037;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.038;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -87,12 +87,25 @@
 					$fileArrayModified=[];
 					foreach($fileArray as $filename){
 						$fileisdir=is_dir(".".$_POST["name"].$filename);
-						if(!$fileisdir){$filesize=filesize(".".$_POST["name"].$filename)/1024;}else{$filesize=0;}
-						array_push($fileArrayModified,array(
-							"name"=>$filename,
-							"dir"=>$fileisdir,
-							"size"=>$filesize
-						));
+						if($fileisdir){
+						    $filesize=0;
+    						array_push($fileArrayModified,array(
+    							"name"=>$filename,
+    							"dir"=>$fileisdir,
+    							"size"=>$filesize
+    						));
+						}
+					}
+					foreach($fileArray as $filename){
+						$fileisdir=is_dir(".".$_POST["name"].$filename);
+						if(!$fileisdir){
+						    $filesize=filesize(".".$_POST["name"].$filename)/1024;
+    						array_push($fileArrayModified,array(
+    							"name"=>$filename,
+    							"dir"=>$fileisdir,
+    							"size"=>$filesize
+    						));
+						}
 					}
 					echo "200||".rawurlencode(json_encode($fileArrayModified));
 				}else{
