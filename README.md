@@ -32,12 +32,13 @@ FileAdmin为用户定义了多种方便使用的快捷键。
 
 FileAdmin内置了从本仓库获取源码并自动更新本体程序的功能，在任意界面点击左上方的“FileAdmin”字样即可检查更新。部分大陆地区的主机/服务器可能不支持此功能。
 
-## Demo
-地址：https://fileadmin-demo.simsoft.top/fileadmin.php
+## 官网&Demo
+- 官网：https://fa.yanji.pro/
+- Demo：https://fileadmin-demo.simsoft.top/fileadmin.php
+如有链接失效可以提交Issue提醒我修复
 
-密码：SimSoft
-
-Demo已禁用保存文件等功能，非程序Bug
+## 版权&免责
+本程序使用AGPL-3.0协议开源，任何二开作品需以相同协议开源，不推荐用于商业用途。本程序若因使用不当造成的任何损失，开发者不负任何责任。
 
 ## 感谢
 - [星辰云](https://starxn.com)提供开发环境支持
