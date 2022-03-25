@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.038;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.039;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -165,6 +165,14 @@
 					$fromfile=".".$_POST["from"].$filename;
 					$tofile=".".$_POST["to"].$filename;
 					rename($fromfile,$tofile);
+				}
+			}elseif($ACT=="fgc"){
+				$filed=file_get_contents($_POST["url"]);
+				if($filed){
+				    $filen=end(explode("/",$_POST["url"]));
+				    file_put_contents(".".$_POST["dir"].$filen,$filed);
+				}else{
+				    echo "1001";
 				}
 			}
 		}else{echo "1000";}
@@ -574,6 +582,20 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
 			}
 		}
+		function fileGetContents(){
+		    let reqUrl=prompt("输入远程下载地址，以“https://”或“http://”开头 §(*￣▽￣*)§");
+		    if(reqUrl){
+		        showModule("loading");
+		        if(reqUrl.indexOf("https://")!=-1||reqUrl.indexOf("http://")!=-1){
+		            request("fgc","url="+encodeURIComponent(reqUrl)+"&dir="+dirOperating,function(c,d,o){
+		                if(o!=""){alert("文件获取失败，可能文件过大，请下载到本地后上传 (*^_^*)")}
+		                loadFileList(dirOperating)
+		            })
+		        }else{
+		            alert("下载链接以“https://”或“http://”开头 ㄟ( ▔, ▔ )ㄏ")
+		        }
+		    }
+		}
 //========================================单选中操作
 		function renameFile(){
 			let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
@@ -754,6 +776,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="newDir()" class="big">新建目录</button>
 			<button onclick="newFile()" class="big">新建文件</button>
 			<button onclick="zipCurrentDir()">打包</button>
+			<button onclick="fileGetContents()" class="big">远程下载</button>
 			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴</button>
 		</div>
 		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
