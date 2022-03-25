@@ -1,9 +1,9 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.035;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.036;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
 	
-	error_reporting(0);
+	//error_reporting(0);
 	function scandirAll($dir,$first=false){	
 		$files = [];
 		$child_dirs = scandir($dir);
@@ -212,8 +212,9 @@ contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;heigh
 contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
 contextmenu button:hover{background:rgba(0,0,0,.05);}
 contextmenu button:active{background:rgba(0,0,0,.1);}
-.imgviewer{background:transparent;}
+.imgviewer,.vidviewer{background:transparent;}
 #imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
+#vidviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:black;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;outline:none;}
 .updinfo{margin:10px;padding:10px;}
 #updinfo{padding:10px;}
 .upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
@@ -441,7 +442,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 					loadFileList(dirOperating);
 				}else{
 					textMode=null;
-					if(fileType=="html"||fileType=="htm"){textMode="html";}
+					if(fileType=="html"||fileType=="htm"||fileType=="txt"){textMode="html";}
 					else if(fileType=="php"){textMode="php";}
 					else if(fileType=="json"){textMode="json";}
 					else if(fileType=="js"){textMode="javascript";}
@@ -466,6 +467,11 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 						showMenu("imgviewer");
 						imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
 						document.getElementById("imgviewer").src=imageViewingUrl;
+					}else if(fileType=="mp4"||fileType=="webm"){
+						showModule("vidviewer");
+						showMenu("vidviewer");
+						vidViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
+						document.getElementById("vidviewer").src=vidViewingUrl;
 					}
 					else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
 					if(textMode){
@@ -778,6 +784,13 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		<div class="menu" data-menu="imgviewer">
 			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
 			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
+		</div>
+		
+		<!--视频播放器-->
+		<div class="module vidviewer" data-module="vidviewer"><video controls id="vidviewer" autoplay></video></div>
+		<div class="menu" data-menu="vidviewer">
+			<button onclick="location=vidViewingUrl" class="big">下载视频</button>
+			<button onclick="document.getElementById('vidviewer').src='';loadFileList(dirOperating)">返回</button>
 		</div>
 		
 			
