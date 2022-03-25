@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.039;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.041;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -214,8 +214,7 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 .files{margin:10px;background:transparent;text-align:center;}
 #fileList{margin-top:5px;border-radius:5px;background:white;overflow:hidden;margin-bottom:10px;display:inline-block;text-align:left;max-width:500px;width:100%}
 #fileList center{padding:30px 0;opacity:.6}
-#fileList .file{border-top:1px solid #f5f5f5;padding:10px;text-align:center;}
-#fileList .file:first-child{border-top:none;}
+#fileList .file{padding:10px;text-align:center;}
 #fileList .file:hover{background:rgba(0,0,0,.09);}
 #fileList .file:active{background:rgba(0,0,0,.12)}
 #fileList .file .fileName::before{display:inline-block;margin-right:5px;width:25px;}
@@ -451,11 +450,20 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				loadFileList(dirOperating);
 			}
 		}
+		function startHoverSelect(ele){
+    		if(event.target.getAttribute("data-filename")){fileName=event.target.getAttribute("data-filename")}else{fileName=event.target.parentNode.getAttribute("data-filename")}
+            if(fileSelected.indexOf(fileName)==-1){fileHoverSelecting="select";}else{fileHoverSelecting="unselect";}
+		}
 		function hoverSelect(ele){
-		    if(fileHoverSelecting){
-    		    fileName=ele.getAttribute("data-filename");
-    			fileSelected.push(fileName);
-    			loadFileSelected();
+    		fileName=ele.getAttribute("data-filename");
+    		if(fileHoverSelecting){
+    		    if(fileHoverSelecting=="select"){
+        		    fileSelected.push(fileName);		    
+    			    loadFileSelected();
+    		    }else{
+    		        fileSelected=fileSelected.filter(item=>item!==fileName);
+					loadFileSelected();
+    		    }
 		    }
 		}
 		function viewFile(ele,byname){
@@ -767,7 +775,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		<!--文件列表页-->
 		<div class="module files" data-module="files">
 			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="上级目录" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
-			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){fileHoverSelecting=true}"></div>
+			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){startHoverSelect(this)}"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
