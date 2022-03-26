@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.041;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.042;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -253,7 +253,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
     60%{transform:translateY(5px)}
     75%{transform:translateY(0)}
 }
-@media screen and (min-width:600px) {
+@media screen and (min-width:700px) {
 	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
 	.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
 	.menu button.big{width:70px}
@@ -262,7 +262,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	.menu.shown{top:8px;}
 	#loadingText{position:fixed;top:0;left:140px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
-@media screen and (max-width:600px) {
+@media screen and (max-width:700px) {
 	body{margin-bottom:50px;}
 	.menu{bottom:-35px;transition:bottom .2s;box-shadow:0 0 5px 0 rgba(0,0,0,.4);background:white;position:fixed;z-index:10;right:0;left:0;height:30px;text-align:center;overflow-y:scroll;white-space:nowrap}
 	.menu button{outline:none;border:0;height:100%;width:fit-content;background:transparent;width:30px;padding:0;}
@@ -458,8 +458,10 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
     		fileName=ele.getAttribute("data-filename");
     		if(fileHoverSelecting){
     		    if(fileHoverSelecting=="select"){
-        		    fileSelected.push(fileName);		    
-    			    loadFileSelected();
+    		        if(fileSelected.indexOf(fileName)==-1){
+        		        fileSelected.push(fileName);		    
+    			        loadFileSelected();
+    		        }
     		    }else{
     		        fileSelected=fileSelected.filter(item=>item!==fileName);
 					loadFileSelected();
