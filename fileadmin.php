@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.042;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.043;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -174,6 +174,25 @@
 				}else{
 				    echo "1001";
 				}
+			}elseif($ACT=="find_by_content"){
+			    $trueDirName=".".implode("/",explode("/",$_POST["dir"]));
+                $filelist=scandirAll($trueDirName);
+                $searchedFiles=[];
+                foreach($filelist as $filenameFound){
+                    $filedata=file_get_contents($filenameFound);
+                    if($_POST["case"]=="1"){$fileInNeed=strstr($filedata,$_POST["find"]);}else{$fileInNeed=stristr($filedata,$_POST["find"]);}
+                    if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+                }
+                echo "200||".rawurlencode(json_encode($searchedFiles));
+			}elseif($ACT=="find_by_name"){
+			    $trueDirName=".".implode("/",explode("/",$_POST["dir"]));
+                $filelist=scandirAll($trueDirName);
+                $searchedFiles=[];
+                foreach($filelist as $filenameFound){
+                    if($_POST["case"]=="1"){$fileInNeed=strstr($filenameFound,$_POST["find"]);}else{$fileInNeed=stristr($filenameFound,$_POST["find"]);}
+                    if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+                }
+                echo "200||".rawurlencode(json_encode($searchedFiles));
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
@@ -211,16 +230,18 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 .addressBar button:hover{background:rgba(0,0,0,.09);}
 .addressBar button:active{background:rgba(0,0,0,.12);}
 .addressBar div{vertical-align:middle;display:inline-block;width:calc(100% - 60px);padding:0 10px;overflow-x:scroll;white-space:nowrap}
-.files{margin:10px;background:transparent;text-align:center;}
-#fileList{margin-top:5px;border-radius:5px;background:white;overflow:hidden;margin-bottom:10px;display:inline-block;text-align:left;max-width:500px;width:100%}
+.files,.search{margin:10px;background:transparent;text-align:center;}
+#fileList,#searchOptnArea,#searchResult{margin-top:5px;border-radius:5px;background:white;overflow:hidden;margin-bottom:10px;display:inline-block;text-align:left;max-width:500px;width:100%}
+#searchOptnArea{margin-bottom:0;}
 #fileList center{padding:30px 0;opacity:.6}
-#fileList .file{padding:10px;text-align:center;}
-#fileList .file:hover{background:rgba(0,0,0,.09);}
-#fileList .file:active{background:rgba(0,0,0,.12)}
-#fileList .file .fileName::before{display:inline-block;margin-right:5px;width:25px;}
-#fileList .file[data-isdir^=false] .fileName::before{content:"📄"}
+#fileList .file,#searchResult .file{padding:10px;text-align:center;}
+#fileList .file:hover,#searchResult .file:hover{background:rgba(0,0,0,.09);}
+#fileList .file:active,#searchResult .file:active{background:rgba(0,0,0,.12)}
+#fileList .file .fileName::before,#searchResult .file .fileName::before{display:inline-block;margin-right:5px;width:25px;}
+#fileList .file[data-isdir^=false] .fileName::before,#searchResult .fileName::before{content:"📄"}
 #fileList .file[data-isdir^=true] .fileName::before{content:"📂"}
-#fileList .file .fileName{display:inline-block;width:calc(100% - 100px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#fileList .file .fileName,#searchResult .fileName{display:inline-block;width:calc(100% - 100px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#searchResult .fileName{width:100%;}
 #fileList .file .size{display:inline-block;width:90px;text-align:right;vertical-align:middle;opacity:.5;}
 #fileList .file[data-isdir^=true] .size{opacity:0;}
 #fileList .file.selected{background:#1e9fff;color:white;}
@@ -245,6 +266,10 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 .loadingAnimationDot{animation:loadingDot .8s linear 0s infinite;font-weight:bold;font-size:2em;display:inline-block;opacity:.1;}
 #dot2{animation-delay:.1s!important}
 #dot3{animation-delay:.2s!important}
+#searchAddrBar{padding:5px;overflow-x:scroll;white-space:nowrap}
+#searchOptnArea div span{width:100px;display:inline-block;vertical-align:middle;padding:5px;}
+#searchOptnArea div input,#searchOptnArea div select{padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
+#searchOptnArea div input{padding-left:5px;}
 @keyframes loadingDot{
     0%{transform:translateY(0px)}
     15%{transform:translateY(10px)}
@@ -468,7 +493,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
     		    }
 		    }
 		}
-		function viewFile(ele,byname){
+		function viewFile(ele,byname,restoreDirOperating){
 			if(!byname){
 				fileIsDir=ele.getAttribute("data-isdir");
 				fileName=ele.getAttribute("data-filename");
@@ -539,6 +564,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 					loadFileSelected();
 				}
 			}
+			if(restoreDirOperating){dirOperating="/";}
 		}
 		function previousDir(){
 			if(dirOperating=="/"){alert("您已经在根目录啦 ㄟ( ▔, ▔ )ㄏ");}else{
@@ -606,6 +632,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		        }
 		    }
 		}
+		function openFileFinder(){
+		    document.getElementById("searchAddrBar").innerText="当前查找目录："+document.getElementById("addressBar").innerText;
+		    showModule("search");
+		    showMenu("search");
+		    document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">您还没有发起搜索 ㄟ( ▔, ▔ )ㄏ</div>';
+		}
 //========================================单选中操作
 		function renameFile(){
 			let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
@@ -657,9 +689,9 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 //========================================文本编辑器
 		function saveFile(){
 			document.getElementById("saveBtn").innerText="······";
-			document.getElementById("loadingAnimations").style.display="block";
-			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()) ,function(code){
-			    document.getElementById("loadingAnimations").style.display="none";
+			document.getElementById("loadingAnimations").classList.add("shown");
+			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
+			    document.getElementById("loadingAnimations").classList.remove("shown");
 				if(code==200){
 					document.getElementById("saveBtn").innerText="完成";
 					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
@@ -709,6 +741,42 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}else{
 				showContextMenu();
 			}
+		}
+//========================================重量级文件搜索
+        function startSearch(){
+            showModule("loading")
+            if(document.getElementById("searchMode").value=="1"){
+                request("find_by_name","find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+                    searchedArr=JSON.parse(decodeURIComponent(d));
+                    searchResultHtml="";
+                    searchedArr.forEach(addToSearchResultHtml);
+                    showModule("search");showMenu("search")
+                    document.getElementById("searchResult").innerHTML=searchResultHtml;
+                    if(searchResultHtml==""){document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';}
+                })
+            }else{
+                request("find_by_content","find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+                    searchedArr=JSON.parse(decodeURIComponent(d));
+                    searchResultHtml="";
+                    searchedArr.forEach(addToSearchResultHtml);
+                    showModule("search");showMenu("search")
+                    document.getElementById("searchResult").innerHTML=searchResultHtml;
+                    if(searchResultHtml==""){document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';}
+                }) 
+            }
+        }
+		function addToSearchResultHtml(data){
+			searchResultHtml=searchResultHtml+`<div class="file" data-filename="`+data.replace("//","/")+`" onclick='viewFile("`+data.replace("//","/")+`",true,true)'>
+				<div class="fileName">`+data.replace("//","/")+`</div>
+			</div>`;
+		}
+		function loadSearchMode(ele){
+		    if(ele.value=="3"){
+		        alert("此功能即将上线~")
+		        //document.getElementById("replaceOptnInput").style.display="block"
+		    }else{
+		        //document.getElementById("replaceOptnInput").style.display="none"
+		    }
 		}
 //========================================检查更新
 		function chkupd(){
@@ -786,6 +854,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="newDir()" class="big">新建目录</button>
 			<button onclick="newFile()" class="big">新建文件</button>
 			<button onclick="zipCurrentDir()">打包</button>
+			<button onclick="openFileFinder();searchDir=dirOperating;dirOperating=''" class="big">查找文件</button>
 			<button onclick="fileGetContents()" class="big">远程下载</button>
 			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴</button>
 		</div>
@@ -847,6 +916,21 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="document.getElementById('vidviewer').src='';loadFileList(dirOperating)">返回</button>
 		</div>
 		
+		<!--重量级文件搜索器-->
+		<div class="module search" data-module="search">
+		    <div class="addressBar" id="searchAddrBar"></div><br>
+		    <div id="searchOptnArea" style="padding:10px">
+		        <div><span>查找内容</span><input id="searchContent" placeholder="输入要搜索的文件名/文件内容 q(≧▽≦q)"></div>
+		        <div><span>工作模式</span><select id="searchMode" onchange="loadSearchMode(this)"><option value="1">仅匹配文件名</option><option value="2">匹配文件内容</option><option value="3">查找并替换文件内容</option></select></div>
+		        <div><span>区分大小写</span><select id="searchCase"><option value="1">开启</option><option value="2">关闭</option></select></div>
+		    </div><br>
+		    <div id="searchResult"></div>
+		</div>
+		<div class="menu" data-menu="search">
+			<button onclick="startSearch()" class="big">开始查找</button>
+			<button onclick="startChange()" style="display:none" class="big">开始替换</button>
+			<button onclick="dirOperating='/';loadFileList(dirOperating)">退出</button>
+		</div>
 			
 		<!--更新信息-->
 		<div class="module updinfo" data-module="updinfo">
