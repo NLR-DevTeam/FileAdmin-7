@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.043;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.044;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -193,6 +193,20 @@
                     if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
                 }
                 echo "200||".rawurlencode(json_encode($searchedFiles));
+			}elseif($ACT=="replace"){
+			    $trueDirName=".".implode("/",explode("/",$_POST["dir"]));
+                $filelist=scandirAll($trueDirName);
+                $replaceCount=0;
+                foreach($filelist as $filenameFound){
+                    $filedata=file_get_contents($filenameFound);
+                    $fileInNeed=strstr($filedata,$_POST["find"]);
+                    if($fileInNeed){
+                        $replaceCount++;
+                        $newFiledata=str_replace($_POST["find"],$_POST["replace"],$filedata);
+                        file_put_contents($filenameFound,$newFiledata);
+                    }
+                }
+                echo "200||".$replaceCount;
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
@@ -637,6 +651,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		    showModule("search");
 		    showMenu("search");
 		    document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">您还没有发起搜索 ㄟ( ▔, ▔ )ㄏ</div>';
+		    document.getElementById("replaceBtn").style.display="none";
 		}
 //========================================单选中操作
 		function renameFile(){
@@ -761,8 +776,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
                     searchedArr.forEach(addToSearchResultHtml);
                     showModule("search");showMenu("search")
                     document.getElementById("searchResult").innerHTML=searchResultHtml;
-                    if(searchResultHtml==""){document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';}
-                }) 
+                    document.getElementById("replaceBtn").style.display="inline-block"
+                    if(searchResultHtml==""){
+                        document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';
+                        document.getElementById("replaceBtn").style.display="none"
+                    }
+                })
             }
         }
 		function addToSearchResultHtml(data){
@@ -772,10 +791,22 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 		function loadSearchMode(ele){
 		    if(ele.value=="3"){
-		        alert("此功能即将上线~")
-		        //document.getElementById("replaceOptnInput").style.display="block"
+		        document.getElementById("replaceOptnInput").style.display="block"
+		        document.getElementById("replaceHidden").style.display="none"
+		        document.getElementById("searchCase").value="1"
 		    }else{
-		        //document.getElementById("replaceOptnInput").style.display="none"
+		        document.getElementById("replaceOptnInput").style.display="none"
+		        document.getElementById("replaceBtn").style.display="none"
+		        document.getElementById("replaceHidden").style.display="block"
+		    }
+		}
+		function startChange(){
+		    if(confirm("替换操作具有危险性且不支持撤销，强烈建议执行前仔细核对文件列表并对整个目录打包备份。是否确认要继续 (⊙_⊙)？")){
+                showModule("loading")
+                request("replace","find="+encodeURIComponent(document.getElementById("searchContent").value)+"&replace="+encodeURIComponent(document.getElementById("searchReplaceContent").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+                    alert("在"+d+"个文件中完成了替换操作 (*^▽^*)");
+                    openFileFinder();
+                })
 		    }
 		}
 //========================================检查更新
@@ -921,14 +952,15 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		    <div class="addressBar" id="searchAddrBar"></div><br>
 		    <div id="searchOptnArea" style="padding:10px">
 		        <div><span>查找内容</span><input id="searchContent" placeholder="输入要搜索的文件名/文件内容 q(≧▽≦q)"></div>
+		        <div id="replaceOptnInput" style="display:none"><span>替换内容</span><input id="searchReplaceContent" placeholder="输入要替换为的文件内容 §(*￣▽￣*)§"></div>
 		        <div><span>工作模式</span><select id="searchMode" onchange="loadSearchMode(this)"><option value="1">仅匹配文件名</option><option value="2">匹配文件内容</option><option value="3">查找并替换文件内容</option></select></div>
-		        <div><span>区分大小写</span><select id="searchCase"><option value="1">开启</option><option value="2">关闭</option></select></div>
+		        <div id="replaceHidden"><span>区分大小写</span><select id="searchCase"><option value="1">开启</option><option value="2">关闭</option></select></div>
 		    </div><br>
 		    <div id="searchResult"></div>
 		</div>
 		<div class="menu" data-menu="search">
 			<button onclick="startSearch()" class="big">开始查找</button>
-			<button onclick="startChange()" style="display:none" class="big">开始替换</button>
+			<button onclick="startChange()" style="display:none" class="big" id="replaceBtn">确认替换</button>
 			<button onclick="dirOperating='/';loadFileList(dirOperating)">退出</button>
 		</div>
 			
