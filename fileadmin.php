@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.044;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.045;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -178,10 +178,13 @@
 			    $trueDirName=".".implode("/",explode("/",$_POST["dir"]));
                 $filelist=scandirAll($trueDirName);
                 $searchedFiles=[];
+                $textFiles=["txt","htm","html","php","css","js","json"];
                 foreach($filelist as $filenameFound){
-                    $filedata=file_get_contents($filenameFound);
-                    if($_POST["case"]=="1"){$fileInNeed=strstr($filedata,$_POST["find"]);}else{$fileInNeed=stristr($filedata,$_POST["find"]);}
-                    if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+			        if(in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
+                        $filedata=file_get_contents($filenameFound);
+                        if($_POST["case"]=="1"){$fileInNeed=strstr($filedata,$_POST["find"]);}else{$fileInNeed=stristr($filedata,$_POST["find"]);}
+                        if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+			        }
                 }
                 echo "200||".rawurlencode(json_encode($searchedFiles));
 			}elseif($ACT=="find_by_name"){
@@ -197,14 +200,17 @@
 			    $trueDirName=".".implode("/",explode("/",$_POST["dir"]));
                 $filelist=scandirAll($trueDirName);
                 $replaceCount=0;
+                $textFiles=["txt","htm","html","php","css","js","json"];
                 foreach($filelist as $filenameFound){
-                    $filedata=file_get_contents($filenameFound);
-                    $fileInNeed=strstr($filedata,$_POST["find"]);
-                    if($fileInNeed){
-                        $replaceCount++;
-                        $newFiledata=str_replace($_POST["find"],$_POST["replace"],$filedata);
-                        file_put_contents($filenameFound,$newFiledata);
-                    }
+			        if(in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
+                        $filedata=file_get_contents($filenameFound);
+                        $fileInNeed=strstr($filedata,$_POST["find"]);
+                        if($fileInNeed){
+                            $replaceCount++;
+                            $newFiledata=str_replace($_POST["find"],$_POST["replace"],$filedata);
+                            file_put_contents($filenameFound,$newFiledata);
+                        }
+			        }
                 }
                 echo "200||".$replaceCount;
 			}
@@ -251,11 +257,9 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file,#searchResult .file{padding:10px;text-align:center;}
 #fileList .file:hover,#searchResult .file:hover{background:rgba(0,0,0,.09);}
 #fileList .file:active,#searchResult .file:active{background:rgba(0,0,0,.12)}
-#fileList .file .fileName::before,#searchResult .file .fileName::before{display:inline-block;margin-right:5px;width:25px;}
-#fileList .file[data-isdir^=false] .fileName::before,#searchResult .fileName::before{content:"📄"}
-#fileList .file[data-isdir^=true] .fileName::before{content:"📂"}
-#fileList .file .fileName,#searchResult .fileName{display:inline-block;width:calc(100% - 100px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-#searchResult .fileName{width:100%;}
+.file .fileIco{display:inline-block;margin-right:5px;width:27px;height:27px;vertical-align:middle}
+#fileList .file .fileName,#searchResult .fileName{display:inline-block;width:calc(100% - 135px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#searchResult .fileName{width:calc(100% - 40px);}
 #fileList .file .size{display:inline-block;width:90px;text-align:right;vertical-align:middle;opacity:.5;}
 #fileList .file[data-isdir^=true] .size{opacity:0;}
 #fileList .file.selected{background:#1e9fff;color:white;}
@@ -473,12 +477,20 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
+				fileType=data.name.split(".")[data.name.split(".").length-1].toLowerCase();
 				fileListOperating.push(data.name);
 				fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
+					<img src="https://asset.simsoft.top/FileAdminIcons/`+getFileIco(fileType,data.dir)+`.svg" class="fileIco">
 					<div class="fileName">`+data.name+`</div>
 					<div class="size">`+humanSize(data.size*100)+`</div>
 				</div>`;
 			}
+		}
+		function getFileIco(type,dir){
+		    if(dir){return "folder";}else{
+		        currentIcons=["css","html","js","json","mp3","php","svg"];
+		        if(currentIcons.indexOf(type)!=-1){return type;}else{return "unknown"}
+		    }
 		}
 		function editAddressBar(){
 			let newDir=prompt("请输入想转到的路径 (o゜▽゜)o☆",dirOperating);
@@ -785,7 +797,9 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
             }
         }
 		function addToSearchResultHtml(data){
+			fileType=data.split(".")[data.split(".").length-1].toLowerCase();
 			searchResultHtml=searchResultHtml+`<div class="file" data-filename="`+data.replace("//","/")+`" onclick='viewFile("`+data.replace("//","/")+`",true,true)'>
+				<img src="https://asset.simsoft.top/FileAdminIcons/`+getFileIco(fileType,false)+`.svg" class="fileIco">
 				<div class="fileName">`+data.replace("//","/")+`</div>
 			</div>`;
 		}
@@ -951,7 +965,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		<div class="module search" data-module="search">
 		    <div class="addressBar" id="searchAddrBar"></div><br>
 		    <div id="searchOptnArea" style="padding:10px">
-		        <div><span>查找内容</span><input id="searchContent" placeholder="输入要搜索的文件名/文件内容 q(≧▽≦q)"></div>
+		        <div><span>查找内容</span><input id="searchContent" autocomplete="off" placeholder="输入要搜索的文件名/文件内容 q(≧▽≦q)"></div>
 		        <div id="replaceOptnInput" style="display:none"><span>替换内容</span><input id="searchReplaceContent" placeholder="输入要替换为的文件内容 §(*￣▽￣*)§"></div>
 		        <div><span>工作模式</span><select id="searchMode" onchange="loadSearchMode(this)"><option value="1">仅匹配文件名</option><option value="2">匹配文件内容</option><option value="3">查找并替换文件内容</option></select></div>
 		        <div id="replaceHidden"><span>区分大小写</span><select id="searchCase"><option value="1">开启</option><option value="2">关闭</option></select></div>
