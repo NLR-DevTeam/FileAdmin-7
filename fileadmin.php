@@ -258,6 +258,7 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file:hover,#searchResult .file:hover{background:rgba(0,0,0,.09);}
 #fileList .file:active,#searchResult .file:active{background:rgba(0,0,0,.12)}
 .file .fileIco{display:inline-block;margin-right:5px;width:27px;height:27px;vertical-align:middle}
+.file[data-isdir^=true] .fileIco{padding:2px;}
 #fileList .file .fileName,#searchResult .fileName{display:inline-block;width:calc(100% - 135px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 #searchResult .fileName{width:calc(100% - 40px);}
 #fileList .file .size{display:inline-block;width:90px;text-align:right;vertical-align:middle;opacity:.5;}
