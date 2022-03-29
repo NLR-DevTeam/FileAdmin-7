@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.047;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.048;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -845,8 +845,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				showModule("login");
 			}
 		}
-//</script>
-<?php }else{ ?>
+//</script><?php }else{ ?>
 <!--
 	SimSoft FileAdmin 前端部分
 	由盐鸡开发的一款轻量级文件管理器
@@ -889,9 +888,8 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
 			<button onclick="loadFileList(dirOperating)">刷新</button>
 			<button onclick="showMenu('files-upload')">上传</button>
-			<button onclick="newDir()" class="big">新建目录</button>
-			<button onclick="newFile()" class="big">新建文件</button>
 			<button onclick="zipCurrentDir()">打包</button>
+			<button onclick="showMenu('files-newfile')">新建</button>
 			<button onclick="openFileFinder();searchDir=dirOperating;dirOperating=''" class="big">查找文件</button>
 			<button onclick="fileGetContents()" class="big">远程下载</button>
 			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴</button>
@@ -917,6 +915,11 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button class="big" onclick="document.getElementById('folderUploadInput').click()">上传目录</button>
 			<button onclick="loadFileMenu();">取消</button>
 		</div>
+		<div class="menu" data-menu="files-newfile">
+			<button onclick="newDir()" class="big">新建目录</button>
+			<button onclick="newFile()" class="big">新建文件</button>
+			<button onclick="loadFileMenu();">取消</button>
+		</div>
 		
 		<!--文件上传器-->
 		<div class="module upload" data-module="upload">
@@ -939,14 +942,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="loadFileList(dirOperating)">返回</button>
 		</div>
-		
 		<!--图片预览器-->
 		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
 		<div class="menu" data-menu="imgviewer">
 			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
 			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
 		</div>
-		
 		<!--视频播放器-->
 		<div class="module vidviewer" data-module="vidviewer"><video controls id="vidviewer" autoplay></video></div>
 		<div class="menu" data-menu="vidviewer">
@@ -995,5 +996,4 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html>
-<?php } ?>
+</html><?php } ?>
