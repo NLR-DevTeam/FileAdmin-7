@@ -1,18 +1,15 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.045;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.046;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
-	
 	error_reporting(0);
 	function scandirAll($dir,$first=false){	
 		$files = [];
 		$child_dirs = scandir($dir);
-		foreach($child_dirs as $child_dir){
-			if($child_dir != '.' && $child_dir != '..'){
-				if(is_dir($dir."/".$child_dir)){$files=array_merge($files,scandirAll($dir."/".$child_dir));}
-				else{array_push($files,$dir."/".$child_dir);}
-			}
-		}
+		foreach($child_dirs as $child_dir){if($child_dir != '.' && $child_dir != '..'){
+			if(is_dir($dir."/".$child_dir)){$files=array_merge($files,scandirAll($dir."/".$child_dir));}
+			else{array_push($files,$dir."/".$child_dir);}
+		}}
 		return $files;
 	}
 	function create_zip($files=array(),$destination='',$overwrite=false){
@@ -88,23 +85,14 @@
 					foreach($fileArray as $filename){
 						$fileisdir=is_dir(".".$_POST["name"].$filename);
 						if($fileisdir){
-						    $filesize=0;
-    						array_push($fileArrayModified,array(
-    							"name"=>$filename,
-    							"dir"=>$fileisdir,
-    							"size"=>$filesize
-    						));
+						    $filesize=0;array_push($fileArrayModified,array("name"=>$filename,"dir"=>$fileisdir,"size"=>$filesize));
 						}
 					}
 					foreach($fileArray as $filename){
 						$fileisdir=is_dir(".".$_POST["name"].$filename);
 						if(!$fileisdir){
 						    $filesize=filesize(".".$_POST["name"].$filename)/1024;
-    						array_push($fileArrayModified,array(
-    							"name"=>$filename,
-    							"dir"=>$fileisdir,
-    							"size"=>$filesize
-    						));
+    						array_push($fileArrayModified,array("name"=>$filename,"dir"=>$fileisdir,"size"=>$filesize));
 						}
 					}
 					echo "200||".rawurlencode(json_encode($fileArrayModified));
@@ -222,6 +210,9 @@
 		$destDir=".".$_GET["dir"];
 		if(!is_dir($destDir)){nbMkdir($destDir);}
 		move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
+	}elseif($_GET["a"]=="ver"){
+		$latest=file_get_contents("https://fileadmin.vercel.app/api/latest?stamp=".time());
+		if($latest && $latest!=$VERSION){echo "1001";}else{echo "v".$VERSION;}
 	}elseif($_GET["a"]=="css"){ 
 		header("content-type: text/css");
 ?>
@@ -230,9 +221,11 @@
 *{box-sizing:border-box;}
 body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
 ::-webkit-scrollbar{display:none;}
-.title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;}
+.title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;vertical-align:top;}
 .appName{font-size:1.5em;position:absolute;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
 .appName b{color:#1e9fff;}
+#versionNote{border-radius:10px 10px 10px 0;background:#f5f5f5;display:inline-block;margin-left:135px;color:#ababab;padding:0 5px;font-size:.9em;margin-top:5px;}
+#versionNote.active{background:#1e9fff;color:white}
 .title svg{position:absolute;top:0;bottom:0;right:10px;margin:auto;transform:rotate(180deg)}
 .module{display:none;background:white;}
 .module.shown{display:block;animation:showModule .3s ease;}
@@ -280,7 +273,6 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 .upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
 .uploadProgress{height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;margin:10px 0;}
 #uploadProgressBar{height:8px;transition:width .2s;background:#1e9fff;width:0;}
-.uploadText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.7}
 .loadingAnimation{position:fixed;inset:0;margin:auto;width:fit-content;height:fit-content;z-index:20}
 .loadingAnimationDot{animation:loadingDot .8s linear 0s infinite;font-weight:bold;font-size:2em;display:inline-block;opacity:.1;}
 #dot2{animation-delay:.1s!important}
@@ -326,6 +318,9 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
 			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
 			moveOrCopyMode=null;
+			fetch("?a=ver").then(function(d){return d.text()}).then(function(d){
+			    if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
+			}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
 		}
 		window.onkeydown=function(){
 			if(event.keyCode==191){
@@ -789,7 +784,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
                     searchedArr.forEach(addToSearchResultHtml);
                     showModule("search");showMenu("search")
                     document.getElementById("searchResult").innerHTML=searchResultHtml;
-                    document.getElementById("replaceBtn").style.display="inline-block"
+                    if(document.getElementById("searchMode").value=="3"){document.getElementById("replaceBtn").style.display="inline-block"}
                     if(searchResultHtml==""){
                         document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';
                         document.getElementById("replaceBtn").style.display="none"
@@ -829,7 +824,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			showModule("loading")
 			request("chkupd",null,function(c,d,o){
 				if(o=="1001"){dirOperating="/";loadFileList("/");alert("您的FileAdmin已是最新版啦~");}
-				else if(o=="1002"){dirOperating="/";loadFileList("/");alert("获取更新失败，您的服务器网络环境可能无法访问GitHub (；′⌒`)");}
+				else if(o=="1002"){dirOperating="/";loadFileList("/");alert("获取更新失败，您的服务器网络环境可能无法访问Vercel (；′⌒`)");}
 				else{
 					showModule("updinfo");showMenu("updinfo")
 					document.getElementById("updinfo").innerHTML=o;
@@ -852,13 +847,11 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 //</script>
 <?php }else{ ?>
-
 <!--
 	SimSoft FileAdmin 前端部分
 	由盐鸡开发的一款轻量级文件管理器
 	© 2022 SimSoft
 -->
-
 <!DOCTYPE html>
 <html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="if(!fileHoverSelecting){fileSelected=[];loadFileSelected();}" onmouseup="setTimeout(function(){fileHoverSelecting=false;},50)">
 	<head>
@@ -870,10 +863,10 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<body>
 		<div class="title">
 			<div class="appName" onclick="chkupd()">File<b>Admin</b></div>
+			<div id="versionNote">正在获取</div>
 			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
 		<div class="module loading shown" data-module="loading" id="loadingAnimations">
-			<div id="loadingText">正在请求...</div>
 			<div class="loadingAnimation">
 				<div class="loadingAnimationDot" id="dot1">·</div>
 				<div class="loadingAnimationDot" id="dot2">·</div>
@@ -994,7 +987,6 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
 	</body>
-	
 	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-javascript.min.js"></script>
@@ -1004,9 +996,4 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html>
-
-
-<?php
-	}
-?>
+</html><?php } ?>
