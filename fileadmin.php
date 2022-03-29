@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.046;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.047;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -224,7 +224,7 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 .title{position:fixed;top:0;left:0;right:0;height:fit-content;box-shadow:0 0 5px 0 rgba(0,0,0,.4);height:40px;background:white;z-index:5;vertical-align:top;}
 .appName{font-size:1.5em;position:absolute;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
 .appName b{color:#1e9fff;}
-#versionNote{border-radius:10px 10px 10px 0;background:#f5f5f5;display:inline-block;margin-left:135px;color:#ababab;padding:0 5px;font-size:.9em;margin-top:5px;}
+#versionNote{border-radius:10px 10px 10px 0;background:#f5f5f5;display:inline-block;margin-left:5px;color:#ababab;padding:0 5px;font-size:.4em;vertical-align:top}
 #versionNote.active{background:#1e9fff;color:white}
 .title svg{position:absolute;top:0;bottom:0;right:10px;margin:auto;transform:rotate(180deg)}
 .module{display:none;background:white;}
@@ -862,8 +862,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	</head>
 	<body>
 		<div class="title">
-			<div class="appName" onclick="chkupd()">File<b>Admin</b></div>
-			<div id="versionNote">正在获取</div>
+			<div class="appName" onclick="chkupd()">File<b>Admin</b><div id="versionNote">正在获取</div></div>
 			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
 		<div class="module loading shown" data-module="loading" id="loadingAnimations">
@@ -996,4 +995,5 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html><?php } ?>
+</html>
+<?php } ?>
