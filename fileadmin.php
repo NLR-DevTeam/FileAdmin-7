@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.052;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.053;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -335,7 +335,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				event.preventDefault();
 				if(document.querySelector(".texteditor.shown")){saveFile();}
 			}else if(event.keyCode==27){
-				if(document.querySelector(".texteditor.shown")){loadFileList(dirOperating);}
+				if(document.querySelector(".texteditor.shown")){history.back();}
 				else if(document.querySelector(".files.shown")){previousDir();}
 			}else if(event.ctrlKey==true&&event.keyCode==65){
 				if(document.querySelector(".files.shown")){event.preventDefault();fileSelected=fileListOperating;loadFileSelected();}
@@ -433,7 +433,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			waitingToUploadCount++;
 		}
 		function uploadFileFromList(id){
-			if(!waitingToUpload[id]){loadFileList(dirOperating)}else{
+			if(!waitingToUpload[id]){history.back();}else{
 				waitingToUploadCount--;
 				document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
 				document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
@@ -551,7 +551,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 								else if(code==1002){alert("您指定的目录不存在 (´。＿。｀)")}
 								else if(code==1003){alert("找不到此压缩包，请尝试刷新此页面（＞人＜；）");}
 								else{alert("可能出现未知错误，请尝试刷新此页面（＞人＜；）");}
-								loadFileList(dirOperating);
+								loadFileList(dirOperating,true);
 							})
 						}
 					}}
@@ -618,7 +618,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				showModule("loading")
 				request("zip","name="+encodeURIComponent(dirOperating),function(code){
 					if(code==1001){alert("文件打包失败..（＞人＜；）")}
-					loadFileList(dirOperating);
+					loadFileList(dirOperating,true);
 				})
 			}
 		}
@@ -627,7 +627,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			if(filename){
 				showModule("loading")
 				if(filename.indexOf("/")==-1){
-					request("save","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating)});
+					request("save","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
 				}else{alert("文件名不能包含特殊字符呐 (；′⌒`)");}
 			}
 		}
@@ -636,7 +636,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			if(filename){
 				showModule("loading")
 				if(filename.indexOf("/")==-1){
-					request("mkdir","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating)});
+					request("mkdir","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
 				}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
 			}
 		}
@@ -647,7 +647,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				if(reqUrl.indexOf("https://")!=-1||reqUrl.indexOf("http://")!=-1){
 					request("fgc","url="+encodeURIComponent(reqUrl)+"&dir="+dirOperating,function(c,d,o){
 						if(o!=""){alert("文件获取失败，可能文件过大，请下载到本地后上传 (*^_^*)")}
-						loadFileList(dirOperating)
+						loadFileList(dirOperating,true)
 					})
 				}else{
 					alert("下载链接以“https://”或“http://”开头 ㄟ( ▔, ▔ )ㄏ")
@@ -669,7 +669,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 					showModule("loading");
 					request("rename","dir="+encodeURIComponent(dirOperating)+"&old="+encodeURIComponent(fileSelected[0])+"&new="+encodeURIComponent(newName),function(c){
 						if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
-						loadFileList(dirOperating)
+						loadFileList(dirOperating,true)
 					});
 				}else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
 			}
@@ -685,7 +685,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			let fileDelStr=JSON.stringify(fileSelected);
 			if(confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")){
 				showModule("loading");
-				request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating)});
+				request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating,true)});
 			}
 		}
 		function setMoveFiles(){
@@ -704,7 +704,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			if(moveOrCopyMode){
 				showModule("loading");
 				request(moveOrCopyMode,"files="+moveOrCopyFiles+"&from="+moveOrCopyFromDir+"&to="+dirOperating,function(){
-					loadFileList(dirOperating);
+					loadFileList(dirOperating,true);
 				})
 				moveOrCopyMode=null;document.getElementById("pasteBtn").style.display="none";
 			}
@@ -823,8 +823,8 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function chkupd(){
 			showModule("loading")
 			request("chkupd",null,function(c,d,o){
-				if(o=="1001"){dirOperating="/";loadFileList("/");alert("您的FileAdmin已是最新版啦~");}
-				else if(o=="1002"){dirOperating="/";loadFileList("/");alert("获取更新失败，您的服务器网络环境可能无法访问Vercel (；′⌒`)");}
+				if(o=="1001"){alert("您的FileAdmin已是最新版啦~");loadFileList(dirOperating,true)}
+				else if(o=="1002"){alert("获取更新失败，您的服务器网络环境可能无法访问Vercel (；′⌒`)");loadFileList(dirOperating,true)}
 				else{
 					showModule("updinfo");showMenu("updinfo")
 					document.getElementById("updinfo").innerHTML=o;
@@ -835,7 +835,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			showModule("loading");
 			request("applyversion",null,function(c){
 				if(c==200){location.reload();}
-				else{alert("更新失败惹..");showModule("updinfo");showMenu("updinfo")}
+				else{alert("更新失败惹..");history.back();showMenu("updinfo")}
 			})
 		}
 //========================================退出登录
@@ -886,7 +886,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
-			<button onclick="loadFileList(dirOperating)">刷新</button>
+			<button onclick="loadFileList(dirOperating,true)">刷新</button>
 			<button onclick="showMenu('files-upload')">上传</button>
 			<button onclick="zipCurrentDir()">打包</button>
 			<button onclick="showMenu('files-newfile')">新建</button>
@@ -940,19 +940,19 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="viewFile(fileEditing,true)">刷新</button>
 			<button onclick="setWrap(this)">换行</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
-			<button onclick="loadFileList(dirOperating)">返回</button>
+			<button onclick="history.back()">返回</button>
 		</div>
 		<!--图片预览器-->
 		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
 		<div class="menu" data-menu="imgviewer">
 			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
-			<button onclick="document.getElementById('imgviewer').src='';loadFileList(dirOperating)">返回</button>
+			<button onclick="document.getElementById('imgviewer').src='';history.back();">返回</button>
 		</div>
 		<!--视频播放器-->
 		<div class="module vidviewer" data-module="vidviewer"><video controls id="vidviewer" autoplay></video></div>
 		<div class="menu" data-menu="vidviewer">
 			<button onclick="location=vidViewingUrl" class="big">下载视频</button>
-			<button onclick="document.getElementById('vidviewer').src='';loadFileList(dirOperating)">返回</button>
+			<button onclick="document.getElementById('vidviewer').src='';history.back();">返回</button>
 		</div>
 		
 		<!--重量级文件搜索器-->
@@ -969,7 +969,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		<div class="menu" data-menu="search">
 			<button onclick="startSearch()" class="big">开始查找</button>
 			<button onclick="startChange()" style="display:none" class="big" id="replaceBtn">确认替换</button>
-			<button onclick="dirOperating='/';loadFileList(dirOperating)">退出</button>
+			<button onclick="dirOperating='/';history.back();">退出</button>
 		</div>
 			
 		<!--更新信息-->
@@ -979,7 +979,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		</div>
 		<div class="menu" data-menu="updinfo">
 			<button onclick="applupd()" class="big">应用更新</button>
-			<button onclick="dirOperating='/';loadFileList('/');">取消</button>
+			<button onclick="history.back()">取消</button>
 		</div>
 		
 		<div style="display:none">
