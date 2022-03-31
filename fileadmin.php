@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.051;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.052;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -67,9 +67,7 @@
 			}
 		}
 	}
-
-	$ACT=$_POST["a"];
-	$PWD=$_POST["pwd"];
+	$ACT=$_POST["a"];$PWD=$_POST["pwd"];
 	if($ACT){
 		if($ACT=="login"){
 			if($_POST["loginPwd"]==$PASSWORD){echo "200||".password_hash($PASSWORD.date("Ymd"),PASSWORD_DEFAULT);}else{echo "1001";}
@@ -320,11 +318,13 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
 			}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
 			window.onpopstate=function(){
-				let state=event.state;
-				if(state.mode){
-					let mode=state.mode;
-					if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}
-				}
+			    if(document.querySelector(".upload.shown")){history.forward()}else{
+    				let state=event.state;
+    				if(state.mode){
+    					let mode=state.mode;
+    					if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{history.back();}
+    				}
+			    }
 			}
 		}
 		window.onkeydown=function(){
