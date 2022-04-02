@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.053;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.054;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -248,8 +248,8 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file,#searchResult .file{padding:10px;text-align:center;}
 #fileList .file:hover,#searchResult .file:hover{background:rgba(0,0,0,.09);}
 #fileList .file:active,#searchResult .file:active{background:rgba(0,0,0,.12)}
-.file .fileIco{display:inline-block;margin-right:5px;width:27px;height:27px;vertical-align:middle}
-.file[data-isdir^=true] .fileIco{padding:2px;}
+.file .fileIco{display:inline-block;margin-right:5px;width:23px;height:23px;vertical-align:middle}
+.file.selected .fileIco{filter:invert(1)}
 #fileList .file .fileName,#searchResult .fileName{display:inline-block;width:calc(100% - 135px);text-align:left;vertical-align:middle;font-size:1.1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 #searchResult .fileName{width:calc(100% - 40px);}
 #fileList .file .size{display:inline-block;width:90px;text-align:right;vertical-align:middle;opacity:.5;}
@@ -484,7 +484,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				fileType=data.name.split(".")[data.name.split(".").length-1].toLowerCase();
 				fileListOperating.push(data.name);
 				fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
-					<img src="https://asset.simsoft.top/FileAdminIcons/`+getFileIco(fileType,data.dir)+`.svg" class="fileIco">
+					<img src="https://fileadmin.vercel.app/ico/`+getFileIco(fileType,data.dir)+`.svg" class="fileIco">
 					<div class="fileName">`+data.name+`</div>
 					<div class="size">`+humanSize(data.size*100)+`</div>
 				</div>`;
@@ -492,7 +492,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 		function getFileIco(type,dir){
 			if(dir){return "folder";}else{
-				currentIcons=["css","html","js","json","mp3","php","svg"];
+				currentIcons=["css","gif","htm","ico","ini","jpg","js","md","mp3","mp4","php","png","rar","svg","ts","ttf","txt","xml","zip","html"];
 				if(currentIcons.indexOf(type)!=-1){return type;}else{return "unknown"}
 			}
 		}
