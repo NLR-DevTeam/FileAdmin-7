@@ -795,7 +795,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function addToSearchResultHtml(data){
 			fileType=data.split(".")[data.split(".").length-1].toLowerCase();
 			searchResultHtml=searchResultHtml+`<div class="file" data-filename="`+data.replace("//","/")+`" onclick='viewFile("`+data.replace("//","/")+`",true,true)'>
-				<img src="https://asset.simsoft.top/FileAdminIcons/`+getFileIco(fileType,false)+`.svg" class="fileIco">
+				<img src="https://fileadmin.vercel.app/ico/`+getFileIco(fileType,false)+`.svg" class="fileIco">
 				<div class="fileName">`+data.replace("//","/")+`</div>
 			</div>`;
 		}
