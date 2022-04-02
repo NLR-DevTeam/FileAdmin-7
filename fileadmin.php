@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.054;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.055;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -758,6 +758,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function fileContextMenu(ele){
 			if(fileSelected.length<2){
 				event.stopPropagation();
+				navigator.vibrate([100]);
 				fileSelected=[ele.getAttribute("data-filename")];
 				loadFileSelected();
 				showContextMenu();
