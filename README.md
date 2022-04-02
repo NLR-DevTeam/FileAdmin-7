@@ -43,9 +43,7 @@
 
 ## 官网&Demo
 - 官网：https://fa.yanji.pro/
-- Demo：https://fileadmin-demo.simsoft.top/fileadmin.php
 
-如有链接失效可以提交Issue提醒我修复
 
 ## 版权&免责
 - 本程序使用AGPL-3.0协议开源，任何二开作品需以相同协议开源，不推荐用于商业用途。
