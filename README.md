@@ -43,6 +43,7 @@
 
 ## 官网
 - 官网：https://fa.yanji.pro/
+- 介绍：https://www.bilibili.com/video/BV1XZ4y1m7WK
 
 
 ## 版权&免责
