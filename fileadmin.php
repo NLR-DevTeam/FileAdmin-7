@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.055;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.056;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -310,7 +310,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 //<script>
 //=========================================初始化
 		window.onload=function(){
-			fileHoverSelecting=false;dirOperating="/";request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
+			fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
 			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
 			moveOrCopyMode=null;
@@ -318,13 +318,13 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
 			}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
 			window.onpopstate=function(){
-			    if(document.querySelector(".upload.shown")){history.forward()}else{
-    				let state=event.state;
-    				if(state.mode){
-    					let mode=state.mode;
-    					if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{history.back();}
-    				}
-			    }
+				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
+					let state=event.state;
+					if(state.mode){
+						let mode=state.mode;
+						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{history.back();}
+					}
+				}
 			}
 		}
 		window.onkeydown=function(){
@@ -413,7 +413,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			Array.from(ele.files).forEach(addFileToUploadArr);
 			showModule("upload");
 			uploadFileFromList(0);
-			ele.value='';
+			ele.value='';uploadNotFinished=true;
 		}
 		function addFileToUploadArr(file){
 			waitingToUpload.push({"file":file,"dir":dirOperating});
@@ -433,7 +433,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			waitingToUploadCount++;
 		}
 		function uploadFileFromList(id){
-			if(!waitingToUpload[id]){history.back();}else{
+			if(!waitingToUpload[id]){uploadNotFinished=false;history.back();}else{
 				waitingToUploadCount--;
 				document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
 				document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
