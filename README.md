@@ -1,6 +1,8 @@
 # FileAdmin
 由盐鸡开发的一款轻量级文件管理器
 
+如果这个项目有帮助到你，点个 Star 再走呗
+
 ## 兼容性
 - 服务端：完美兼容PHP 7.x，理论上8.x也可以运行。
 - 浏览器：仅兼容Google Chrome / Microsoft Edge的最新版本。
