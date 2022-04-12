@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.056;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.057;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -415,6 +415,23 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			uploadFileFromList(0);
 			ele.value='';uploadNotFinished=true;
 		}
+		document.addEventListener('paste',function(event){
+			if(document.querySelector(".files.shown") && !moveOrCopyMode){
+				var items=event.clipboardData && event.clipboardData.items;
+				if(items && items.length){
+					waitingToUpload=[];
+					waitingToUploadCount=0;
+					for(var i = 0; i < items.length; i++){
+						if(items[i].type!==''){
+							addFileToUploadArr(items[i].getAsFile());
+						}
+					}
+					showModule("upload");
+					uploadNotFinished=true;
+					uploadFileFromList(0);
+				}
+			}
+		});
 		function addFileToUploadArr(file){
 			waitingToUpload.push({"file":file,"dir":dirOperating});
 			waitingToUploadCount++;
@@ -847,6 +864,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}
 		}
 //</script><?php }else{ ?>
+
 <!--
 	SimSoft FileAdmin 前端部分
 	由盐鸡开发的一款轻量级文件管理器
@@ -988,6 +1006,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
 	</body>
+		
 	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-javascript.min.js"></script>
@@ -997,4 +1016,5 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html><?php } ?>
+</html>
+<?php } ?>
