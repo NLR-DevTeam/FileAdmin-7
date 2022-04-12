@@ -421,11 +421,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				if(items && items.length){
 					waitingToUpload=[];
 					waitingToUploadCount=0;
-					for(var i = 0; i < items.length; i++){
-						if(items[i].type!==''){
-							addFileToUploadArr(items[i].getAsFile());
-						}
-					}
+					for(var i = 0; i < items.length; i++){if(items[i].type!==''&&items[i].type!=='text/plain'){addFileToUploadArr(items[i].getAsFile());}}
 					showModule("upload");
 					uploadNotFinished=true;
 					uploadFileFromList(0);
@@ -864,7 +860,6 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}
 		}
 //</script><?php }else{ ?>
-
 <!--
 	SimSoft FileAdmin 前端部分
 	由盐鸡开发的一款轻量级文件管理器
@@ -1006,7 +1001,6 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
 	</body>
-		
 	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-javascript.min.js"></script>
@@ -1016,5 +1010,4 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html>
-<?php } ?>
+</html><?php } ?>
