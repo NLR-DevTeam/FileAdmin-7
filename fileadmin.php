@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.057;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.058;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -421,7 +421,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				if(items && items.length){
 					waitingToUpload=[];
 					waitingToUploadCount=0;
-					for(var i = 0; i < items.length; i++){if(items[i].type!==''&&items[i].type!=='text/plain'){addFileToUploadArr(items[i].getAsFile());}}
+					for(var i = 0; i < items.length; i++){console.log(items[i].type);if(items[i].type!==''){if(items[i].getAsFile()){addFileToUploadArr(items[i].getAsFile());}}}
 					showModule("upload");
 					uploadNotFinished=true;
 					uploadFileFromList(0);
