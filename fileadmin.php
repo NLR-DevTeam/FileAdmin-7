@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.058;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.059;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -164,9 +164,9 @@
 				$trueDirName=".".implode("/",explode("/",$_POST["dir"]));
 				$filelist=scandirAll($trueDirName);
 				$searchedFiles=[];
-				$textFiles=["txt","htm","html","php","css","js","json"];
+				$textFiles=explode(" ",$_POST["type"]);
 				foreach($filelist as $filenameFound){
-					if(in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
+					if($_POST["type"]=='' || in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
 						$filedata=file_get_contents($filenameFound);
 						if($_POST["case"]=="1"){$fileInNeed=strstr($filedata,$_POST["find"]);}else{$fileInNeed=stristr($filedata,$_POST["find"]);}
 						if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
@@ -176,19 +176,22 @@
 			}elseif($ACT=="find_by_name"){
 				$trueDirName=".".implode("/",explode("/",$_POST["dir"]));
 				$filelist=scandirAll($trueDirName);
+				$textFiles=explode(" ",$_POST["type"]);
 				$searchedFiles=[];
 				foreach($filelist as $filenameFound){
-					if($_POST["case"]=="1"){$fileInNeed=strstr($filenameFound,$_POST["find"]);}else{$fileInNeed=stristr($filenameFound,$_POST["find"]);}
-					if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+					if($_POST["type"]=='' || in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
+    					if($_POST["case"]=="1"){$fileInNeed=strstr($filenameFound,$_POST["find"]);}else{$fileInNeed=stristr($filenameFound,$_POST["find"]);}
+    					if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+					}
 				}
 				echo "200||".rawurlencode(json_encode($searchedFiles));
 			}elseif($ACT=="replace"){
 				$trueDirName=".".implode("/",explode("/",$_POST["dir"]));
 				$filelist=scandirAll($trueDirName);
 				$replaceCount=0;
-				$textFiles=["txt","htm","html","php","css","js","json"];
+				$textFiles=explode(" ",$_POST["type"]);
 				foreach($filelist as $filenameFound){
-					if(in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
+					if($_POST["type"]=='' || in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
 						$filedata=file_get_contents($filenameFound);
 						$fileInNeed=strstr($filedata,$_POST["find"]);
 						if($fileInNeed){
@@ -574,7 +577,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 						showMenu("imgviewer");
 						imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
 						document.getElementById("imgviewer").src=imageViewingUrl;
-					}else if(fileType=="mp4"||fileType=="webm"){
+					}else if(fileType=="mp4"||fileType=="webm"||fileType=="mp3"){
 						showModule("vidviewer");
 						showMenu("vidviewer");
 						vidViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
@@ -783,7 +786,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function startSearch(){
 			showModule("loading")
 			if(document.getElementById("searchMode").value=="1"){
-				request("find_by_name","find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+				request("find_by_name","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
 					searchedArr=JSON.parse(decodeURIComponent(d));
 					searchResultHtml="";
 					searchedArr.forEach(addToSearchResultHtml);
@@ -792,7 +795,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 					if(searchResultHtml==""){document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';}
 				})
 			}else{
-				request("find_by_content","find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+				request("find_by_content","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
 					searchedArr=JSON.parse(decodeURIComponent(d));
 					searchResultHtml="";
 					searchedArr.forEach(addToSearchResultHtml);
@@ -827,7 +830,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		function startChange(){
 			if(confirm("替换操作具有危险性且不支持撤销，强烈建议执行前仔细核对文件列表并对整个目录打包备份。是否确认要继续 (⊙_⊙)？")){
 				showModule("loading")
-				request("replace","find="+encodeURIComponent(document.getElementById("searchContent").value)+"&replace="+encodeURIComponent(document.getElementById("searchReplaceContent").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+				request("replace","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&replace="+encodeURIComponent(document.getElementById("searchReplaceContent").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
 					alert("在"+d+"个文件中完成了替换操作 (*^▽^*)");
 					openFileFinder();
 				})
@@ -859,12 +862,14 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				showModule("login");
 			}
 		}
-//</script><?php }else{ ?>
+//</script>
+<?php }else{ ?>
 <!--
 	SimSoft FileAdmin 前端部分
 	由盐鸡开发的一款轻量级文件管理器
 	© 2022 SimSoft
 -->
+
 <!DOCTYPE html>
 <html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="if(!fileHoverSelecting){fileSelected=[];loadFileSelected();}" onmouseup="setTimeout(function(){fileHoverSelecting=false;},50)">
 	<head>
@@ -956,12 +961,14 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="history.back()">返回</button>
 		</div>
+		
 		<!--图片预览器-->
 		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
 		<div class="menu" data-menu="imgviewer">
 			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
 			<button onclick="document.getElementById('imgviewer').src='';history.back();">返回</button>
 		</div>
+		
 		<!--视频播放器-->
 		<div class="module vidviewer" data-module="vidviewer"><video controls id="vidviewer" autoplay></video></div>
 		<div class="menu" data-menu="vidviewer">
@@ -974,6 +981,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<div class="addressBar" id="searchAddrBar"></div><br>
 			<div id="searchOptnArea" style="padding:10px">
 				<div><span>查找内容</span><input id="searchContent" autocomplete="off" placeholder="输入要搜索的文件名/文件内容 q(≧▽≦q)"></div>
+				<div><span>查找格式</span><input value="html php css js" id="searchType" autocomplete="off" placeholder="空格分隔，留空则查找所有文件 ( •̀ ω •́ )✧"></div>
 				<div id="replaceOptnInput" style="display:none"><span>替换内容</span><input id="searchReplaceContent" placeholder="输入要替换为的文件内容 §(*￣▽￣*)§"></div>
 				<div><span>工作模式</span><select id="searchMode" onchange="loadSearchMode(this)"><option value="1">仅匹配文件名</option><option value="2">匹配文件内容</option><option value="3">查找并替换文件内容</option></select></div>
 				<div id="replaceHidden"><span>区分大小写</span><select id="searchCase"><option value="1">开启</option><option value="2">关闭</option></select></div>
@@ -1001,6 +1009,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
 	</body>
+	
 	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-javascript.min.js"></script>
@@ -1010,4 +1019,5 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html><?php } ?>
+</html>
+<?php } ?>
