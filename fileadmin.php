@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.059;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.061;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -280,7 +280,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 #dot3{animation-delay:.2s!important}
 #searchAddrBar{padding:5px;overflow-x:scroll;white-space:nowrap}
 #searchOptnArea div span{width:100px;display:inline-block;vertical-align:middle;padding:5px;}
-#searchOptnArea div input,#searchOptnArea div select{padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
+#searchOptnArea div input,#searchOptnArea div select{background:white;padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
 #searchOptnArea div input{padding-left:5px;}
 @keyframes loadingDot{
 	0%{transform:translateY(0px)}
@@ -862,14 +862,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				showModule("login");
 			}
 		}
-//</script>
-<?php }else{ ?>
+//</script><?php }else{ ?>
 <!--
 	SimSoft FileAdmin 前端部分
 	由盐鸡开发的一款轻量级文件管理器
 	© 2022 SimSoft
 -->
-
 <!DOCTYPE html>
 <html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="if(!fileHoverSelecting){fileSelected=[];loadFileSelected();}" onmouseup="setTimeout(function(){fileHoverSelecting=false;},50)">
 	<head>
@@ -961,14 +959,12 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="history.back()">返回</button>
 		</div>
-		
 		<!--图片预览器-->
 		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
 		<div class="menu" data-menu="imgviewer">
 			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
 			<button onclick="document.getElementById('imgviewer').src='';history.back();">返回</button>
 		</div>
-		
 		<!--视频播放器-->
 		<div class="module vidviewer" data-module="vidviewer"><video controls id="vidviewer" autoplay></video></div>
 		<div class="menu" data-menu="vidviewer">
@@ -1009,7 +1005,6 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
 	</body>
-	
 	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-javascript.min.js"></script>
@@ -1019,5 +1014,4 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
-</html>
-<?php } ?>
+</html><?php } ?>
