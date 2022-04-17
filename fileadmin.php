@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.061;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.062;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -98,9 +98,14 @@
 					echo "1001";
 				}
 			}elseif($ACT=="getfile"){
-				echo file_get_contents(".".$_POST["name"]);
+				if(file_exists(".".$_POST["name"].".fajs")){echo file_get_contents(".".$_POST["name"].".fajs");}else{echo file_get_contents(".".$_POST["name"]);}
 			}elseif($ACT=="save"){
 				file_put_contents(".".$_POST["name"],$_POST["data"]);
+				if(file_exists(".".$_POST["name"].".fajs")){unlink(".".$_POST["name"].".fajs");}
+				echo "200";
+			}elseif($ACT=="fajssave"){
+				file_put_contents(".".$_POST["name"],$_POST["obfuscate"]);
+				file_put_contents(".".$_POST["name"].".fajs",$_POST["original"]);
 				echo "200";
 			}elseif($ACT=="zip"){
 				$zipResult=create_zip(scandirAll(realpath(".".$_POST["name"]),true),".".$_POST["name"]."FileAdmin_".time().".zip",false);
@@ -508,7 +513,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		}
 		function getFileIco(type,dir){
 			if(dir){return "folder";}else{
-				currentIcons=["css","gif","htm","ico","ini","jpg","js","md","mp3","mp4","php","png","rar","svg","ts","ttf","txt","xml","zip","html"];
+				currentIcons=["css","gif","htm","ico","ini","jpg","js","md","mp3","mp4","php","png","rar","svg","ts","ttf","txt","xml","zip","html","fajs"];
 				if(currentIcons.indexOf(type)!=-1){return type;}else{return "unknown"}
 			}
 		}
@@ -582,11 +587,16 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 						showMenu("vidviewer");
 						vidViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
 						document.getElementById("vidviewer").src=vidViewingUrl;
-					}
+					}else if(fileType=="fajs"){alert("您不能直接打开.fajs文件，请打开同名的.js文件哦~")}
 					else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
 					if(textMode){
 						showModule("loading");
 						request("getfile","name="+dirOperating+fileName,function(c,d,file){
+						    if(fileType=="js"){
+						        document.getElementById("obfuscateBtn").style.display="inline-block";
+                    			if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
+                    			else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
+						    }else{document.getElementById("obfuscateBtn").style.display="none"}
 							ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
 							textEditor=ace.edit("textEditor");
 							textEditor.setOption("enableLiveAutocompletion",true);
@@ -726,19 +736,38 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			}
 		}
 //========================================文本编辑器
-		function saveFile(){
+		function saveFile(forceDisableObfuscator){
 			document.getElementById("saveBtn").innerText="······";
 			document.getElementById("loadingAnimations").classList.add("shown");
-			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
-				document.getElementById("loadingAnimations").classList.remove("shown");
-				if(code==200){
-					document.getElementById("saveBtn").innerText="完成";
-					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
-				}else{
-					alert("出现未知错误（＞人＜；）");
-					document.getElementById("saveBtn").innerText="保存";
-				}
-			})
+			if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
+			    try{
+			        let obfuscated=JavaScriptObfuscator.obfuscate(textEditor.getValue(),{compact:true,controlFlowFlattening:true,controlFlowFlatteningThreshold:1,numbersToExpressions:true,simplify:true,stringArrayShuffle:true,splitStrings:true,stringArrayThreshold:1})._obfuscatedCode
+        			console.log(obfuscated)
+        			request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
+        				document.getElementById("loadingAnimations").classList.remove("shown");
+        				if(code==200){
+        					document.getElementById("saveBtn").innerText="完成";
+        					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
+        				}else{
+        					alert("出现未知错误（＞人＜；）");
+        					document.getElementById("saveBtn").innerText="保存";
+        				}
+        			})
+			    }catch(err){
+			        alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n错误详情："+err+"\n请检查代码中是否存在错误~");saveFile(true);
+			    }
+			}else{
+    			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
+    				document.getElementById("loadingAnimations").classList.remove("shown");
+    				if(code==200){
+    					document.getElementById("saveBtn").innerText="完成";
+    					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
+    				}else{
+    					alert("出现未知错误（＞人＜；）");
+    					document.getElementById("saveBtn").innerText="保存";
+    				}
+    			})
+			}
 		}
 		function setWrap(ele){
 			if(textEditor.getSession().getUseWrapMode()==true){
@@ -750,6 +779,17 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 				ele.innerText="启用";
 				setTimeout(function(){ele.innerText="换行"},700)
 			}
+		}
+		function setObfuscate(ele){
+		    if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
+		        localStorage.setItem("FileAdmin_Settings_Obfuscator","0")
+		        ele.innerText="启用混淆"
+		    }else{
+		        if(confirm("开启Js混淆前，请仔细阅读以下说明：\n\n- Js混淆可有效防止他人窃取您的Js源码\n- Js混淆会使您的Js文件存储占用成倍上涨\n- Js混淆可能会导致部分代码无法运行\n- 您可能难以调试混淆后的Js代码\n- Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件\n- 请务必使用防火墙屏蔽他人对.fajs文件的访问\n- 请勿直接修改、移动或删除.fajs文件\n\n更多说明详见Github项目主页，是否仍要开启Js混淆功能？")){
+    		        localStorage.setItem("FileAdmin_Settings_Obfuscator","1")
+    		        ele.innerText="关闭混淆"
+		        }
+		    }
 		}
 //========================================右键菜单
 		function showContextMenu(){
@@ -953,6 +993,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<div id="textEditor"></div>
 		</div>
 		<div class="menu" data-menu="texteditor">
+			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
 			<button onclick="saveFile()" id="saveBtn">保存</button>
 			<button onclick="viewFile(fileEditing,true)">刷新</button>
 			<button onclick="setWrap(this)">换行</button>
@@ -1014,4 +1055,5 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/mode-json.min.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
+	<script src="https://asset.simsoft.top/SimAdmin/obfuscator.js"></script>
 </html><?php } ?>
