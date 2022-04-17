@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.062;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.063;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -267,10 +267,12 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
 #textEditor *::-webkit-scrollbar{display:block;width:10px;height:0px;background:#ebebeb;}
 #textEditor *::-webkit-scrollbar-thumb{border-radius:5px;background:#dcdcdc;}
-contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:100px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
-contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;}
+contextmenukey{display:none;}
+contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:150px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
+contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;position:relative;}
 contextmenu button:hover{background:rgba(0,0,0,.05);}
 contextmenu button:active{background:rgba(0,0,0,.1);}
+contextmenu button contextmenukey{position:absolute;right:5px;top:0;bottom:0;height:fit-content;margin:auto;display:inline-block;opacity:.5;}
 .imgviewer,.vidviewer{background:transparent;}
 #imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
 #vidviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:black;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;outline:none;}
@@ -378,7 +380,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			.catch(err=>{alert(err);})
 		}
 		function showModule(name){
-			document.title="FileAdmin | 轻量级文件管理";
+			document.title="FileAdmin | 极致文件管理体验";
 			hideMenu();
 			if(document.querySelector(".module.shown")){document.querySelector(".module.shown").classList.remove("shown");}
 			document.querySelector(".module[data-module^='"+name+"']").classList.remove("hidden");
@@ -803,7 +805,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 					menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
 					menuElem.style.top=event.clientY+"px";
 					menuElem.style.left=event.clientX+"px";
-					if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-100){menuElem.style.left=event.clientX-100+"px";}
+					if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-150){menuElem.style.left=event.clientX-150+"px";}
 					document.body.appendChild(menuElem);
 				}
 			}
@@ -942,30 +944,30 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){startHoverSelect(this)}"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
 			<button onclick="loadFileList(dirOperating,true)">刷新</button>
 			<button onclick="showMenu('files-upload')">上传</button>
 			<button onclick="zipCurrentDir()">打包</button>
 			<button onclick="showMenu('files-newfile')">新建</button>
 			<button onclick="openFileFinder();searchDir=dirOperating;dirOperating=''" class="big">查找文件</button>
 			<button onclick="fileGetContents()" class="big">远程下载</button>
-			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴</button>
+			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴<contextmenukey>Ctrl + V</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
 			<button onclick="renameFile();">改名</button>
 			<button onclick="downCurrFile();">下载</button>
-			<button onclick="setMoveFiles();">剪切</button>
-			<button onclick="setCopyFiles();">复制</button>
-			<button onclick="delFile();">删除</button>
+			<button onclick="setMoveFiles();">剪切<contextmenukey>Ctrl + X</contextmenukey></button>
+			<button onclick="setCopyFiles();">复制<contextmenukey>Ctrl + C</contextmenukey></button>
+			<button onclick="delFile();">删除<contextmenukey>Delete</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-multiselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选</button>
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
-			<button onclick="setMoveFiles();">剪切</button>
-			<button onclick="setCopyFiles();">复制</button>
-			<button onclick="delFile();">删除</button>
+			<button onclick="setMoveFiles();">剪切<contextmenukey>Ctrl + X</contextmenukey></button>
+			<button onclick="setCopyFiles();">复制<contextmenukey>Ctrl + C</contextmenukey></button>
+			<button onclick="delFile();">删除<contextmenukey>Delete</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-upload">
 			<button class="big" onclick="document.getElementById('filesUploadInput').click()">上传文件</button>
@@ -994,11 +996,11 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
 		</div>
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
-			<button onclick="saveFile()" id="saveBtn">保存</button>
+			<button onclick="saveFile()" id="saveBtn">保存<contextmenukey>Ctrl + S</contextmenukey></button>
 			<button onclick="viewFile(fileEditing,true)">刷新</button>
 			<button onclick="setWrap(this)">换行</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
-			<button onclick="history.back()">返回</button>
+			<button onclick="history.back()">返回<contextmenukey>ESC</contextmenukey></button>
 		</div>
 		<!--图片预览器-->
 		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
