@@ -53,8 +53,8 @@ FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者
 - 请勿直接修改、移动或删除.fajs文件，否则会导致您无法编辑Js源码
 
 附常用防火墙配置方式：
-- 宝塔免费防火墙URL过滤规则：\.(fajs)
-- Cloudflare防火墙阻止规则：(http.request.full_uri contains ".fajs")
+- 宝塔免费防火墙URL过滤规则：`\.(fajs)`
+- Cloudflare防火墙阻止规则：`(http.request.full_uri contains ".fajs")`
 
 其余防火墙配置同理
 
