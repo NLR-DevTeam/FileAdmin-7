@@ -72,3 +72,4 @@ FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者
 - [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
 - [AdminX](https://github.com/1689295608/AdminX)提供部分函数实现
 - [IconFont](https://iconfont.cn)提供文件图标
+- [Javascript Obfuscator](https://obfuscator.io)提供Js混淆技术支持
