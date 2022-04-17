@@ -272,7 +272,7 @@ contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:150px;heigh
 contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;position:relative;}
 contextmenu button:hover{background:rgba(0,0,0,.05);}
 contextmenu button:active{background:rgba(0,0,0,.1);}
-contextmenu button contextmenukey{position:absolute;right:5px;top:0;bottom:0;height:fit-content;margin:auto;display:inline-block;opacity:.5;}
+contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;height:fit-content;margin:auto;display:inline-block;opacity:.5;}
 .imgviewer,.vidviewer{background:transparent;}
 #imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
 #vidviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:black;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;outline:none;}
