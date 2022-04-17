@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.063;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.064;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -564,6 +564,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 					else if(fileType=="json"){textMode="json";}
 					else if(fileType=="js"){textMode="javascript";}
 					else if(fileType=="css"){textMode="css";}
+					else if(fileType=="xml"||fileType=="yml"||fileType=="xaml"){textMode="xml";}
 					else if(fileType=="zip"){if(confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")){
 						let destDir=prompt("要解压到哪个目录捏 (*^▽^*)",dirOperating);
 						if(destDir){
