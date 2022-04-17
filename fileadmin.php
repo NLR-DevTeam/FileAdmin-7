@@ -754,7 +754,7 @@ contextmenu button:active{background:rgba(0,0,0,.1);}
         				}
         			})
 			    }catch(err){
-			        alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n错误详情："+err+"\n请检查代码中是否存在错误~");saveFile(true);
+			        alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n"+err+"\n\n请检查代码中是否存在错误~");saveFile(true);
 			    }
 			}else{
     			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
