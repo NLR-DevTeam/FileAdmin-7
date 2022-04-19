@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.064;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.065;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -185,8 +185,8 @@
 				$searchedFiles=[];
 				foreach($filelist as $filenameFound){
 					if($_POST["type"]=='' || in_array(strtolower(end(explode(".",$filenameFound))),$textFiles)){
-    					if($_POST["case"]=="1"){$fileInNeed=strstr($filenameFound,$_POST["find"]);}else{$fileInNeed=stristr($filenameFound,$_POST["find"]);}
-    					if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
+						if($_POST["case"]=="1"){$fileInNeed=strstr($filenameFound,$_POST["find"]);}else{$fileInNeed=stristr($filenameFound,$_POST["find"]);}
+						if($fileInNeed){array_push($searchedFiles,str_replace("./","/",$filenameFound));}
 					}
 				}
 				echo "200||".rawurlencode(json_encode($searchedFiles));
@@ -289,6 +289,9 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 #searchOptnArea div span{width:100px;display:inline-block;vertical-align:middle;padding:5px;}
 #searchOptnArea div input,#searchOptnArea div select{background:white;padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
 #searchOptnArea div input{padding-left:5px;}
+#mobileFastInput{position:fixed;top:-90px;bottom:calc(100% - 40px);height:fit-content;background:white;text-align:center;z-index:10;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
+.mobileInputBtn{display:inline-block;width:calc(100% / 14 - 5px);border-radius:5px;padding:5px 2px;}
+.mobileInputBtn:active{background:#eeeeee;}
 @keyframes loadingDot{
 	0%{transform:translateY(0px)}
 	15%{transform:translateY(10px)}
@@ -387,6 +390,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			document.querySelector(".module[data-module^='"+name+"']").classList.add("shown");
 			if(name=="login"){document.getElementById("logoutBtn").style.display="none";}else{document.getElementById("logoutBtn").style.display="block";}
 			if(name!="login"&&name!="files"&&name!="loading"){history.pushState({'mode':'other'},document.title)}
+			if(name!="texteditor"&&name!="loading"){document.getElementById("mobileFastInput").style="";}
 		}
 		function showMenu(name){
 			if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
@@ -595,11 +599,12 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 					if(textMode){
 						showModule("loading");
 						request("getfile","name="+dirOperating+fileName,function(c,d,file){
-						    if(fileType=="js"){
-						        document.getElementById("obfuscateBtn").style.display="inline-block";
-                    			if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
-                    			else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
-						    }else{document.getElementById("obfuscateBtn").style.display="none"}
+							if(fileType=="js"){
+								document.getElementById("obfuscateBtn").style.display="inline-block";
+								if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
+								else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
+							}else{document.getElementById("obfuscateBtn").style.display="none"}
+							if(navigator.maxTouchPoints>0){document.getElementById("mobileFastInput").style.top="0"}
 							ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
 							textEditor=ace.edit("textEditor");
 							textEditor.setOption("enableLiveAutocompletion",true);
@@ -743,33 +748,33 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			document.getElementById("saveBtn").innerText="······";
 			document.getElementById("loadingAnimations").classList.add("shown");
 			if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
-			    try{
-			        let obfuscated=JavaScriptObfuscator.obfuscate(textEditor.getValue(),{compact:true,controlFlowFlattening:true,controlFlowFlatteningThreshold:1,numbersToExpressions:true,simplify:true,stringArrayShuffle:true,splitStrings:true,stringArrayThreshold:1})._obfuscatedCode
-        			console.log(obfuscated)
-        			request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
-        				document.getElementById("loadingAnimations").classList.remove("shown");
-        				if(code==200){
-        					document.getElementById("saveBtn").innerText="完成";
-        					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
-        				}else{
-        					alert("出现未知错误（＞人＜；）");
-        					document.getElementById("saveBtn").innerText="保存";
-        				}
-        			})
-			    }catch(err){
-			        alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n"+err+"\n\n请检查代码中是否存在错误~");saveFile(true);
-			    }
+				try{
+					let obfuscated=JavaScriptObfuscator.obfuscate(textEditor.getValue(),{compact:true,controlFlowFlattening:true,controlFlowFlatteningThreshold:1,numbersToExpressions:true,simplify:true,stringArrayShuffle:true,splitStrings:true,stringArrayThreshold:1})._obfuscatedCode
+					console.log(obfuscated)
+					request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
+						document.getElementById("loadingAnimations").classList.remove("shown");
+						if(code==200){
+							document.getElementById("saveBtn").innerText="完成";
+							setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
+						}else{
+							alert("出现未知错误（＞人＜；）");
+							document.getElementById("saveBtn").innerText="保存";
+						}
+					})
+				}catch(err){
+					alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n"+err+"\n\n请检查代码中是否存在错误~");saveFile(true);
+				}
 			}else{
-    			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
-    				document.getElementById("loadingAnimations").classList.remove("shown");
-    				if(code==200){
-    					document.getElementById("saveBtn").innerText="完成";
-    					setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
-    				}else{
-    					alert("出现未知错误（＞人＜；）");
-    					document.getElementById("saveBtn").innerText="保存";
-    				}
-    			})
+				request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
+					document.getElementById("loadingAnimations").classList.remove("shown");
+					if(code==200){
+						document.getElementById("saveBtn").innerText="完成";
+						setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
+					}else{
+						alert("出现未知错误（＞人＜；）");
+						document.getElementById("saveBtn").innerText="保存";
+					}
+				})
 			}
 		}
 		function setWrap(ele){
@@ -784,15 +789,15 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			}
 		}
 		function setObfuscate(ele){
-		    if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
-		        localStorage.setItem("FileAdmin_Settings_Obfuscator","0")
-		        ele.innerText="启用混淆"
-		    }else{
-		        if(confirm("开启Js混淆前，请仔细阅读以下说明：\n\n- Js混淆可有效防止他人窃取您的Js源码\n- Js混淆会使您的Js文件存储占用成倍上涨\n- Js混淆可能会导致部分代码无法运行\n- 您可能难以调试混淆后的Js代码\n- Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件\n- 请务必使用防火墙屏蔽他人对.fajs文件的访问\n- 请勿直接修改、移动或删除.fajs文件\n\n更多说明详见Github项目主页，是否仍要开启Js混淆功能？")){
-    		        localStorage.setItem("FileAdmin_Settings_Obfuscator","1")
-    		        ele.innerText="关闭混淆"
-		        }
-		    }
+			if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
+				localStorage.setItem("FileAdmin_Settings_Obfuscator","0")
+				ele.innerText="启用混淆"
+			}else{
+				if(confirm("开启Js混淆前，请仔细阅读以下说明：\n\n- Js混淆可有效防止他人窃取您的Js源码\n- Js混淆会使您的Js文件存储占用成倍上涨\n- Js混淆可能会导致部分代码无法运行\n- 您可能难以调试混淆后的Js代码\n- Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件\n- 请务必使用防火墙屏蔽他人对.fajs文件的访问\n- 请勿直接修改、移动或删除.fajs文件\n\n更多说明详见Github项目主页，是否仍要开启Js混淆功能？")){
+					localStorage.setItem("FileAdmin_Settings_Obfuscator","1")
+					ele.innerText="关闭混淆"
+				}
+			}
 		}
 //========================================右键菜单
 		function showContextMenu(){
@@ -878,6 +883,23 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 					openFileFinder();
 				})
 			}
+		}
+//========================================移动端输入面板
+		function mobileInput(ele){
+			textEditor.insert(ele.innerText);
+			textEditor.focus();
+		}
+		function mobileEditorPrevious(){
+			currentLine=textEditor.selection.getCursor().row+1;
+			currentChar=textEditor.selection.getCursor().column;
+			textEditor.gotoLine(currentLine,currentChar-1);
+			textEditor.focus();
+		}
+		function mobileEditorNext(){
+			currentLine=textEditor.selection.getCursor().row+1;
+			currentChar=textEditor.selection.getCursor().column;
+			textEditor.gotoLine(currentLine,currentChar+1);
+			textEditor.focus();
 		}
 //========================================检查更新
 		function chkupd(){
@@ -994,6 +1016,22 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		<!--纯文本编辑器-->
 		<div class="module texteditor" data-module="texteditor">
 			<div id="textEditor"></div>
+		</div>
+		<div id="mobileFastInput">
+			<div class="mobileInputBtn" onclick="mobileInput(this)"><</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">></div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">{</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">}</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">(</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">)</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">%</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">/</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">\</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">=</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">"</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">'</div>
+			<div class="mobileInputBtn" onclick="mobileEditorPrevious()">←</div>
+			<div class="mobileInputBtn" onclick="mobileEditorNext()">→</div>
 		</div>
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
