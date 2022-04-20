@@ -513,7 +513,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				showMenu("files-noselect");
 			})
 			if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title)}
-			if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},580);}
+			if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},600);}
 		}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
