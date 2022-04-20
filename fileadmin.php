@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.066;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.067;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -336,7 +336,9 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
     					let state=event.state;
     					if(state.mode){
     						let mode=state.mode;
-    						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{history.back();}
+    						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{
+    						    history.back();
+    						}
     					}
     				}
 			    }else{forwardFromComfim=false;}
@@ -365,7 +367,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			}else if(event.keyCode==116){
 			    event.preventDefault();
 				if(document.querySelector(".files.shown")){loadFileList(dirOperating,true);}
-				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent){if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}}}
+				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent){if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}}else{viewFile(fileEditing,true)}}
 			}
 		}
 //=========================================公共函数
@@ -511,6 +513,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				showMenu("files-noselect");
 			})
 			if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title)}
+			if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},580);}
 		}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
@@ -562,6 +565,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				fileName=ele.getAttribute("data-filename");
 			}else{fileIsDir=false;fileName=ele;}
 			if(fileSelected.length==0){
+			    offsetBeforeEditing=pageYOffset;
 				fileType=fileName.split(".")[fileName.split(".").length-1].toLowerCase();
 				fileEditing=fileName;
 				if(fileIsDir=="true"){
