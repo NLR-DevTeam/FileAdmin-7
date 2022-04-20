@@ -1,7 +1,7 @@
 # FileAdmin
 一款体验极佳的轻量级PHP文件管理器
 
-项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用SinAdmin的任何代码
+项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用其任何代码
 
 如果这个项目有帮助到你，点个 Star 再走呗
 
