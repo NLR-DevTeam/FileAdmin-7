@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.065;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.066;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -221,8 +221,8 @@
 		if($latest && $latest!=$VERSION){echo "1001";}else{echo "v".$VERSION;}
 	}elseif($_GET["a"]=="css"){ 
 		header("content-type: text/css");
-?>
-/*<style>*/
+?>/*<style>*/
+/* FileAdmin CSS */
 #passwordManagerUsername{display:none}
 *{box-sizing:border-box;}
 body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;background:#f5f5f5;min-height:100%;}
@@ -318,12 +318,11 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	#textEditor{height:calc(100% - 90px)}
 	#loadingText{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
-/*</style>*/
-<?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>
-//<script>
+/*</style>*/<?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>//<script>
+/* FileAdmin Javascript */
 //=========================================初始化
 		window.onload=function(){
-			fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
+			forwardFromComfim=false;fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
 			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
 			moveOrCopyMode=null;
@@ -331,13 +330,16 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
 			}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
 			window.onpopstate=function(){
-				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
-					let state=event.state;
-					if(state.mode){
-						let mode=state.mode;
-						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{history.back();}
-					}
-				}
+			    if(!forwardFromComfim){
+    				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")){forwardFromComfim=true;history.forward();return;}}
+    				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
+    					let state=event.state;
+    					if(state.mode){
+    						let mode=state.mode;
+    						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{history.back();}
+    					}
+    				}
+			    }else{forwardFromComfim=false;}
 			}
 		}
 		window.onkeydown=function(){
@@ -360,6 +362,10 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				if(document.querySelector(".files.shown")){setMoveFiles();}
 			}else if(event.ctrlKey==true&&event.keyCode==86){
 				if(document.querySelector(".files.shown")){filePaste();}
+			}else if(event.keyCode==116){
+			    event.preventDefault();
+				if(document.querySelector(".files.shown")){loadFileList(dirOperating,true);}
+				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent){if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}}}
 			}
 		}
 //=========================================公共函数
@@ -615,7 +621,8 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 							textEditor.session.setMode("ace/mode/"+textMode);
 							showModule("texteditor");
 							showMenu("texteditor");
-							document.title=fileName+" | FileAdmin"
+							document.title=fileName+" | FileAdmin";
+							lastSaveContent=file;
 						});
 					}
 				}
@@ -737,9 +744,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		function filePaste(){
 			if(moveOrCopyMode){
 				showModule("loading");
-				request(moveOrCopyMode,"files="+moveOrCopyFiles+"&from="+moveOrCopyFromDir+"&to="+dirOperating,function(){
-					loadFileList(dirOperating,true);
-				})
+				request(moveOrCopyMode,"files="+moveOrCopyFiles+"&from="+moveOrCopyFromDir+"&to="+dirOperating,function(){loadFileList(dirOperating,true);})
 				moveOrCopyMode=null;document.getElementById("pasteBtn").style.display="none";
 			}
 		}
@@ -754,11 +759,12 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 					request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
 						document.getElementById("loadingAnimations").classList.remove("shown");
 						if(code==200){
+						    lastSaveContent=textEditor.getValue()
 							document.getElementById("saveBtn").innerText="完成";
-							setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
+							setTimeout(function(){document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";},700)
 						}else{
 							alert("出现未知错误（＞人＜；）");
-							document.getElementById("saveBtn").innerText="保存";
+							document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";
 						}
 					})
 				}catch(err){
@@ -768,11 +774,12 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
 					document.getElementById("loadingAnimations").classList.remove("shown");
 					if(code==200){
+					    lastSaveContent=textEditor.getValue()
 						document.getElementById("saveBtn").innerText="完成";
-						setTimeout(function(){document.getElementById("saveBtn").innerText="保存";},700)
+						setTimeout(function(){document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";},700)
 					}else{
 						alert("出现未知错误（＞人＜；）");
-						document.getElementById("saveBtn").innerText="保存";
+						document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";
 					}
 				})
 			}
@@ -1036,7 +1043,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
 			<button onclick="saveFile()" id="saveBtn">保存<contextmenukey>Ctrl + S</contextmenukey></button>
-			<button onclick="viewFile(fileEditing,true)">刷新</button>
+			<button onclick='if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}'>刷新</button>
 			<button onclick="setWrap(this)">换行</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="history.back()">返回<contextmenukey>ESC</contextmenukey></button>
