@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.068;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.069;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -276,8 +276,9 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file.selected{background:#1e9fff;color:white;}
 .texteditor{margin:10px;}
 #textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
-#textEditor *::-webkit-scrollbar{display:block;width:10px;height:0px;background:#ebebeb;}
-#textEditor *::-webkit-scrollbar-thumb{border-radius:5px;background:#dcdcdc;}
+#textEditor *::-webkit-scrollbar{display:block;width:3px;height:0px;background:#ebebeb;}
+#textEditor *::-webkit-scrollbar:hover{width:15px}
+#textEditor *::-webkit-scrollbar-thumb{border-radius:2px;background:#bababa;}
 contextmenukey{display:none;}
 contextmenu{z-index:30;position:fixed;border:1px solid #c1c1c1;width:150px;height:fit-content;background:white;overflow:hidden;box-shadow:1px 1px 2px 0 rgba(0,0,0,.2);}
 contextmenu button{outline:none;display:block;border:0;padding:5px 10px;background:white;width:100%;text-align:left;position:relative;}
@@ -637,7 +638,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 							showModule("texteditor");
 							showMenu("texteditor");
 							document.title=fileName+" | FileAdmin";
-							lastSaveContent=file;
+							lastSaveContent=textEditor.getValue();
 						});
 					}
 				}
@@ -1126,4 +1127,4 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
 	<script src="https://asset.simsoft.top/SimAdmin/obfuscator.js"></script>
-</html><?php } ?> 
+</html><?php } ?>
