@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.067;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.068;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -67,6 +67,17 @@
 			}
 		}
 	}
+   function dirsize($dir){
+        @$dh=opendir($dir);$size=0;
+        while($file = @readdir($dh)){
+            if($file!="." && $file!=".."){
+                $path = $dir."/".$file;
+                if (is_dir($path)){$size+=dirsize($path);}elseif(is_file($path)){$size += filesize($path);}
+            }
+        }
+        @closedir($dh);return $size;
+    }
+    
 	$ACT=$_POST["a"];$PWD=$_POST["pwd"];
 	if($ACT){
 		if($ACT=="login"){
@@ -157,14 +168,6 @@
 					$tofile=".".$_POST["to"].$filename;
 					rename($fromfile,$tofile);
 				}
-			}elseif($ACT=="fgc"){
-				$filed=file_get_contents($_POST["url"]);
-				if($filed){
-					$filen=end(explode("/",$_POST["url"]));
-					file_put_contents(".".$_POST["dir"].$filen,$filed);
-				}else{
-					echo "1001";
-				}
 			}elseif($ACT=="find_by_content"){
 				$trueDirName=".".implode("/",explode("/",$_POST["dir"]));
 				$filelist=scandirAll($trueDirName);
@@ -207,6 +210,14 @@
 					}
 				}
 				echo "200||".$replaceCount;
+			}elseif($ACT=="space"){
+			    if(is_dir(".".$_POST["name"])){
+    			    $total=disk_total_space(".".$_POST["name"]);
+    			    $free=disk_free_space(".".$_POST["name"]);
+    			    $used=$total-$free;
+    			    $current=dirsize(".".$_POST["name"]);
+    			    echo "200||".$total."||".$free."||".$used."||".$current;
+			    }else{echo "1001";}
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
@@ -513,7 +524,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				showMenu("files-noselect");
 			})
 			if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title)}
-			if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},600);}
+			if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},580);}
 		}
 		function addToFileListHtml(data){
 			if(data.name!="."&&data.name!=".."){
@@ -683,20 +694,6 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				if(filename.indexOf("/")==-1){
 					request("mkdir","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
 				}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
-			}
-		}
-		function fileGetContents(){
-			let reqUrl=prompt("输入远程下载地址，以“https://”或“http://”开头 §(*￣▽￣*)§");
-			if(reqUrl){
-				showModule("loading");
-				if(reqUrl.indexOf("https://")!=-1||reqUrl.indexOf("http://")!=-1){
-					request("fgc","url="+encodeURIComponent(reqUrl)+"&dir="+dirOperating,function(c,d,o){
-						if(o!=""){alert("文件获取失败，可能文件过大，请下载到本地后上传 (*^_^*)")}
-						loadFileList(dirOperating,true)
-					})
-				}else{
-					alert("下载链接以“https://”或“http://”开头 ㄟ( ▔, ▔ )ㄏ")
-				}
 			}
 		}
 		function openFileFinder(){
@@ -912,6 +909,27 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			textEditor.gotoLine(currentLine,currentChar+1);
 			textEditor.focus();
 		}
+//========================================磁盘空间占用
+        function getDiskSpaceInfo(){
+            showModule("loading");
+            request("space","name="+encodeURIComponent(dirOperating),function(c,data,d){
+                if(c==200){
+                    let returnData=d.split("||");
+                    console.log(returnData)
+                    let total=humanSize(returnData[1]/10);
+                    let free=humanSize(returnData[2]/10);
+                    let freepercent=Math.round(returnData[2]/returnData[1]*10000)/100;
+                    let used=humanSize(returnData[3]/10);
+                    let usedpercent=Math.round(returnData[3]/returnData[1]*10000)/100;
+                    let current=humanSize(returnData[4]/10);
+                    let currentpercent=Math.round(returnData[4]/returnData[1]*10000)/100;
+                    if(returnData[1]!=0){alert("空间信息获取成功啦 ( •̀ ω •́ )✧\n\n磁盘空间合计："+total+"\n可用磁盘空间："+free+"（占总空间的"+freepercent+"%）"+"\n已用磁盘空间："+used+"（占总空间的"+usedpercent+"%）"+"\n当前目录占用："+current+"（占总空间的"+currentpercent+"%）");}
+                    else{alert("磁盘总空间获取失败，您使用的环境可能不允许此操作 `(*>﹏<*)′\n当前查看的目录占用"+current+"磁盘空间哦 ( •̀ ω •́ )✧")}
+                    loadFileList(dirOperating,true);
+                }else if(c==1001){alert("您当前查看的目录不存在，可能已经被删除惹 /_ \\")}
+                else{alert("出现未知错误惹 /_ \\");}
+            })
+        }
 //========================================检查更新
 		function chkupd(){
 			showModule("loading")
@@ -984,7 +1002,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			<button onclick="zipCurrentDir()">打包</button>
 			<button onclick="showMenu('files-newfile')">新建</button>
 			<button onclick="openFileFinder();searchDir=dirOperating;dirOperating=''" class="big">查找文件</button>
-			<button onclick="fileGetContents()" class="big">远程下载</button>
+			<button onclick="getDiskSpaceInfo()" class="big">占用情况</button>
 			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴<contextmenukey>Ctrl + V</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
