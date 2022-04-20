@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.072;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.073;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -387,7 +387,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		function request(act,txt,callback){
 			if(txt){fetchBody="a="+act+"&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&"+txt;}
 			else{fetchBody="a="+act+"&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"));}
-			fetch('',{
+			fetch('?stamp='+new Date().getTime(),{
 				body:fetchBody,
 				method:"POST",
 				headers:{'Content-Type':'application/x-www-form-urlencoded'}
