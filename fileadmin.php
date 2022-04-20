@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.069;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.071;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -532,17 +532,16 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				fileType=data.name.split(".")[data.name.split(".").length-1].toLowerCase();
 				fileListOperating.push(data.name);
 				fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
-					<img src="https://fileadmin.vercel.app/ico/`+getFileIco(fileType,data.dir)+`.svg" class="fileIco">
+					`+getFileIco(fileType,data.dir)+`
 					<div class="fileName">`+data.name+`</div>
 					<div class="size">`+humanSize(data.size*100)+`</div>
 				</div>`;
 			}
 		}
 		function getFileIco(type,dir){
-			if(dir){return "folder";}else{
-				currentIcons=["css","gif","htm","ico","ini","jpg","js","md","mp3","mp4","php","png","rar","svg","ts","ttf","txt","xml","zip","html","fajs"];
-				if(currentIcons.indexOf(type)!=-1){return type;}else{return "unknown"}
-			}
+			if(dir){return `<svg style='padding:2px' viewBox="0 0 16 16" version="1.1" class="fileIco" fill="#1e9fff"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>`;}
+			else{if(type=="fajs"){return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="27" width="14" height="8" fill="none" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 27V23C28 21.3431 27 19 24 19C21 19 20 21.3431 20 23V27" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+			else{return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`}}
 		}
 		function editAddressBar(){
 			let newDir=prompt("请输入想转到的路径 (o゜▽゜)o☆",dirOperating);
@@ -869,7 +868,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		function addToSearchResultHtml(data){
 			fileType=data.split(".")[data.split(".").length-1].toLowerCase();
 			searchResultHtml=searchResultHtml+`<div class="file" data-filename="`+data.replace("//","/")+`" onclick='viewFile("`+data.replace("//","/")+`",true,true)'>
-				<img src="https://fileadmin.vercel.app/ico/`+getFileIco(fileType,false)+`.svg" class="fileIco">
+				`+getFileIco(fileType,false)+`
 				<div class="fileName">`+data.replace("//","/")+`</div>
 			</div>`;
 		}
@@ -974,7 +973,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	<body>
 		<div class="title">
 			<div class="appName" onclick="chkupd()">File<b>Admin</b><div id="versionNote">正在获取</div></div>
-			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="3"8" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
 		<div class="module loading shown" data-module="loading" id="loadingAnimations">
 			<div class="loadingAnimation">
