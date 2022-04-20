@@ -975,7 +975,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
-			<button onclick="loadFileList(dirOperating,true)">刷新</button>
+			<button onclick="loadFileList(dirOperating,true)">刷新<contextmenukey>F5</contextmenukey></button>
 			<button onclick="showMenu('files-upload')">上传</button>
 			<button onclick="zipCurrentDir()">打包</button>
 			<button onclick="showMenu('files-newfile')">新建</button>
@@ -1043,7 +1043,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
 			<button onclick="saveFile()" id="saveBtn">保存<contextmenukey>Ctrl + S</contextmenukey></button>
-			<button onclick='if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}'>刷新</button>
+			<button onclick='if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}'>刷新<contextmenukey>F5</contextmenukey></button>
 			<button onclick="setWrap(this)">换行</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="history.back()">返回<contextmenukey>ESC</contextmenukey></button>
