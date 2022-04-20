@@ -1126,4 +1126,4 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/theme-chrome.js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ext-language_tools.min.js"></script>
 	<script src="https://asset.simsoft.top/SimAdmin/obfuscator.js"></script>
-</html><?php } ?>
+</html><?php } ?> 
