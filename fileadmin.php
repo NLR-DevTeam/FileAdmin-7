@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.074;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.075;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -293,6 +293,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 #updinfo{padding:10px;}
 .upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
 .uploadProgress{height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;margin:10px 0;}
+.uploadText{width:100%;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #uploadProgressBar{height:8px;transition:width .2s;background:#1e9fff;width:0;}
 .loadingAnimation{position:fixed;inset:0;margin:auto;width:fit-content;height:fit-content;z-index:20}
 .loadingAnimationDot{animation:loadingDot .8s linear 0s infinite;font-weight:bold;font-size:2em;display:inline-block;opacity:.1;}
@@ -456,7 +457,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				if(items && items.length){
 					waitingToUpload=[];
 					waitingToUploadCount=0;
-					for(var i = 0; i < items.length; i++){console.log(items[i].type);if(items[i].type!==''){if(items[i].getAsFile()){addFileToUploadArr(items[i].getAsFile());}}}
+					for(var i = 0; i < items.length; i++){if(items[i].type!==''){if(items[i].getAsFile()){addFileToUploadArr(items[i].getAsFile());}}}
 					showModule("upload");
 					uploadNotFinished=true;
 					uploadFileFromList(0);
@@ -481,6 +482,8 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			waitingToUploadCount++;
 		}
 		function uploadFileFromList(id){
+		    lastUploadTime=new Date().getTime();
+		    lastUploadProgress=0;
 			if(!waitingToUpload[id]){uploadNotFinished=false;history.back();}else{
 				waitingToUploadCount--;
 				document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
@@ -500,7 +503,11 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 					percent=Math.round((loaded * 100))+"%"
 					document.getElementById("uploadProgressBar").style.width=percent;
 					document.getElementById("uploadText-CurrProg").innerText=percent+" ("+humanSize(eve.loaded/10)+" / "+humanSize(eve.total/10)+")";
+					uploadSpeed=humanSize((eve.loaded-lastUploadProgress)/(new Date().getTime()-lastUploadTime)*100)+"/S"
+					document.getElementById("uploadText-CurrSpeed").innerText=uploadSpeed;
 					if(percent=="100%"){document.getElementById("uploadText-CurrProg").innerText=percent+" (正在处理...)";}
+		            lastUploadTime=new Date().getTime();
+					lastUploadProgress=eve.loaded;
 				}
 				xhr.send(fd);
 			}
@@ -757,7 +764,6 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
 				try{
 					let obfuscated=JavaScriptObfuscator.obfuscate(textEditor.getValue(),{compact:true,controlFlowFlattening:true,controlFlowFlatteningThreshold:1,numbersToExpressions:true,simplify:true,stringArrayShuffle:true,splitStrings:true,stringArrayThreshold:1})._obfuscatedCode
-					console.log(obfuscated)
 					request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
 						document.getElementById("loadingAnimations").classList.remove("shown");
 						if(code==200){
@@ -921,7 +927,6 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
             request("space","name="+encodeURIComponent(dirOperating),function(c,data,d){
                 if(c==200){
                     let returnData=d.split("||");
-                    console.log(returnData)
                     let total=humanSize(returnData[1]/10);
                     let free=humanSize(returnData[2]/10);
                     let freepercent=Math.round(returnData[2]/returnData[1]*10000)/100;
@@ -1044,6 +1049,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			<div class="uploadProgress"><div id="uploadProgressBar"></div></div>
 			<div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
 			<div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
+			<div class="uploadText">当前速度：<span id="uploadText-CurrSpeed"></span></div>
 			<div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
 			<div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
 		</div>
