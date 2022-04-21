@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.073;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.074;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -335,7 +335,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 /* FileAdmin Javascript */
 //=========================================初始化
 		window.onload=function(){
-			forwardFromComfim=false;fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
+			forwardFromConfirm=false;fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
 			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
 			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
 			moveOrCopyMode=null;
@@ -343,8 +343,8 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
 			}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
 			window.onpopstate=function(){
-			    if(!forwardFromComfim){
-    				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")){forwardFromComfim=true;history.forward();return;}}
+			    if(!forwardFromConfirm){
+    				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")){forwardFromConfirm=true;history.forward();return;}}
     				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
     					let state=event.state;
     					if(state.mode){
@@ -354,7 +354,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
     						}
     					}
     				}
-			    }else{forwardFromComfim=false;}
+			    }else{forwardFromConfirm=false;}
 			}
 		}
 		window.onkeydown=function(){
@@ -380,7 +380,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			}else if(event.keyCode==116){
 			    event.preventDefault();
 				if(document.querySelector(".files.shown")){loadFileList(dirOperating,true);}
-				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent){if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}}else{viewFile(fileEditing,true)}}
+				if(document.querySelector(".texteditor.shown")){reloadEditor()}
 			}
 		}
 //=========================================公共函数
@@ -808,6 +808,11 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				}
 			}
 		}
+		function reloadEditor(){
+		    if(textEditor.getValue()!=lastSaveContent){
+		        if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}
+		    }else{viewFile(fileEditing,true)}
+		}
 //========================================右键菜单
 		function showContextMenu(){
 			if(navigator.maxTouchPoints==0){
@@ -1066,7 +1071,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
 			<button onclick="saveFile()" id="saveBtn">保存<contextmenukey>Ctrl + S</contextmenukey></button>
-			<button onclick='if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}'>刷新<contextmenukey>F5</contextmenukey></button>
+			<button onclick="reloadEditor()">刷新<contextmenukey>F5</contextmenukey></button>
 			<button onclick="setWrap(this)">换行</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="history.back()">返回<contextmenukey>ESC</contextmenukey></button>
