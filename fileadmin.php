@@ -141,15 +141,15 @@
 					echo "200";
 				}
 			}elseif($ACT=="chkupd"){
-				$latest=file_get_contents("https://fileadmin.vercel.app/api/latest?stamp=".time());
+				$latest=file_get_contents("https://api.simsoft.top/fileadmin/latest/?stamp=".time());
 				if($latest && $latest!=$VERSION){
-					$updinfo=file_get_contents("https://fileadmin.vercel.app/api/updinfo?stamp=".time());
+					$updinfo=file_get_contents("https://api.simsoft.top/fileadmin/updateinfo/?stamp=".time());
 					if($updinfo){
 						echo $updinfo;
 					}else{echo "1002";}
 				}else{echo "1001";}
 			}elseif($ACT=="applyversion"){
-				$updater=file_get_contents("https://fileadmin.vercel.app/api/updater?stamp=".time());
+				$updater=file_get_contents("https://api.simsoft.top/fileadmin/updater/?stamp=".time());
 				if($updater){
 					file_put_contents("./FileAdminUpdater.php",$updater);
 					header("location: ./FileAdminUpdater.php?famain=".end(explode("/",$_SERVER['PHP_SELF'])));
@@ -228,7 +228,7 @@
 		if(!is_dir($destDir)){nbMkdir($destDir);}
 		move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
 	}elseif($_GET["a"]=="ver"){
-		$latest=file_get_contents("https://fileadmin.vercel.app/api/latest?stamp=".time());
+		$latest=file_get_contents("https://api.simsoft.top/fileadmin/latest/?stamp=".time());
 		if($latest && $latest!=$VERSION){echo "1001";}else{echo "v".$VERSION;}
 	}elseif($_GET["a"]=="css"){ 
 		header("content-type: text/css");
