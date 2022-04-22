@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.075;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.076;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -542,7 +542,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
 					`+getFileIco(fileType,data.dir)+`
 					<div class="fileName">`+data.name+`</div>
-					<div class="size">`+humanSize(data.size*100)+`</div>
+					<div class="size">`+humanSize(data.size*102.4)+`</div>
 				</div>`;
 			}
 		}
