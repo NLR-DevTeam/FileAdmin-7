@@ -978,7 +978,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	<head>
 		<title>FileAdmin</title>
 		<meta name="viewport" content="width=device-width">
-		<link rel="icon" href="//asset.simsoft.top/fileadmin.png">
+		<link rel="icon" href="//asset.simsoft.top/branding/projects/fileadmin.png">
 		<link rel="stylesheet" href="?a=css">
 	</head>
 	<body>
