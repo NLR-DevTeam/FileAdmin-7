@@ -68,16 +68,16 @@
 		}
 	}
    function dirsize($dir){
-        @$dh=opendir($dir);$size=0;
-        while($file = @readdir($dh)){
-            if($file!="." && $file!=".."){
-                $path = $dir."/".$file;
-                if (is_dir($path)){$size+=dirsize($path);}elseif(is_file($path)){$size += filesize($path);}
-            }
-        }
-        @closedir($dh);return $size;
-    }
-    
+		@$dh=opendir($dir);$size=0;
+		while($file = @readdir($dh)){
+			if($file!="." && $file!=".."){
+				$path = $dir."/".$file;
+				if (is_dir($path)){$size+=dirsize($path);}elseif(is_file($path)){$size += filesize($path);}
+			}
+		}
+		@closedir($dh);return $size;
+	}
+	
 	$ACT=$_POST["a"];$PWD=$_POST["pwd"];
 	if($ACT){
 		if($ACT=="login"){
@@ -211,13 +211,13 @@
 				}
 				echo "200||".$replaceCount;
 			}elseif($ACT=="space"){
-			    if(is_dir(".".$_POST["name"])){
-    			    $total=disk_total_space(".".$_POST["name"]);
-    			    $free=disk_free_space(".".$_POST["name"]);
-    			    $used=$total-$free;
-    			    $current=dirsize(".".$_POST["name"]);
-    			    echo "200||".$total."||".$free."||".$used."||".$current;
-			    }else{echo "1001";}
+				if(is_dir(".".$_POST["name"])){
+					$total=disk_total_space(".".$_POST["name"]);
+					$free=disk_free_space(".".$_POST["name"]);
+					$used=$total-$free;
+					$current=dirsize(".".$_POST["name"]);
+					echo "200||".$total."||".$free."||".$used."||".$current;
+				}else{echo "1001";}
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
@@ -335,454 +335,439 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 /*</style>*/<?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>//<script>
 /* FileAdmin Javascript */
 //=========================================初始化
-		window.onload=function(){
-			forwardFromConfirm=false;fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
-			if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
-			document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
-			moveOrCopyMode=null;
-			fetch("?a=ver").then(function(d){return d.text()}).then(function(d){
-				if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
-			}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
-			window.onpopstate=function(){
-			    if(!forwardFromConfirm){
-    				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")){forwardFromConfirm=true;history.forward();return;}}
-    				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
-    					let state=event.state;
-    					if(state.mode){
-    						let mode=state.mode;
-    						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{
-    						    history.back();
-    						}
-    					}
-    				}
-			    }else{forwardFromConfirm=false;}
-			}
+	window.onload=function(){
+		forwardFromConfirm=false;fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
+		if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
+		document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
+		moveOrCopyMode=null;
+		fetch("?a=ver").then(function(d){return d.text()}).then(function(d){
+			if(d=="1001"){document.getElementById("versionNote").innerText="点击更新";document.getElementById("versionNote").classList.add("active")}else{document.getElementById("versionNote").innerText=d;}
+		}).catch(function(err){document.getElementById("versionNote").innerText="出错"})
+		window.onpopstate=function(){
+			if(!forwardFromConfirm){
+				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")){forwardFromConfirm=true;history.forward();return;}}
+				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
+					let state=event.state;
+					if(state.mode){
+						let mode=state.mode;
+						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{
+							history.back();
+						}
+					}
+				}
+			}else{forwardFromConfirm=false;}
 		}
-		window.onkeydown=function(){
-			if(event.keyCode==191){
-				if(document.querySelector(".files.shown")){editAddressBar();}
-				if(document.querySelector(".login.shown")){event.preventDefault();document.getElementById("loginPassword").focus();}
-			}else if(event.ctrlKey==true&&event.keyCode==83){
-				event.preventDefault();
-				if(document.querySelector(".texteditor.shown")){saveFile();}
-			}else if(event.keyCode==27){
-				if(document.querySelector(".texteditor.shown")){history.back();}
-				else if(document.querySelector(".files.shown")){previousDir();}
-			}else if(event.ctrlKey==true&&event.keyCode==65){
-				if(document.querySelector(".files.shown")){event.preventDefault();fileSelected=fileListOperating;loadFileSelected();}
-			}else if(event.keyCode==46){
-				if(document.querySelector(".files.shown")){delFile();}
-			}else if(event.ctrlKey==true&&event.keyCode==67){
-				if(document.querySelector(".files.shown")){setCopyFiles();}
-			}else if(event.ctrlKey==true&&event.keyCode==88){
-				if(document.querySelector(".files.shown")){setMoveFiles();}
-			}else if(event.ctrlKey==true&&event.keyCode==86){
-				if(document.querySelector(".files.shown")){filePaste();}
-			}else if(event.keyCode==116){
-			    event.preventDefault();
-				if(document.querySelector(".files.shown")){loadFileList(dirOperating,true);}
-				if(document.querySelector(".texteditor.shown")){reloadEditor()}
-			}
+	}
+	window.onkeydown=function(){
+		if(event.keyCode==191){
+			if(document.querySelector(".files.shown")){editAddressBar();}
+			if(document.querySelector(".login.shown")){event.preventDefault();document.getElementById("loginPassword").focus();}
+		}else if(event.ctrlKey==true&&event.keyCode==83){
+			event.preventDefault();
+			if(document.querySelector(".texteditor.shown")){saveFile();}
+		}else if(event.keyCode==27){
+			if(document.querySelector(".texteditor.shown")){history.back();}
+			else if(document.querySelector(".files.shown")){previousDir();}
+		}else if(event.ctrlKey==true&&event.keyCode==65){
+			if(document.querySelector(".files.shown")){event.preventDefault();fileSelected=fileListOperating;loadFileSelected();}
+		}else if(event.keyCode==46){
+			if(document.querySelector(".files.shown")){delFile();}
+		}else if(event.ctrlKey==true&&event.keyCode==67){
+			if(document.querySelector(".files.shown")){setCopyFiles();}
+		}else if(event.ctrlKey==true&&event.keyCode==88){
+			if(document.querySelector(".files.shown")){setMoveFiles();}
+		}else if(event.ctrlKey==true&&event.keyCode==86){
+			if(document.querySelector(".files.shown")){filePaste();}
+		}else if(event.keyCode==116){
+			event.preventDefault();
+			if(document.querySelector(".files.shown")){loadFileList(dirOperating,true);}
+			if(document.querySelector(".texteditor.shown")){reloadEditor()}
 		}
+	}
 //=========================================公共函数
-		function request(act,txt,callback){
-			if(txt){fetchBody="a="+act+"&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&"+txt;}
-			else{fetchBody="a="+act+"&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"));}
-			fetch('?stamp='+new Date().getTime(),{
-				body:fetchBody,
-				method:"POST",
-				headers:{'Content-Type':'application/x-www-form-urlencoded'}
-			})
-			.then(res=>res.text())
-			.then(txt=>{
-				let parsed=txt.split("||");
-				let code=Number(parsed[0]);
-				if(code==1000){showModule("login");}else{
-					if(parsed[1]){msg=parsed[1];}else{msg=null;}
-					if(callback){callback(code,msg,txt);}
-				}
-			})
-			.catch(err=>{alert(err);})
-		}
-		function showModule(name){
-			document.title="FileAdmin | 极致文件管理体验";
-			hideMenu();
-			if(document.querySelector(".module.shown")){document.querySelector(".module.shown").classList.remove("shown");}
-			document.querySelector(".module[data-module^='"+name+"']").classList.remove("hidden");
-			document.querySelector(".module[data-module^='"+name+"']").classList.add("shown");
-			if(name=="login"){document.getElementById("logoutBtn").style.display="none";}else{document.getElementById("logoutBtn").style.display="block";}
-			if(name!="login"&&name!="files"&&name!="loading"){history.pushState({'mode':'other'},document.title)}
-			if(name!="texteditor"&&name!="loading"){document.getElementById("mobileFastInput").style="";}
-		}
-		function showMenu(name){
-			if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
-			document.querySelector(".menu[data-menu^='"+name+"']").classList.add("shown");
-		}
-		function hideMenu(){
-			if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
-		}
-		function humanSize(num){
-			bytes=num/102.4;
-			if(bytes==0){return "0.00B";} 
-			var e=Math.floor(Math.log(bytes)/Math.log(1024)); 
-			return(bytes/Math.pow(1024, e)).toFixed(2)+'KMGTP'.charAt(e)+'B'; 
-		}
+	function request(act,txt,callback){
+		if(txt){fetchBody="a="+act+"&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&"+txt;}
+		else{fetchBody="a="+act+"&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"));}
+		fetch('?stamp='+new Date().getTime(),{
+			body:fetchBody,
+			method:"POST",
+			headers:{'Content-Type':'application/x-www-form-urlencoded'}
+		})
+		.then(res=>res.text())
+		.then(txt=>{
+			let parsed=txt.split("||");
+			let code=Number(parsed[0]);
+			if(code==1000){showModule("login");}else{
+				if(parsed[1]){msg=parsed[1];}else{msg=null;}
+				if(callback){callback(code,msg,txt);}
+			}
+		})
+		.catch(err=>{alert(err);})
+	}
+	function showModule(name){
+		document.title="FileAdmin | 极致文件管理体验";
+		hideMenu();
+		if(document.querySelector(".module.shown")){document.querySelector(".module.shown").classList.remove("shown");}
+		document.querySelector(".module[data-module^='"+name+"']").classList.remove("hidden");
+		document.querySelector(".module[data-module^='"+name+"']").classList.add("shown");
+		if(name=="login"){document.getElementById("logoutBtn").style.display="none";}else{document.getElementById("logoutBtn").style.display="block";}
+		if(name!="login"&&name!="files"&&name!="loading"){history.pushState({'mode':'other'},document.title)}
+		if(name!="texteditor"&&name!="loading"){document.getElementById("mobileFastInput").style="";}
+	}
+	function showMenu(name){
+		if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
+		document.querySelector(".menu[data-menu^='"+name+"']").classList.add("shown");
+	}
+	function hideMenu(){
+		if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
+	}
+	function humanSize(num){
+		bytes=num/102.4;
+		if(bytes==0){return "0.00B";} 
+		var e=Math.floor(Math.log(bytes)/Math.log(1024)); 
+		return(bytes/Math.pow(1024, e)).toFixed(2)+'KMGTP'.charAt(e)+'B'; 
+	}
 //=========================================登录
-		function loginCheckEnter(eve){if(eve.keyCode==13){login()}}
-		function login(){
-			showModule("loading");
-			request("login","loginPwd="+document.getElementById("loginPassword").value,function(code,msg){
-				if(code==200){
-					localStorage.setItem("FileAdmin_Password",msg);
-					loadFileList(dirOperating,true);
-					history.replaceState({"mode":"fileList","dir":"/"},document.title)
-				}else{
-					showModule("login");
-					alert("密码输入错误 (⊙x⊙;)");
-				}
-			})
-		}
+	function loginCheckEnter(eve){if(eve.keyCode==13){login()}}
+	function login(){
+		showModule("loading");
+		request("login","loginPwd="+document.getElementById("loginPassword").value,function(code,msg){
+			if(code==200){
+				localStorage.setItem("FileAdmin_Password",msg);
+				loadFileList(dirOperating,true);
+				history.replaceState({"mode":"fileList","dir":"/"},document.title)
+			}else{
+				showModule("login");
+				alert("密码输入错误 (⊙x⊙;)");
+			}
+		})
+	}
 //========================================上传文件
-		function addFilesToUploads(ele){
-			waitingToUpload=[];
-			waitingToUploadCount=0;
-			Array.from(ele.files).forEach(addFileToUploadArr);
-			showModule("upload");
-			uploadFileFromList(0);
-			ele.value='';uploadNotFinished=true;
-		}
-		document.addEventListener('paste',function(event){
-			if(document.querySelector(".files.shown") && !moveOrCopyMode){
-				var items=event.clipboardData && event.clipboardData.items;
-				if(items && items.length){
-					waitingToUpload=[];
-					waitingToUploadCount=0;
-					for(var i = 0; i < items.length; i++){if(items[i].type!==''){if(items[i].getAsFile()){addFileToUploadArr(items[i].getAsFile());}}}
-					showModule("upload");
-					uploadNotFinished=true;
-					uploadFileFromList(0);
-				}
-			}
-		});
-		function addFileToUploadArr(file){
-			waitingToUpload.push({"file":file,"dir":dirOperating});
-			waitingToUploadCount++;
-		}
-		function addDirToUploads(ele){
-			waitingToUpload=[];
-			waitingToUploadCount=0;
-			Array.from(ele.files).forEach(addDirToUploadArr);
-			showModule("upload");
-			uploadFileFromList(0);
-			ele.value='';
-		}
-		function addDirToUploadArr(file){
-			let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-1).join("/")+"/";
-			waitingToUpload.push({"file":file,"dir":dirOperating+relativeDir});
-			waitingToUploadCount++;
-		}
-		function uploadFileFromList(id){
-		    lastUploadTime=new Date().getTime();
-		    lastUploadProgress=0;
-			if(!waitingToUpload[id]){uploadNotFinished=false;history.back();}else{
-				waitingToUploadCount--;
-				document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
-				document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
-				document.getElementById("uploadText-DestDir").innerText=waitingToUpload[id]["dir"];
-				document.getElementById("uploadProgressBar").style.display="none";
-				setTimeout(function(){document.getElementById("uploadProgressBar").style.width="0%";document.getElementById("uploadProgressBar").style.display="block";},50)
-				document.getElementById("uploadText-CurrProg").innerText="0% (正在连接...)"
-				xhr=new XMLHttpRequest();
-				xhr.onload=function(){id++;uploadFileFromList(id)};
-				xhr.open("POST","?a=upload&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&dir="+encodeURIComponent(waitingToUpload[id]["dir"]),true);
-				xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
-				var fd=new FormData();
-				fd.append("file",waitingToUpload[id]["file"]);
-				xhr.upload.onprogress=function(eve){
-					loaded=eve.loaded/eve.total;
-					percent=Math.round((loaded * 100))+"%"
-					document.getElementById("uploadProgressBar").style.width=percent;
-					document.getElementById("uploadText-CurrProg").innerText=percent+" ("+humanSize(eve.loaded/10)+" / "+humanSize(eve.total/10)+")";
-					uploadSpeed=humanSize((eve.loaded-lastUploadProgress)/(new Date().getTime()-lastUploadTime)*100)+"/S"
-					document.getElementById("uploadText-CurrSpeed").innerText=uploadSpeed;
-					if(percent=="100%"){document.getElementById("uploadText-CurrProg").innerText=percent+" (正在处理...)";}
-		            lastUploadTime=new Date().getTime();
-					lastUploadProgress=eve.loaded;
-				}
-				xhr.send(fd);
+	function addFilesToUploads(ele){
+		waitingToUpload=[];
+		waitingToUploadCount=0;
+		Array.from(ele.files).forEach(addFileToUploadArr);
+		showModule("upload");
+		uploadFileFromList(0);
+		ele.value='';uploadNotFinished=true;
+	}
+	document.addEventListener('paste',function(event){
+		if(document.querySelector(".files.shown") && !moveOrCopyMode){
+			var items=event.clipboardData && event.clipboardData.items;
+			if(items && items.length){
+				waitingToUpload=[];
+				waitingToUploadCount=0;
+				for(var i = 0; i < items.length; i++){if(items[i].type!==''){if(items[i].getAsFile()){addFileToUploadArr(items[i].getAsFile());}}}
+				showModule("upload");
+				uploadNotFinished=true;
+				uploadFileFromList(0);
 			}
 		}
+	});
+	function addFileToUploadArr(file){
+		waitingToUpload.push({"file":file,"dir":dirOperating});
+		waitingToUploadCount++;
+	}
+	function addDirToUploads(ele){
+		waitingToUpload=[];
+		waitingToUploadCount=0;
+		Array.from(ele.files).forEach(addDirToUploadArr);
+		showModule("upload");
+		uploadFileFromList(0);
+		ele.value='';
+	}
+	function addDirToUploadArr(file){
+		let relativeDir=file.webkitRelativePath.split("/").slice(0,file.webkitRelativePath.split("/").length-1).join("/")+"/";
+		waitingToUpload.push({"file":file,"dir":dirOperating+relativeDir});
+		waitingToUploadCount++;
+	}
+	function uploadFileFromList(id){
+		lastUploadTime=new Date().getTime();
+		lastUploadProgress=0;
+		if(!waitingToUpload[id]){uploadNotFinished=false;history.back();}else{
+			waitingToUploadCount--;
+			document.getElementById("uploadText-CurrFile").innerText=waitingToUpload[id]["file"]["name"];
+			document.getElementById("uploadText-Waiting").innerText=waitingToUploadCount;
+			document.getElementById("uploadText-DestDir").innerText=waitingToUpload[id]["dir"];
+			document.getElementById("uploadProgressBar").style.display="none";
+			setTimeout(function(){document.getElementById("uploadProgressBar").style.width="0%";document.getElementById("uploadProgressBar").style.display="block";},50)
+			document.getElementById("uploadText-CurrProg").innerText="0% (正在连接...)"
+			xhr=new XMLHttpRequest();
+			xhr.onload=function(){id++;uploadFileFromList(id)};
+			xhr.open("POST","?a=upload&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&dir="+encodeURIComponent(waitingToUpload[id]["dir"]),true);
+			xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+			var fd=new FormData();
+			fd.append("file",waitingToUpload[id]["file"]);
+			xhr.upload.onprogress=function(eve){
+				loaded=eve.loaded/eve.total;
+				percent=Math.round((loaded * 100))+"%"
+				document.getElementById("uploadProgressBar").style.width=percent;
+				document.getElementById("uploadText-CurrProg").innerText=percent+" ("+humanSize(eve.loaded/10)+" / "+humanSize(eve.total/10)+")";
+				uploadSpeed=humanSize((eve.loaded-lastUploadProgress)/(new Date().getTime()-lastUploadTime)*100)+"/S"
+				document.getElementById("uploadText-CurrSpeed").innerText=uploadSpeed;
+				if(percent=="100%"){document.getElementById("uploadText-CurrProg").innerText=percent+" (正在处理...)";}
+				lastUploadTime=new Date().getTime();
+				lastUploadProgress=eve.loaded;
+			}
+			xhr.send(fd);
+		}
+	}
 //========================================文件管理器
-		function loadFileList(dir,fromState){
-			fileSelected=[];
-			document.getElementById("addressBar").innerText="根目录"+dir.replaceAll("/"," / ");
-			showModule("loading");
-			request("files","name="+dir,function(code,data){
-				if(code==200){
-					fileListArr=JSON.parse(decodeURIComponent(data));
-					fileListOperating=[];
-					fileListHtml="";
-					fileListArr.forEach(addToFileListHtml);
-					document.getElementById("fileList").innerHTML=fileListHtml;
-					if(fileListHtml==""){
-						document.getElementById("fileList").innerHTML="<center>请求的目录为空 ヽ(*。>Д<)o゜</center>"
-					}
-				}else if(code=="1001"){document.getElementById("fileList").innerHTML="<center>请求的目录不存在捏 (ノへ￣、)</center>"}
-				else if(code="1002"){document.getElementById("fileList").innerHTML="<center>目录名称格式有误 (ﾟДﾟ*)ﾉ</center>"}
-				showModule("files");
-				showMenu("files-noselect");
-			})
-			if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title)}
-			if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},580);}
-		}
-		function addToFileListHtml(data){
-			if(data.name!="."&&data.name!=".."){
-				fileType=data.name.split(".")[data.name.split(".").length-1].toLowerCase();
-				fileListOperating.push(data.name);
-				fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
-					`+getFileIco(fileType,data.dir)+`
-					<div class="fileName">`+data.name+`</div>
-					<div class="size">`+humanSize(data.size*102.4)+`</div>
-				</div>`;
-			}
-		}
-		function getFileIco(type,dir){
-			if(dir){return `<svg style='padding:2px' viewBox="0 0 16 16" version="1.1" class="fileIco" fill="#1e9fff"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>`;}
-			else{if(type=="fajs"){return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="27" width="14" height="8" fill="none" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 27V23C28 21.3431 27 19 24 19C21 19 20 21.3431 20 23V27" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
-			else{return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`}}
-		}
-		function editAddressBar(){
-			let newDir=prompt("请输入想转到的路径 (o゜▽゜)o☆",dirOperating);
-			if(newDir){
-				if(newDir.split("")[0]!="/"){newDir="/"+newDir;}
-				if(newDir.split("")[newDir.split("").length-1]!="/"){newDir=newDir+"/";}
-				dirOperating=newDir;
-				loadFileList(dirOperating);
-			}
-		}
-		function startHoverSelect(ele){
-			if(event.target.getAttribute("data-filename")){fileName=event.target.getAttribute("data-filename")}else{fileName=event.target.parentNode.getAttribute("data-filename")}
-			if(fileSelected.indexOf(fileName)==-1){fileHoverSelecting="select";}else{fileHoverSelecting="unselect";}
-		}
-		function hoverSelect(ele){
-			fileName=ele.getAttribute("data-filename");
-			if(fileHoverSelecting){
-				if(fileHoverSelecting=="select"){
-					if(fileSelected.indexOf(fileName)==-1){
-						fileSelected.push(fileName);			
-						loadFileSelected();
-					}
-				}else{
-					fileSelected=fileSelected.filter(item=>item!==fileName);
-					loadFileSelected();
+	function loadFileList(dir,fromState){
+		fileSelected=[];
+		document.getElementById("addressBar").innerText="根目录"+dir.replaceAll("/"," / ");
+		showModule("loading");
+		request("files","name="+dir,function(code,data){
+			if(code==200){
+				fileListArr=JSON.parse(decodeURIComponent(data));
+				fileListOperating=[];
+				fileListHtml="";
+				fileListArr.forEach(addToFileListHtml);
+				document.getElementById("fileList").innerHTML=fileListHtml;
+				if(fileListHtml==""){
+					document.getElementById("fileList").innerHTML="<center>请求的目录为空 ヽ(*。>Д<)o゜</center>"
 				}
-			}
+			}else if(code=="1001"){document.getElementById("fileList").innerHTML="<center>请求的目录不存在捏 (ノへ￣、)</center>"}
+			else if(code="1002"){document.getElementById("fileList").innerHTML="<center>目录名称格式有误 (ﾟДﾟ*)ﾉ</center>"}
+			showModule("files");
+			showMenu("files-noselect");
+		})
+		if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title)}
+		if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},580);}
+	}
+	function addToFileListHtml(data){
+		if(data.name!="."&&data.name!=".."){
+			fileType=data.name.split(".")[data.name.split(".").length-1].toLowerCase();
+			fileListOperating.push(data.name);
+			fileListHtml=fileListHtml+`<div class="file" onmouseover="hoverSelect(this)" data-isdir=`+data.dir+` data-filename="`+data.name+`" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">
+				`+getFileIco(fileType,data.dir)+`
+				<div class="fileName">`+data.name+`</div>
+				<div class="size">`+humanSize(data.size*102.4)+`</div>
+			</div>`;
 		}
-		function viewFile(ele,byname,restoreDirOperating){
-			if(!byname){
-				fileIsDir=ele.getAttribute("data-isdir");
-				fileName=ele.getAttribute("data-filename");
-			}else{fileIsDir=false;fileName=ele;}
-			if(fileSelected.length==0){
-			    offsetBeforeEditing=pageYOffset;
-				fileType=fileName.split(".")[fileName.split(".").length-1].toLowerCase();
-				fileEditing=fileName;
-				if(fileIsDir=="true"){
-					dirOperating=dirOperating+fileName+"/";
-					loadFileList(dirOperating);
-				}else{
-					textMode=null;
-					if(fileType=="html"||fileType=="htm"||fileType=="txt"){textMode="html";}
-					else if(fileType=="php"){textMode="php";}
-					else if(fileType=="json"){textMode="json";}
-					else if(fileType=="js"){textMode="javascript";}
-					else if(fileType=="css"){textMode="css";}
-					else if(fileType=="xml"||fileType=="yml"||fileType=="xaml"){textMode="xml";}
-					else if(fileType=="zip"){if(confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")){
-						let destDir=prompt("要解压到哪个目录捏 (*^▽^*)",dirOperating);
-						if(destDir){
-							if(destDir.split("")[0]!="/"){destDir="/"+destDir;}
-							if(destDir.split("")[destDir.split("").length-1]!="/"){destDir=destDir+"/";}
-							showModule("loading");request("unzip","name="+dirOperating+fileName+"&dir="+destDir,function(code){
-								if(code==1001){alert("您使用的环境貌似不支持此功能（＞人＜；）")}
-								else if(code==1002){alert("您指定的目录不存在 (´。＿。｀)")}
-								else if(code==1003){alert("找不到此压缩包，请尝试刷新此页面（＞人＜；）");}
-								else{alert("可能出现未知错误，请尝试刷新此页面（＞人＜；）");}
-								loadFileList(dirOperating,true);
-							})
-						}
-					}}
-					else if(fileType=="rar"||fileType=="7z"){alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");}
-					else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"){
-						showModule("imgviewer");
-						showMenu("imgviewer");
-						imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
-						document.getElementById("imgviewer").src=imageViewingUrl;
-					}else if(fileType=="mp4"||fileType=="webm"||fileType=="mp3"){
-						showModule("vidviewer");
-						showMenu("vidviewer");
-						vidViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
-						document.getElementById("vidviewer").src=vidViewingUrl;
-					}else if(fileType=="fajs"){alert("您不能直接打开.fajs文件，请打开同名的.js文件哦~")}
-					else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
-					if(textMode){
-						showModule("loading");
-						request("getfile","name="+dirOperating+fileName,function(c,d,file){
-							if(fileType=="js"){
-								document.getElementById("obfuscateBtn").style.display="inline-block";
-								if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
-								else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
-							}else{document.getElementById("obfuscateBtn").style.display="none"}
-							if(navigator.maxTouchPoints>0){document.getElementById("mobileFastInput").style.top="0"}
-							ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
-							textEditor=ace.edit("textEditor");
-							textEditor.setOption("enableLiveAutocompletion",true);
-							textEditor.session.setValue(file);
-							textEditor.setTheme("ace/theme/chrome");
-							textEditor.gotoLine(1);
-							textEditor.setShowPrintMargin(false);
-							textEditor.session.setMode("ace/mode/"+textMode);
-							showModule("texteditor");
-							showMenu("texteditor");
-							document.title=fileName+" | FileAdmin";
-							lastSaveContent=textEditor.getValue();
-						});
-					}
-				}
-			}else{
+	}
+	function getFileIco(type,dir){
+		if(dir){return `<svg style='padding:2px' viewBox="0 0 16 16" version="1.1" class="fileIco" fill="#1e9fff"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>`;}
+		else{if(type=="fajs"){return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="27" width="14" height="8" fill="none" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 27V23C28 21.3431 27 19 24 19C21 19 20 21.3431 20 23V27" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+		else{return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`}}
+	}
+	function editAddressBar(){
+		let newDir=prompt("请输入想转到的路径 (o゜▽゜)o☆",dirOperating);
+		if(newDir){
+			if(newDir.split("")[0]!="/"){newDir="/"+newDir;}
+			if(newDir.split("")[newDir.split("").length-1]!="/"){newDir=newDir+"/";}
+			dirOperating=newDir;
+			loadFileList(dirOperating);
+		}
+	}
+	function startHoverSelect(ele){
+		if(event.target.getAttribute("data-filename")){fileName=event.target.getAttribute("data-filename")}else{fileName=event.target.parentNode.getAttribute("data-filename")}
+		if(fileSelected.indexOf(fileName)==-1){fileHoverSelecting="select";}else{fileHoverSelecting="unselect";}
+	}
+	function hoverSelect(ele){
+		fileName=ele.getAttribute("data-filename");
+		if(fileHoverSelecting){
+			if(fileHoverSelecting=="select"){
 				if(fileSelected.indexOf(fileName)==-1){
-					fileSelected.push(fileName);
+					fileSelected.push(fileName);			
 					loadFileSelected();
-				}else{
-					fileSelected=fileSelected.filter(item=>item!==fileName);
-					loadFileSelected();
-				}
-			}
-			if(restoreDirOperating){dirOperating="/";}
-		}
-		function previousDir(){history.back(-1)}
-		function arrToDir(item){
-			dirName+=item+"/"
-		}
-		function loadFileMenu(){
-			if(document.querySelector(".files.shown")){
-				if(fileSelected.length==0){showMenu("files-noselect")}
-				else if(fileSelected.length==1){showMenu("files-singleselect")}
-				else{showMenu("files-multiselect")}
-				if(moveOrCopyMode){document.getElementById("pasteBtn").style.display="inline-block"}else{document.getElementById("pasteBtn").style.display="none"}
-			}
-		}
-		function loadFileSelected(){Array.prototype.slice.call(document.getElementsByClassName("file")).forEach(checkFileSelected);loadFileMenu();}
-		function checkFileSelected(ele){
-			if(fileSelected.indexOf(ele.getAttribute("data-filename"))==-1){ele.classList.remove("selected")}else{ele.classList.add("selected")}
-		}
-//========================================无选中操作
-		function zipCurrentDir(){
-			if(confirm("您确实想将当前目录打包为Zip文件嘛 (⊙_⊙)？\nTip: 部分环境可能不支持此功能")){
-				showModule("loading")
-				request("zip","name="+encodeURIComponent(dirOperating),function(code){
-					if(code==1001){alert("文件打包失败..（＞人＜；）")}
-					loadFileList(dirOperating,true);
-				})
-			}
-		}
-		function newFile(){
-			let filename=prompt("📄 请输入新文件名称 (●'◡'●)");
-			if(filename){
-				showModule("loading")
-				if(filename.indexOf("/")==-1){
-					request("save","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
-				}else{alert("文件名不能包含特殊字符呐 (；′⌒`)");}
-			}
-		}
-		function newDir(){
-			let filename=prompt("📂 请输入新目录名称 (●'◡'●)");
-			if(filename){
-				showModule("loading")
-				if(filename.indexOf("/")==-1){
-					request("mkdir","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
-				}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
-			}
-		}
-		function openFileFinder(){
-			document.getElementById("searchAddrBar").innerText="当前查找目录："+document.getElementById("addressBar").innerText;
-			showModule("search");
-			showMenu("search");
-			document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">您还没有发起搜索 ㄟ( ▔, ▔ )ㄏ</div>';
-			document.getElementById("replaceBtn").style.display="none";
-		}
-//========================================单选中操作
-		function renameFile(){
-			let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
-			if(newName){
-				if(newName.indexOf("/")==-1&&newName.indexOf("&")==-1){
-					showModule("loading");
-					request("rename","dir="+encodeURIComponent(dirOperating)+"&old="+encodeURIComponent(fileSelected[0])+"&new="+encodeURIComponent(newName),function(c){
-						if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
-						loadFileList(dirOperating,true)
-					});
-				}else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
-			}
-		}
-		function downCurrFile(){
-			if(document.querySelector(".file.selected").getAttribute("data-isdir")=="true"){alert("不支持直接下载文件夹捏..")}else{
-				downUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileSelected[0]);
-				location=downUrl;
-			}
-		}
-//========================================单多选通用操作
-		function delFile(){
-			let fileDelStr=JSON.stringify(fileSelected);
-			if(confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")){
-				showModule("loading");
-				request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating,true)});
-			}
-		}
-		function setMoveFiles(){
-			moveOrCopyMode="move";
-			moveOrCopyFromDir=dirOperating;
-			moveOrCopyFiles=JSON.stringify(fileSelected);
-			fileSelected=[];loadFileSelected();
-		}
-		function setCopyFiles(){
-			moveOrCopyMode="copy";
-			moveOrCopyFromDir=dirOperating;
-			moveOrCopyFiles=JSON.stringify(fileSelected);
-			fileSelected=[];loadFileSelected();
-		}
-		function filePaste(){
-			if(moveOrCopyMode){
-				showModule("loading");
-				request(moveOrCopyMode,"files="+moveOrCopyFiles+"&from="+moveOrCopyFromDir+"&to="+dirOperating,function(){loadFileList(dirOperating,true);})
-				moveOrCopyMode=null;document.getElementById("pasteBtn").style.display="none";
-			}
-		}
-//========================================文本编辑器
-		function saveFile(forceDisableObfuscator){
-			document.getElementById("saveBtn").innerText="······";
-			document.getElementById("loadingAnimations").classList.add("shown");
-			if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
-				try{
-					let obfuscated=JavaScriptObfuscator.obfuscate(textEditor.getValue(),{compact:true,controlFlowFlattening:true,controlFlowFlatteningThreshold:1,numbersToExpressions:true,simplify:true,stringArrayShuffle:true,splitStrings:true,stringArrayThreshold:1})._obfuscatedCode
-					request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
-						document.getElementById("loadingAnimations").classList.remove("shown");
-						if(code==200){
-						    lastSaveContent=textEditor.getValue()
-							document.getElementById("saveBtn").innerText="完成";
-							setTimeout(function(){document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";},700)
-						}else{
-							alert("出现未知错误（＞人＜；）");
-							document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";
-						}
-					})
-				}catch(err){
-					alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n"+err+"\n\n请检查代码中是否存在错误~");saveFile(true);
 				}
 			}else{
-				request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
+				fileSelected=fileSelected.filter(item=>item!==fileName);
+				loadFileSelected();
+			}
+		}
+	}
+	function viewFile(ele,byname,restoreDirOperating){
+		if(!byname){
+			fileIsDir=ele.getAttribute("data-isdir");
+			fileName=ele.getAttribute("data-filename");
+		}else{fileIsDir=false;fileName=ele;}
+		if(fileSelected.length==0){
+			offsetBeforeEditing=pageYOffset;
+			fileType=fileName.split(".")[fileName.split(".").length-1].toLowerCase();
+			fileEditing=fileName;
+			if(fileIsDir=="true"){
+				dirOperating=dirOperating+fileName+"/";
+				loadFileList(dirOperating);
+			}else{
+				textMode=null;
+				if(fileType=="html"||fileType=="htm"||fileType=="txt"){textMode="html";}
+				else if(fileType=="php"){textMode="php";}
+				else if(fileType=="json"){textMode="json";}
+				else if(fileType=="js"){textMode="javascript";}
+				else if(fileType=="css"){textMode="css";}
+				else if(fileType=="xml"||fileType=="yml"||fileType=="xaml"){textMode="xml";}
+				else if(fileType=="zip"){if(confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")){
+					let destDir=prompt("要解压到哪个目录捏 (*^▽^*)",dirOperating);
+					if(destDir){
+						if(destDir.split("")[0]!="/"){destDir="/"+destDir;}
+						if(destDir.split("")[destDir.split("").length-1]!="/"){destDir=destDir+"/";}
+						showModule("loading");request("unzip","name="+dirOperating+fileName+"&dir="+destDir,function(code){
+							if(code==1001){alert("您使用的环境貌似不支持此功能（＞人＜；）")}
+							else if(code==1002){alert("您指定的目录不存在 (´。＿。｀)")}
+							else if(code==1003){alert("找不到此压缩包，请尝试刷新此页面（＞人＜；）");}
+							else{alert("可能出现未知错误，请尝试刷新此页面（＞人＜；）");}
+							loadFileList(dirOperating,true);
+						})
+					}
+				}}
+				else if(fileType=="rar"||fileType=="7z"){alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");}
+				else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"){
+					showModule("imgviewer");
+					showMenu("imgviewer");
+					imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
+					document.getElementById("imgviewer").src=imageViewingUrl;
+				}else if(fileType=="mp4"||fileType=="webm"||fileType=="mp3"){
+					showModule("vidviewer");
+					showMenu("vidviewer");
+					vidViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
+					document.getElementById("vidviewer").src=vidViewingUrl;
+				}else if(fileType=="fajs"){alert("您不能直接打开.fajs文件，请打开同名的.js文件哦~")}
+				else{if(confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")){textMode="html"}}
+				if(textMode){
+					showModule("loading");
+					request("getfile","name="+dirOperating+fileName,function(c,d,file){
+						if(fileType=="js"){
+							document.getElementById("obfuscateBtn").style.display="inline-block";
+							if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
+							else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
+						}else{document.getElementById("obfuscateBtn").style.display="none"}
+						if(navigator.maxTouchPoints>0){document.getElementById("mobileFastInput").style.top="0"}
+						ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
+						textEditor=ace.edit("textEditor");
+						textEditor.setOption("enableLiveAutocompletion",true);
+						textEditor.session.setValue(file);
+						textEditor.setTheme("ace/theme/chrome");
+						textEditor.gotoLine(1);
+						textEditor.setShowPrintMargin(false);
+						textEditor.session.setMode("ace/mode/"+textMode);
+						showModule("texteditor");
+						showMenu("texteditor");
+						document.title=fileName+" | FileAdmin";
+						lastSaveContent=textEditor.getValue();
+					});
+				}
+			}
+		}else{
+			if(fileSelected.indexOf(fileName)==-1){
+				fileSelected.push(fileName);
+				loadFileSelected();
+			}else{
+				fileSelected=fileSelected.filter(item=>item!==fileName);
+				loadFileSelected();
+			}
+		}
+		if(restoreDirOperating){dirOperating="/";}
+	}
+	function previousDir(){history.back(-1)}
+	function arrToDir(item){
+		dirName+=item+"/"
+	}
+	function loadFileMenu(){
+		if(document.querySelector(".files.shown")){
+			if(fileSelected.length==0){showMenu("files-noselect")}
+			else if(fileSelected.length==1){showMenu("files-singleselect")}
+			else{showMenu("files-multiselect")}
+			if(moveOrCopyMode){document.getElementById("pasteBtn").style.display="inline-block"}else{document.getElementById("pasteBtn").style.display="none"}
+		}
+	}
+	function loadFileSelected(){Array.prototype.slice.call(document.getElementsByClassName("file")).forEach(checkFileSelected);loadFileMenu();}
+	function checkFileSelected(ele){
+		if(fileSelected.indexOf(ele.getAttribute("data-filename"))==-1){ele.classList.remove("selected")}else{ele.classList.add("selected")}
+	}
+//========================================无选中操作
+	function zipCurrentDir(){
+		if(confirm("您确实想将当前目录打包为Zip文件嘛 (⊙_⊙)？\nTip: 部分环境可能不支持此功能")){
+			showModule("loading")
+			request("zip","name="+encodeURIComponent(dirOperating),function(code){
+				if(code==1001){alert("文件打包失败..（＞人＜；）")}
+				loadFileList(dirOperating,true);
+			})
+		}
+	}
+	function newFile(){
+		let filename=prompt("📄 请输入新文件名称 (●'◡'●)");
+		if(filename){
+			showModule("loading")
+			if(filename.indexOf("/")==-1){
+				request("save","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
+			}else{alert("文件名不能包含特殊字符呐 (；′⌒`)");}
+		}
+	}
+	function newDir(){
+		let filename=prompt("📂 请输入新目录名称 (●'◡'●)");
+		if(filename){
+			showModule("loading")
+			if(filename.indexOf("/")==-1){
+				request("mkdir","name="+encodeURIComponent(dirOperating+filename),function(){loadFileList(dirOperating,true)});
+			}else{alert("目录名不能包含特殊字符呐 (；′⌒`)");}
+		}
+	}
+	function openFileFinder(){
+		document.getElementById("searchAddrBar").innerText="当前查找目录："+document.getElementById("addressBar").innerText;
+		showModule("search");
+		showMenu("search");
+		document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">您还没有发起搜索 ㄟ( ▔, ▔ )ㄏ</div>';
+		document.getElementById("replaceBtn").style.display="none";
+	}
+//========================================单选中操作
+	function renameFile(){
+		let newName=prompt("请输入文件的新名称(*^▽^*)",fileSelected[0]);
+		if(newName){
+			if(newName.indexOf("/")==-1&&newName.indexOf("&")==-1){
+				showModule("loading");
+				request("rename","dir="+encodeURIComponent(dirOperating)+"&old="+encodeURIComponent(fileSelected[0])+"&new="+encodeURIComponent(newName),function(c){
+					if(c==1002){alert("文件 “"+newName+"” 已经存在啦 (；′⌒`)")}else if(c!=200){alert("出现未知错误 (；′⌒`)")}
+					loadFileList(dirOperating,true)
+				});
+			}else{alert("文件名不可包含特殊字符哦 (；′⌒`)")}
+		}
+	}
+	function downCurrFile(){
+		if(document.querySelector(".file.selected").getAttribute("data-isdir")=="true"){alert("不支持直接下载文件夹捏..")}else{
+			downUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileSelected[0]);
+			location=downUrl;
+		}
+	}
+//========================================单多选通用操作
+	function delFile(){
+		let fileDelStr=JSON.stringify(fileSelected);
+		if(confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")){
+			showModule("loading");
+			request("del","files="+encodeURIComponent(fileDelStr)+"&dir="+dirOperating,function(){loadFileList(dirOperating,true)});
+		}
+	}
+	function setMoveFiles(){
+		moveOrCopyMode="move";
+		moveOrCopyFromDir=dirOperating;
+		moveOrCopyFiles=JSON.stringify(fileSelected);
+		fileSelected=[];loadFileSelected();
+	}
+	function setCopyFiles(){
+		moveOrCopyMode="copy";
+		moveOrCopyFromDir=dirOperating;
+		moveOrCopyFiles=JSON.stringify(fileSelected);
+		fileSelected=[];loadFileSelected();
+	}
+	function filePaste(){
+		if(moveOrCopyMode){
+			showModule("loading");
+			request(moveOrCopyMode,"files="+moveOrCopyFiles+"&from="+moveOrCopyFromDir+"&to="+dirOperating,function(){loadFileList(dirOperating,true);})
+			moveOrCopyMode=null;document.getElementById("pasteBtn").style.display="none";
+		}
+	}
+//========================================文本编辑器
+	function saveFile(forceDisableObfuscator){
+		document.getElementById("saveBtn").innerText="······";
+		document.getElementById("loadingAnimations").classList.add("shown");
+		if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
+			try{
+				let obfuscated=JavaScriptObfuscator.obfuscate(textEditor.getValue(),{compact:true,controlFlowFlattening:true,controlFlowFlatteningThreshold:1,numbersToExpressions:true,simplify:true,stringArrayShuffle:true,splitStrings:true,stringArrayThreshold:1})._obfuscatedCode
+				request("fajssave","name="+dirOperating+fileEditing+"&original="+encodeURIComponent(textEditor.getValue())+"&obfuscate="+encodeURIComponent(obfuscated),function(code){
 					document.getElementById("loadingAnimations").classList.remove("shown");
 					if(code==200){
-					    lastSaveContent=textEditor.getValue()
+						lastSaveContent=textEditor.getValue()
 						document.getElementById("saveBtn").innerText="完成";
 						setTimeout(function(){document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";},700)
 					}else{
@@ -790,183 +775,198 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 						document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";
 					}
 				})
+			}catch(err){
+				alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n"+err+"\n\n请检查代码中是否存在错误~");saveFile(true);
 			}
-		}
-		function setWrap(ele){
-			if(textEditor.getSession().getUseWrapMode()==true){
-				textEditor.getSession().setUseWrapMode(false);
-				ele.innerText="关闭";
-				setTimeout(function(){ele.innerText="换行"},700)
-			}else{
-				textEditor.getSession().setUseWrapMode(true)
-				ele.innerText="启用";
-				setTimeout(function(){ele.innerText="换行"},700)
-			}
-		}
-		function setObfuscate(ele){
-			if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
-				localStorage.setItem("FileAdmin_Settings_Obfuscator","0")
-				ele.innerText="启用混淆"
-			}else{
-				if(confirm("开启Js混淆前，请仔细阅读以下说明：\n\n- Js混淆可有效防止他人窃取您的Js源码\n- Js混淆会使您的Js文件存储占用成倍上涨\n- Js混淆可能会导致部分代码无法运行\n- 您可能难以调试混淆后的Js代码\n- Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件\n- 请务必使用防火墙屏蔽他人对.fajs文件的访问\n- 请勿直接修改、移动或删除.fajs文件\n\n更多说明详见Github项目主页，是否仍要开启Js混淆功能？")){
-					localStorage.setItem("FileAdmin_Settings_Obfuscator","1")
-					ele.innerText="关闭混淆"
+		}else{
+			request("save","name="+dirOperating+fileEditing+"&data="+encodeURIComponent(textEditor.getValue()),function(code){
+				document.getElementById("loadingAnimations").classList.remove("shown");
+				if(code==200){
+					lastSaveContent=textEditor.getValue()
+					document.getElementById("saveBtn").innerText="完成";
+					setTimeout(function(){document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";},700)
+				}else{
+					alert("出现未知错误（＞人＜；）");
+					document.getElementById("saveBtn").innerHTML="保存<contextmenukey>Ctrl + S</contextmenukey>";
 				}
+			})
+		}
+	}
+	function setWrap(ele){
+		if(textEditor.getSession().getUseWrapMode()==true){
+			textEditor.getSession().setUseWrapMode(false);
+			ele.innerText="关闭";
+			setTimeout(function(){ele.innerText="换行"},700)
+		}else{
+			textEditor.getSession().setUseWrapMode(true)
+			ele.innerText="启用";
+			setTimeout(function(){ele.innerText="换行"},700)
+		}
+	}
+	function setObfuscate(ele){
+		if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
+			localStorage.setItem("FileAdmin_Settings_Obfuscator","0")
+			ele.innerText="启用混淆"
+		}else{
+			if(confirm("开启Js混淆前，请仔细阅读以下说明：\n\n- Js混淆可有效防止他人窃取您的Js源码\n- Js混淆会使您的Js文件存储占用成倍上涨\n- Js混淆可能会导致部分代码无法运行\n- 您可能难以调试混淆后的Js代码\n- Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件\n- 请务必使用防火墙屏蔽他人对.fajs文件的访问\n- 请勿直接修改、移动或删除.fajs文件\n\n更多说明详见Github项目主页，是否仍要开启Js混淆功能？")){
+				localStorage.setItem("FileAdmin_Settings_Obfuscator","1")
+				ele.innerText="关闭混淆"
 			}
 		}
-		function reloadEditor(){
-		    if(textEditor.getValue()!=lastSaveContent){
-		        if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}
-		    }else{viewFile(fileEditing,true)}
-		}
+	}
+	function reloadEditor(){
+		if(textEditor.getValue()!=lastSaveContent){
+			if(confirm("您有内容还没有保存哦，确实要刷新嘛？")){viewFile(fileEditing,true)}
+		}else{viewFile(fileEditing,true)}
+	}
 //========================================右键菜单
-		function showContextMenu(){
-			if(navigator.maxTouchPoints==0){
-				hideContextMenu();
-				if(document.querySelector(".menu.shown")){
-					event.preventDefault();
-					let menuElem=document.createElement("contextmenu");
-					menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
-					menuElem.onmousedown=function(){event.stopPropagation();}
-					menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
-					menuElem.style.top=event.clientY+"px";
-					menuElem.style.left=event.clientX+"px";
-					if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-150){menuElem.style.left=event.clientX-150+"px";}
-					document.body.appendChild(menuElem);
-				}
+	function showContextMenu(){
+		if(navigator.maxTouchPoints==0){
+			hideContextMenu();
+			if(document.querySelector(".menu.shown")){
+				event.preventDefault();
+				let menuElem=document.createElement("contextmenu");
+				menuElem.innerHTML=document.querySelector(".menu.shown").innerHTML;
+				menuElem.onmousedown=function(){event.stopPropagation();}
+				menuElem.onclick=function(){event.stopPropagation();hideContextMenu();}
+				menuElem.style.top=event.clientY+"px";
+				menuElem.style.left=event.clientX+"px";
+				if(event.clientX>document.getElementsByTagName("html")[0].clientWidth-150){menuElem.style.left=event.clientX-150+"px";}
+				document.body.appendChild(menuElem);
 			}
 		}
-		function hideContextMenu(){
-			if(document.querySelector("contextmenu")){document.querySelector("contextmenu").remove()}
+	}
+	function hideContextMenu(){
+		if(document.querySelector("contextmenu")){document.querySelector("contextmenu").remove()}
+	}
+	function fileContextMenu(ele){
+		if(fileSelected.length<2){
+			event.stopPropagation();
+			navigator.vibrate([100]);
+			fileSelected=[ele.getAttribute("data-filename")];
+			loadFileSelected();
+			showContextMenu();
+		}else{
+			showContextMenu();
 		}
-		function fileContextMenu(ele){
-			if(fileSelected.length<2){
-				event.stopPropagation();
-				navigator.vibrate([100]);
-				fileSelected=[ele.getAttribute("data-filename")];
-				loadFileSelected();
-				showContextMenu();
-			}else{
-				showContextMenu();
-			}
-		}
+	}
 //========================================重量级文件搜索
-		function startSearch(){
-			showModule("loading")
-			if(document.getElementById("searchMode").value=="1"){
-				request("find_by_name","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
-					searchedArr=JSON.parse(decodeURIComponent(d));
-					searchResultHtml="";
-					searchedArr.forEach(addToSearchResultHtml);
-					showModule("search");showMenu("search")
-					document.getElementById("searchResult").innerHTML=searchResultHtml;
-					if(searchResultHtml==""){document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';}
-				})
-			}else{
-				request("find_by_content","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
-					searchedArr=JSON.parse(decodeURIComponent(d));
-					searchResultHtml="";
-					searchedArr.forEach(addToSearchResultHtml);
-					showModule("search");showMenu("search")
-					document.getElementById("searchResult").innerHTML=searchResultHtml;
-					if(document.getElementById("searchMode").value=="3"){document.getElementById("replaceBtn").style.display="inline-block"}
-					if(searchResultHtml==""){
-						document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';
-						document.getElementById("replaceBtn").style.display="none"
-					}
-				})
-			}
-		}
-		function addToSearchResultHtml(data){
-			fileType=data.split(".")[data.split(".").length-1].toLowerCase();
-			searchResultHtml=searchResultHtml+`<div class="file" data-filename="`+data.replace("//","/")+`" onclick='viewFile("`+data.replace("//","/")+`",true,true)'>
-				`+getFileIco(fileType,false)+`
-				<div class="fileName">`+data.replace("//","/")+`</div>
-			</div>`;
-		}
-		function loadSearchMode(ele){
-			if(ele.value=="3"){
-				document.getElementById("replaceOptnInput").style.display="block"
-				document.getElementById("replaceHidden").style.display="none"
-				document.getElementById("searchCase").value="1"
-			}else{
-				document.getElementById("replaceOptnInput").style.display="none"
-				document.getElementById("replaceBtn").style.display="none"
-				document.getElementById("replaceHidden").style.display="block"
-			}
-		}
-		function startChange(){
-			if(confirm("替换操作具有危险性且不支持撤销，强烈建议执行前仔细核对文件列表并对整个目录打包备份。是否确认要继续 (⊙_⊙)？")){
-				showModule("loading")
-				request("replace","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&replace="+encodeURIComponent(document.getElementById("searchReplaceContent").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
-					alert("在"+d+"个文件中完成了替换操作 (*^▽^*)");
-					openFileFinder();
-				})
-			}
-		}
-//========================================移动端输入面板
-		function mobileInput(ele){
-			textEditor.insert(ele.innerText);
-			textEditor.focus();
-		}
-		function mobileEditorPrevious(){
-			currentLine=textEditor.selection.getCursor().row+1;
-			currentChar=textEditor.selection.getCursor().column;
-			textEditor.gotoLine(currentLine,currentChar-1);
-			textEditor.focus();
-		}
-		function mobileEditorNext(){
-			currentLine=textEditor.selection.getCursor().row+1;
-			currentChar=textEditor.selection.getCursor().column;
-			textEditor.gotoLine(currentLine,currentChar+1);
-			textEditor.focus();
-		}
-//========================================磁盘空间占用
-        function getDiskSpaceInfo(){
-            showModule("loading");
-            request("space","name="+encodeURIComponent(dirOperating),function(c,data,d){
-                if(c==200){
-                    let returnData=d.split("||");
-                    let total=humanSize(returnData[1]/10);
-                    let free=humanSize(returnData[2]/10);
-                    let freepercent=Math.round(returnData[2]/returnData[1]*10000)/100;
-                    let used=humanSize(returnData[3]/10);
-                    let usedpercent=Math.round(returnData[3]/returnData[1]*10000)/100;
-                    let current=humanSize(returnData[4]/10);
-                    let currentpercent=Math.round(returnData[4]/returnData[1]*10000)/100;
-                    if(returnData[1]!=0){alert("空间信息获取成功啦 ( •̀ ω •́ )✧\n\n磁盘空间合计："+total+"\n可用磁盘空间："+free+"（占总空间的"+freepercent+"%）"+"\n已用磁盘空间："+used+"（占总空间的"+usedpercent+"%）"+"\n当前目录占用："+current+"（占总空间的"+currentpercent+"%）");}
-                    else{alert("磁盘总空间获取失败，您使用的环境可能不允许此操作 `(*>﹏<*)′\n当前查看的目录占用"+current+"磁盘空间哦 ( •̀ ω •́ )✧")}
-                    loadFileList(dirOperating,true);
-                }else if(c==1001){alert("您当前查看的目录不存在，可能已经被删除惹 /_ \\")}
-                else{alert("出现未知错误惹 /_ \\");}
-            })
-        }
-//========================================检查更新
-		function chkupd(){
-			showModule("loading")
-			request("chkupd",null,function(c,d,o){
-				if(o=="1001"){alert("您的FileAdmin已是最新版啦~");loadFileList(dirOperating,true)}
-				else if(o=="1002"){alert("获取更新失败，您的服务器网络环境可能无法访问Vercel (；′⌒`)");loadFileList(dirOperating,true)}
-				else{
-					showModule("updinfo");showMenu("updinfo")
-					document.getElementById("updinfo").innerHTML=o;
+	function startSearch(){
+		showModule("loading")
+		if(document.getElementById("searchMode").value=="1"){
+			request("find_by_name","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+				searchedArr=JSON.parse(decodeURIComponent(d));
+				searchResultHtml="";
+				searchedArr.forEach(addToSearchResultHtml);
+				showModule("search");showMenu("search")
+				document.getElementById("searchResult").innerHTML=searchResultHtml;
+				if(searchResultHtml==""){document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';}
+			})
+		}else{
+			request("find_by_content","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&case="+encodeURIComponent(document.getElementById("searchCase").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+				searchedArr=JSON.parse(decodeURIComponent(d));
+				searchResultHtml="";
+				searchedArr.forEach(addToSearchResultHtml);
+				showModule("search");showMenu("search")
+				document.getElementById("searchResult").innerHTML=searchResultHtml;
+				if(document.getElementById("searchMode").value=="3"){document.getElementById("replaceBtn").style.display="inline-block"}
+				if(searchResultHtml==""){
+					document.getElementById("searchResult").innerHTML='<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';
+					document.getElementById("replaceBtn").style.display="none"
 				}
 			})
 		}
-		function applupd(){
-			showModule("loading");
-			request("applyversion",null,function(c){
-				if(c==200){location.reload();}
-				else{alert("更新失败惹..");history.back();showMenu("updinfo")}
+	}
+	function addToSearchResultHtml(data){
+		fileType=data.split(".")[data.split(".").length-1].toLowerCase();
+		searchResultHtml=searchResultHtml+`<div class="file" data-filename="`+data.replace("//","/")+`" onclick='viewFile("`+data.replace("//","/")+`",true,true)'>
+			`+getFileIco(fileType,false)+`
+			<div class="fileName">`+data.replace("//","/")+`</div>
+		</div>`;
+	}
+	function loadSearchMode(ele){
+		if(ele.value=="3"){
+			document.getElementById("replaceOptnInput").style.display="block"
+			document.getElementById("replaceHidden").style.display="none"
+			document.getElementById("searchCase").value="1"
+		}else{
+			document.getElementById("replaceOptnInput").style.display="none"
+			document.getElementById("replaceBtn").style.display="none"
+			document.getElementById("replaceHidden").style.display="block"
+		}
+	}
+	function startChange(){
+		if(confirm("替换操作具有危险性且不支持撤销，强烈建议执行前仔细核对文件列表并对整个目录打包备份。是否确认要继续 (⊙_⊙)？")){
+			showModule("loading")
+			request("replace","type="+encodeURIComponent(document.getElementById("searchType").value)+"&find="+encodeURIComponent(document.getElementById("searchContent").value)+"&replace="+encodeURIComponent(document.getElementById("searchReplaceContent").value)+"&dir="+encodeURIComponent(searchDir),function(c,d){
+				alert("在"+d+"个文件中完成了替换操作 (*^▽^*)");
+				openFileFinder();
 			})
 		}
-//========================================退出登录
-		function logout(){
-			if(confirm("您真的要退出登录嘛？＞﹏＜")){
-				localStorage.setItem("FileAdmin_Password",0);
-				showModule("login");
+	}
+//========================================移动端输入面板
+	function mobileInput(ele){
+		textEditor.insert(ele.innerText);
+		textEditor.focus();
+	}
+	function mobileEditorPrevious(){
+		currentLine=textEditor.selection.getCursor().row+1;
+		currentChar=textEditor.selection.getCursor().column;
+		textEditor.gotoLine(currentLine,currentChar-1);
+		textEditor.focus();
+	}
+	function mobileEditorNext(){
+		currentLine=textEditor.selection.getCursor().row+1;
+		currentChar=textEditor.selection.getCursor().column;
+		textEditor.gotoLine(currentLine,currentChar+1);
+		textEditor.focus();
+	}
+//========================================磁盘空间占用
+	function getDiskSpaceInfo(){
+		showModule("loading");
+		request("space","name="+encodeURIComponent(dirOperating),function(c,data,d){
+			if(c==200){
+				let returnData=d.split("||");
+				let total=humanSize(returnData[1]/10);
+				let free=humanSize(returnData[2]/10);
+				let freepercent=Math.round(returnData[2]/returnData[1]*10000)/100;
+				let used=humanSize(returnData[3]/10);
+				let usedpercent=Math.round(returnData[3]/returnData[1]*10000)/100;
+				let current=humanSize(returnData[4]/10);
+				let currentpercent=Math.round(returnData[4]/returnData[1]*10000)/100;
+				if(returnData[1]!=0){alert("空间信息获取成功啦 ( •̀ ω •́ )✧\n\n磁盘空间合计："+total+"\n可用磁盘空间："+free+"（占总空间的"+freepercent+"%）"+"\n已用磁盘空间："+used+"（占总空间的"+usedpercent+"%）"+"\n当前目录占用："+current+"（占总空间的"+currentpercent+"%）");}
+				else{alert("磁盘总空间获取失败，您使用的环境可能不允许此操作 `(*>﹏<*)′\n当前查看的目录占用"+current+"磁盘空间哦 ( •̀ ω •́ )✧")}
+				loadFileList(dirOperating,true);
+			}else if(c==1001){alert("您当前查看的目录不存在，可能已经被删除惹 /_ \\")}
+			else{alert("出现未知错误惹 /_ \\");}
+		})
+	}
+//========================================检查更新
+	function chkupd(){
+		showModule("loading")
+		request("chkupd",null,function(c,d,o){
+			if(o=="1001"){alert("您的FileAdmin已是最新版啦~");loadFileList(dirOperating,true)}
+			else if(o=="1002"){alert("获取更新失败，您的服务器网络环境可能无法访问Vercel (；′⌒`)");loadFileList(dirOperating,true)}
+			else{
+				showModule("updinfo");showMenu("updinfo")
+				document.getElementById("updinfo").innerHTML=o;
 			}
+		})
+	}
+	function applupd(){
+		showModule("loading");
+		request("applyversion",null,function(c){
+			if(c==200){location.reload();}
+			else{alert("更新失败惹..");history.back();showMenu("updinfo")}
+		})
+	}
+//========================================退出登录
+	function logout(){
+		if(confirm("您真的要退出登录嘛？＞﹏＜")){
+			localStorage.setItem("FileAdmin_Password",0);
+			showModule("login");
 		}
+	}
 //</script><?php }else{ ?>
 <!--
 	SimSoft FileAdmin 前端部分
