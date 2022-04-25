@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.077;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.078;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -221,7 +221,8 @@
 			}
 		}else{echo "1000";}
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="down"){
-		header("Content-Disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
+		header("content-length: ".filesize(".".$_GET["name"]));
+		header("content-disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
 		echo file_get_contents(".".$_GET["name"]);
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="upload"){
 		$destDir=".".$_GET["dir"];
@@ -548,8 +549,12 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	}
 	function getFileIco(type,dir){
 		if(dir){return `<svg style='padding:2px' viewBox="0 0 16 16" version="1.1" class="fileIco" fill="#1e9fff"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>`;}
-		else{if(type=="fajs"){return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="27" width="14" height="8" fill="none" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 27V23C28 21.3431 27 19 24 19C21 19 20 21.3431 20 23V27" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3"" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
-		else{return `<svg class="fileIco" viewBox="0 0 48 48" fill="none"><path d="M10 44H38C39.1046 44 40 43.1046 40 42V14L31 4H10C8.89543 4 8 4.89543 8 6V42C8 43.1046 8.89543 44 10 44Z" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4V14H40" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`}}
+		else if(type=="fajs"){return `<img class="fileIco" src="https://asset.simsoft.top/products/fileadmin/filetype/lock.svg">`;}
+		else if(["html","htm","php","js","css","xml","json","xaml"].indexOf(type)!=-1){return `<img class="fileIco" src="https://asset.simsoft.top/products/fileadmin/filetype/code.svg">`;}
+		else if(["mp3","wav","aac","mid"].indexOf(type)!=-1){return `<img class="fileIco" src="https://asset.simsoft.top/products/fileadmin/filetype/audio.svg">`;}
+		else if(["png","ico","svg","jpg","jpeg","gif","webp"].indexOf(type)!=-1){return `<img class="fileIco" src="https://asset.simsoft.top/products/fileadmin/filetype/image.svg">`;}
+		else if(["txt","md","yml","log","ini"].indexOf(type)!=-1){return `<img class="fileIco" src="https://asset.simsoft.top/products/fileadmin/filetype/text.svg">`;}
+		else{return `<img class="fileIco" src="https://asset.simsoft.top/products/fileadmin/filetype/unknown.svg">`}
 	}
 	function editAddressBar(){
 		let newDir=prompt("请输入想转到的路径 (o゜▽゜)o☆",dirOperating);
@@ -613,7 +618,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 					}
 				}}
 				else if(fileType=="rar"||fileType=="7z"){alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");}
-				else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"){
+				else if(fileType=="jpg"||fileType=="png"||fileType=="jpeg"||fileType=="gif"||fileType=="webp"||fileType=="ico"||fileType=="svg"){
 					showModule("imgviewer");
 					showMenu("imgviewer");
 					imageViewingUrl="?a=down&pwd="+encodeURIComponent(localStorage.getItem("FileAdmin_Password"))+"&name="+encodeURI(dirOperating+fileName);
