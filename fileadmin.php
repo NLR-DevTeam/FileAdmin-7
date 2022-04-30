@@ -305,7 +305,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 #searchOptnArea div input,#searchOptnArea div select{background:white;padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
 #searchOptnArea div input{padding-left:5px;}
 #mobileFastInput{position:fixed;bottom:-90px;height:40px;background:white;text-align:center;z-index:15;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
-@media screen and (min-width:700px) {
+@media screen and (max-width:700px) {
     .mobileInputAdded #mobileFastInput{bottom:0;}
     .mobileInputAdded .menu.shown{bottom:40px}
     .mobileInputAdded .title{display:none}
