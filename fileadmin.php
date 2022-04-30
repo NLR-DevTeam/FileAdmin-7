@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.079;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.081;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -288,8 +288,7 @@ contextmenu button:hover{background:rgba(0,0,0,.05);}
 contextmenu button:active{background:rgba(0,0,0,.1);}
 contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;height:fit-content;margin:auto;display:inline-block;opacity:.5;}
 .imgviewer,.vidviewer{background:transparent;}
-#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;}
-#vidviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:black;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;outline:none;}
+#vidviewer,#imgviewer{width:calc(100% - 10px);height:calc(100vh - 100px);background:white;margin:5px;border:1px solid rgba(0,0,0,.1);border-radius:5px;object-fit:contain;outline:none;}
 .updinfo{margin:10px;padding:10px;}
 #updinfo{padding:10px;}
 .upload{inset:0;margin:auto;height:fit-content;width:340px;padding:10px;border-radius:5px;position:fixed;overflow:hidden;}
@@ -321,14 +320,13 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	60%{transform:translateY(5px)}
 	75%{transform:translateY(0)}
 }
-@media screen and (min-width:700px) {
+@media screen and (min-width:701px) {
 	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
 	.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;}
 	.menu button.big{width:70px}
 	.menu button:hover{background:#f9f9f9}
 	.menu button:active{background:#f0f0f0}
 	.menu.shown{top:8px;}
-	#loadingText{position:fixed;top:0;left:140px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
 @media screen and (max-width:700px) {
 	body{margin-bottom:50px;}
@@ -337,7 +335,6 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	.menu button.big{width:60px}
 	.menu.shown{bottom:0;}
 	#textEditor{height:calc(100% - 90px)}
-	#loadingText{position:fixed;top:0;right:50px;bottom:calc(100% - 40px);margin:auto;z-index:20;height:fit-content;opacity:.5;font-size:.9em;}
 }
 /*</style>*/<?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>//<script>
 /* FileAdmin Javascript */
