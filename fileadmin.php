@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.078;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.079;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -304,7 +304,11 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 #searchOptnArea div span{width:100px;display:inline-block;vertical-align:middle;padding:5px;}
 #searchOptnArea div input,#searchOptnArea div select{background:white;padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
 #searchOptnArea div input{padding-left:5px;}
-#mobileFastInput{position:fixed;top:-90px;bottom:calc(100% - 40px);height:fit-content;background:white;text-align:center;z-index:10;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
+#mobileFastInput{position:fixed;bottom:-90px;height:40px;background:white;text-align:center;z-index:15;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
+.mobileInputAdded #mobileFastInput{bottom:0;}
+.mobileInputAdded .menu.shown{bottom:40px}
+.mobileInputAdded .title{display:none}
+.mobileInputAdded #textEditor{top:10px}
 .mobileInputBtn{display:inline-block;width:calc(100% / 14 - 5px);border-radius:5px;padding:5px 2px;}
 .mobileInputBtn:active{background:#eeeeee;}
 @keyframes loadingDot{
@@ -413,7 +417,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		document.querySelector(".module[data-module^='"+name+"']").classList.add("shown");
 		if(name=="login"){document.getElementById("logoutBtn").style.display="none";}else{document.getElementById("logoutBtn").style.display="block";}
 		if(name!="login"&&name!="files"&&name!="loading"){history.pushState({'mode':'other'},document.title)}
-		if(name!="texteditor"&&name!="loading"){document.getElementById("mobileFastInput").style="";}
+		if(name!="texteditor"&&name!="loading"){document.body.classList.remove("mobileInputAdded");}
 	}
 	function showMenu(name){
 		if(document.querySelector(".menu.shown")){document.querySelector(".menu.shown").classList.remove("shown");}
@@ -638,7 +642,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 							if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
 							else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
 						}else{document.getElementById("obfuscateBtn").style.display="none"}
-						if(navigator.maxTouchPoints>0){document.getElementById("mobileFastInput").style.top="0"}
+						if(navigator.maxTouchPoints>0){document.body.classList.add("mobileInputAdded")}
 						ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
 						textEditor=ace.edit("textEditor");
 						textEditor.setOption("enableLiveAutocompletion",true);
@@ -764,6 +768,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	}
 //========================================文本编辑器
 	function saveFile(forceDisableObfuscator){
+	    textEditor.focus();
 		document.getElementById("saveBtn").innerText="······";
 		document.getElementById("loadingAnimations").classList.add("shown");
 		if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
@@ -1072,8 +1077,8 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			<div class="mobileInputBtn" onclick="mobileInput(this)">)</div>
 			<div class="mobileInputBtn" onclick="mobileInput(this)">%</div>
 			<div class="mobileInputBtn" onclick="mobileInput(this)">/</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">\</div>
 			<div class="mobileInputBtn" onclick="mobileInput(this)">=</div>
+			<div class="mobileInputBtn" onclick="mobileInput(this)">;</div>
 			<div class="mobileInputBtn" onclick="mobileInput(this)">"</div>
 			<div class="mobileInputBtn" onclick="mobileInput(this)">'</div>
 			<div class="mobileInputBtn" onclick="mobileEditorPrevious()">←</div>
