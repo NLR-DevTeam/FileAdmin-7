@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.081;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.082;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -303,14 +303,18 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 #searchOptnArea div span{width:100px;display:inline-block;vertical-align:middle;padding:5px;}
 #searchOptnArea div input,#searchOptnArea div select{background:white;padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
 #searchOptnArea div input{padding-left:5px;}
-#mobileFastInput{position:fixed;bottom:-90px;height:40px;background:white;text-align:center;z-index:15;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
 @media screen and (max-width:700px) {
-    .mobileInputAdded #mobileFastInput{bottom:0;}
-    .mobileInputAdded .menu.shown{bottom:40px}
-    .mobileInputAdded .title{display:none}
-    .mobileInputAdded #textEditor{top:10px}
+	.mobileInputAdded #mobileFastInput{bottom:0;}
+	.mobileInputAdded .menu.shown{bottom:40px}
+	.mobileInputAdded .title{display:none}
+	.mobileInputAdded #textEditor{top:10px}
 }
-.mobileInputBtn{display:inline-block;width:calc(100% / 14 - 5px);border-radius:5px;padding:5px 2px;}
+#mobileFastInput{position:fixed;bottom:-90px;height:40px;background:white;text-align:center;z-index:15;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
+.mobileInputBtn.mode{background:#fafafa}
+.mobileInputBtn{display:inline-block;border-radius:5px;padding:5px 2px;}
+#fastInputHtm .mobileInputBtn{width:calc(100% / 8 - 5px);}
+#fastInputJs .mobileInputBtn{width:calc(100% / 10 - 5px);}
+#fastInputCss .mobileInputBtn{width:calc(100% / 9 - 5px);}
 .mobileInputBtn:active{background:#eeeeee;}
 @keyframes loadingDot{
 	0%{transform:translateY(0px)}
@@ -340,8 +344,19 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 /* FileAdmin Javascript */
 //=========================================初始化
 	window.onload=function(){
-		forwardFromConfirm=false;fileHoverSelecting=false;dirOperating="/";uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":"/"},document.title)});
-		if(navigator.userAgent.indexOf("Chrome")==-1){alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。")}
+		if(location.href.split("#")[1]){
+			newdirn=location.href.split("#")[1];
+			if(newdirn.split("")[0]!="/"){newdirn="/"+newdirn;}
+			if(newdirn.split("")[newdirn.split("").length-1]!="/"){newdirn=newdirn+"/";}
+			dirOperating=newdirn;
+		}else{
+			dirOperating="/";
+		}
+		forwardFromConfirm=false;fileHoverSelecting=false;uploadNotFinished=false;request("check",null,function(){loadFileList(dirOperating,true);history.replaceState({"mode":"fileList","dir":dirOperating},document.title)});
+		if(navigator.userAgent.indexOf("Chrome")==-1 && !localStorage.getItem("FileAdmin_Settings_BrowserAlert")){
+			alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。");
+			localStorage.setItem("FileAdmin_Settings_BrowserAlert","0");
+		}
 		document.getElementById("passwordManagerUsername").value="FileAdmin（"+location.host+"）";
 		moveOrCopyMode=null;
 		fetch("?a=ver").then(function(d){return d.text()}).then(function(d){
@@ -352,7 +367,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				if(document.querySelector(".texteditor.shown")){if(textEditor.getValue()!=lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")){forwardFromConfirm=true;history.forward();return;}}
 				if(document.querySelector(".upload.shown")&&uploadNotFinished){history.forward()}else{
 					let state=event.state;
-					if(state.mode){
+					if(state&&state.mode){
 						let mode=state.mode;
 						if(mode=="fileList"){dirOperating=state.dir;loadFileList(dirOperating,true)}else{
 							history.back();
@@ -536,7 +551,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			showModule("files");
 			showMenu("files-noselect");
 		})
-		if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title)}
+		if(!fromState){history.pushState({"mode":"fileList","dir":dir},document.title,"#"+dirOperating)}
 		if(window.offsetBeforeEditing){setTimeout(function(){scrollTo(0,offsetBeforeEditing);offsetBeforeEditing=null;},580);}
 	}
 	function addToFileListHtml(data){
@@ -767,7 +782,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	}
 //========================================文本编辑器
 	function saveFile(forceDisableObfuscator){
-	    textEditor.focus();
+		textEditor.focus();
 		document.getElementById("saveBtn").innerText="······";
 		document.getElementById("loadingAnimations").classList.add("shown");
 		if(!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length-1].toLowerCase()=="js" && localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){
@@ -930,6 +945,12 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		textEditor.gotoLine(currentLine,currentChar+1);
 		textEditor.focus();
 	}
+	function changeMobileInputMode(id){
+		document.getElementById("fastInputHtm").style.display="none";
+		document.getElementById("fastInputCss").style.display="none";
+		document.getElementById("fastInputJs").style.display="none";
+		document.getElementById("fastInput"+id).style.display="block";
+	}
 //========================================磁盘空间占用
 	function getDiskSpaceInfo(){
 		showModule("loading");
@@ -993,7 +1014,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	<body>
 		<div class="title">
 			<div class="appName" onclick="chkupd()">File<b>Admin</b><div id="versionNote">正在获取</div></div>
-			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="3"8" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
 		<div class="module loading shown" data-module="loading" id="loadingAnimations">
 			<div class="loadingAnimation">
@@ -1068,20 +1089,39 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 			<div id="textEditor"></div>
 		</div>
 		<div id="mobileFastInput">
-			<div class="mobileInputBtn" onclick="mobileInput(this)"><</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">></div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">{</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">}</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">(</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">)</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">%</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">/</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">=</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">;</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">"</div>
-			<div class="mobileInputBtn" onclick="mobileInput(this)">'</div>
-			<div class="mobileInputBtn" onclick="mobileEditorPrevious()">←</div>
-			<div class="mobileInputBtn" onclick="mobileEditorNext()">→</div>
+			<div id="fastInputHtm">
+				<div class="mobileInputBtn" onclick="mobileInput(this)"><</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">></div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">"</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">'</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">=</div>
+				<div class="mobileInputBtn" onclick="mobileEditorPrevious()">←</div>
+				<div class="mobileInputBtn" onclick="mobileEditorNext()">→</div>
+				<div class="mobileInputBtn mode" onclick="changeMobileInputMode('Js')">HTM</div>
+			</div>
+			<div id="fastInputJs" style="display:none">
+				<div class="mobileInputBtn" onclick="mobileInput(this)">{</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">}</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">(</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">)</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">\</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">;</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">=</div>
+				<div class="mobileInputBtn" onclick="mobileEditorPrevious()">←</div>
+				<div class="mobileInputBtn" onclick="mobileEditorNext()">→</div>
+				<div class="mobileInputBtn mode" onclick="changeMobileInputMode('Css')">JS</div>
+			</div>
+			<div id="fastInputCss" style="display:none">
+				<div class="mobileInputBtn" onclick="mobileInput(this)">{</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">}</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">#</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">%</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">:</div>
+				<div class="mobileInputBtn" onclick="mobileInput(this)">;</div>
+				<div class="mobileInputBtn" onclick="mobileEditorPrevious()">←</div>
+				<div class="mobileInputBtn" onclick="mobileEditorNext()">→</div>
+				<div class="mobileInputBtn mode" onclick="changeMobileInputMode('Htm')">CSS</div>
+			</div>
 		</div>
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate(this)" id="obfuscateBtn" class="big"></button>
