@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.082;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.083;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -615,11 +615,21 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 				loadFileList(dirOperating);
 			}else{
 				textMode=null;
-				if(fileType=="html"||fileType=="htm"||fileType=="txt"){textMode="html";}
+				if(fileType=="html"||fileType=="htm"||fileType=="txt"){
+					textMode="html";
+					document.getElementById("fastInputHtm").style.display="block";
+					document.getElementById("fastInputCss").style.display="none";
+					document.getElementById("fastInputJs").style.display="none";
+				}
 				else if(fileType=="php"){textMode="php";}
 				else if(fileType=="json"){textMode="json";}
 				else if(fileType=="js"){textMode="javascript";}
-				else if(fileType=="css"){textMode="css";}
+				else if(fileType=="css"){
+					textMode="css";
+					document.getElementById("fastInputHtm").style.display="none";
+					document.getElementById("fastInputCss").style.display="block";
+					document.getElementById("fastInputJs").style.display="none";
+				}
 				else if(fileType=="xml"||fileType=="yml"||fileType=="xaml"){textMode="xml";}
 				else if(fileType=="zip"){if(confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")){
 					let destDir=prompt("要解压到哪个目录捏 (*^▽^*)",dirOperating);
@@ -655,6 +665,9 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 							document.getElementById("obfuscateBtn").style.display="inline-block";
 							if(localStorage.getItem("FileAdmin_Settings_Obfuscator")=="1"){document.getElementById("obfuscateBtn").innerText="关闭混淆"}
 							else{document.getElementById("obfuscateBtn").innerText="启用混淆"}
+							document.getElementById("fastInputHtm").style.display="none";
+							document.getElementById("fastInputCss").style.display="none";
+							document.getElementById("fastInputJs").style.display="block";
 						}else{document.getElementById("obfuscateBtn").style.display="none"}
 						if(navigator.maxTouchPoints>0){document.body.classList.add("mobileInputAdded")}
 						ace.config.set('basePath','https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/')
@@ -950,6 +963,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 		document.getElementById("fastInputCss").style.display="none";
 		document.getElementById("fastInputJs").style.display="none";
 		document.getElementById("fastInput"+id).style.display="block";
+		textEditor.focus();
 	}
 //========================================磁盘空间占用
 	function getDiskSpaceInfo(){
