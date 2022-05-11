@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.085;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=6.084;
 
 	/* SimSoft FileAdmin	   © SimSoft, All rights reserved. */
 	/*请勿将包含此处的截图发给他人，否则其将可以登录FileAdmin！*/
@@ -268,8 +268,6 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file,#searchResult .file{padding:10px;text-align:center;}
 #fileList .file:hover,#searchResult .file:hover{background:rgba(0,0,0,.09);}
 #fileList .file:active,#searchResult .file:active{background:rgba(0,0,0,.12)}
-#fileList .file{transform:translateX(-5px);opacity:0;transition:transform .2s,opacity .2s;}
-#fileList .file.fadein{transform:none;opacity:1;}
 .file .fileIco{display:inline-block;margin-right:5px;width:23px;height:23px;vertical-align:middle}
 .file.selected[data-isdir^=true] .fileIco{fill:black;}
 .file.selected .fileIco{filter:invert(1)}
@@ -551,7 +549,6 @@ contextmenu #saveMenuText{display:none}
 				if(fileListHtml==""){
 					ID("fileList").innerHTML="<center>请求的目录为空 ヽ(*。>Д<)o゜</center>"
 				}
-				showListAnimation(1);
 			}else if(code=="1001"){ID("fileList").innerHTML="<center>请求的目录不存在捏 (ノへ￣、)</center>"}
 			else if(code="1002"){ID("fileList").innerHTML="<center>目录名称格式有误 (ﾟДﾟ*)ﾉ</center>"}
 			showModule("files");
@@ -570,13 +567,6 @@ contextmenu #saveMenuText{display:none}
 				<div class="size">`+humanSize(data.size*102.4)+`</div>
 			</div>`;
 		}
-	}
-	function showListAnimation(id){
-	    let elem=$('.file:nth-child('+id+')');
-	    if(elem){
-	        elem.classList.add('fadein');
-	        setTimeout(function(){showListAnimation(id+1)},30)
-	    }
 	}
 	function getFileIco(type,dir){
 		if(dir){return `<svg style='padding:2px' viewBox="0 0 16 16" version="1.1" class="fileIco" fill="#1e9fff"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>`;}
