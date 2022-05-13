@@ -1,7 +1,7 @@
 <?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.01;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
-
+	
 	/* 设置不进行报错以免影响运行 */
 	error_reporting(0);
 	
@@ -428,6 +428,11 @@ contextmenu #saveMenuText{display:none}
 /* </style> */
 <?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>
 /* <script> */
+
+
+
+/* ==================== 初始化+部分公用函数实现 ==================== */
+
 /* 加载时进行初始化 */
 window.onload = function() {
 
@@ -532,7 +537,7 @@ window.onkeydown = function() {
 		if ($(".texteditor.shown")) {
 			history.back();/* 退出文本编辑器 */
 		} else if ($(".files.shown")) {
-			previousDir();/* 上级目录 */
+			history.back(-1);/* 上级目录 */
 		}
 	} else if (event.ctrlKey == true && event.keyCode == 65) {
 		if ($(".files.shown")) {
@@ -643,6 +648,7 @@ function hideMenu() {
 	}
 }
 
+/* 文件体积格式化 */
 function humanSize(num) {
 	bytes = num / 102.4;
 	if (bytes == 0) {
@@ -652,20 +658,28 @@ function humanSize(num) {
 	return (bytes / Math.pow(1024, e)).toFixed(2) + 'KMGTP'.charAt(e) + 'B';
 }
 
+/* getElementById简写 */
 function ID(id) {
 	return document.getElementById(id);
 }
 
+/* querySelector简写 */
 function $(selector) {
 	return document.querySelector(selector);
 }
 
+
+
+/* ==================== 登录部分 ==================== */
+
+/* 监听登录框键盘动作，如果按下了enter就执行登录 */
 function loginCheckEnter(eve) {
 	if (eve.keyCode == 13) {
 		login()
 	}
 }
 
+/* 登录函数 */
 function login() {
 	showModule("loading");
 	request("login", "loginPwd=" + ID("loginPassword").value, function(code, msg) {
@@ -683,6 +697,19 @@ function login() {
 	})
 }
 
+/* 右上角退登按钮 */
+function logout() {
+	if (confirm("您真的要退出登录嘛？＞﹏＜")) {
+		localStorage.setItem("FileAdmin_Password", 0);
+		showModule("login");
+	}
+}
+
+
+
+/* ==================== 上传文件 ==================== */
+
+/* 上传文件输入框改变后进行处理 */
 function addFilesToUploads(ele) {
 	waitingToUpload = [];
 	waitingToUploadCount = 0;
@@ -692,6 +719,8 @@ function addFilesToUploads(ele) {
 	ele.value = '';
 	uploadNotFinished = true;
 }
+
+/* 当检测到粘贴事件后将剪切板内容添加到上传列表（即ctrl+v上传）的实现 */
 document.addEventListener('paste', function(event) {
 	if ($(".files.shown") && !moveOrCopyMode) {
 		var items = event.clipboardData && event.clipboardData.items;
@@ -712,6 +741,7 @@ document.addEventListener('paste', function(event) {
 	}
 });
 
+/* 将【文件】添加到待上传Array的函数 */
 function addFileToUploadArr(file) {
 	waitingToUpload.push({
 		"file": file,
@@ -720,6 +750,7 @@ function addFileToUploadArr(file) {
 	waitingToUploadCount++;
 }
 
+/* 目录上传输入框内容变化处理 */
 function addDirToUploads(ele) {
 	waitingToUpload = [];
 	waitingToUploadCount = 0;
@@ -729,6 +760,7 @@ function addDirToUploads(ele) {
 	ele.value = '';
 }
 
+/* 将【目录】添加到待上传Array的函数 */
 function addDirToUploadArr(file) {
 	let relativeDir = file.webkitRelativePath.split("/").slice(0, file.webkitRelativePath.split("/").length - 1).join("/") + "/";
 	waitingToUpload.push({
@@ -738,6 +770,7 @@ function addDirToUploadArr(file) {
 	waitingToUploadCount++;
 }
 
+/* 从待上传Array中的第id个文件发送上传请求的函数 */
 function uploadFileFromList(id) {
 	lastUploadTime = new Date().getTime();
 	lastUploadProgress = 0;
@@ -781,6 +814,40 @@ function uploadFileFromList(id) {
 	}
 }
 
+
+
+
+/* ==================== 文件浏览器主体部分 ==================== */
+
+/* 获取当前目录的占用信息 */
+function getDiskSpaceInfo() {
+	showModule("loading");
+	request("space", "name=" + encodeURIComponent(dirOperating), function(c, data, d) {
+		if (c == 200) {
+			let returnData = d.split("||");
+			let total = humanSize(returnData[1] / 10);
+			let free = humanSize(returnData[2] / 10);
+			let freepercent = Math.round(returnData[2] / returnData[1] * 10000) / 100;
+			let used = humanSize(returnData[3] / 10);
+			let usedpercent = Math.round(returnData[3] / returnData[1] * 10000) / 100;
+			let current = humanSize(returnData[4] / 10);
+			let currentpercent = Math.round(returnData[4] / returnData[1] * 10000) / 100;
+			if (returnData[1] != 0) {
+				alert("空间信息获取成功啦 ( •̀ ω •́ )✧\n\n磁盘空间合计：" + total + "\n可用磁盘空间：" + free + "（占总空间的" + freepercent + "%）" + "\n已用磁盘空间：" + used + "（占总空间的" + usedpercent + "%）" + "\n当前目录占用：" + current + "（占总空间的" + currentpercent + "%）");
+			} else {
+			    /* 某些环境（比如kangle虚拟主机）没法获取总空间，这里进行错误处理 */
+				alert("磁盘总空间获取失败，您使用的环境可能不允许此操作 `(*>﹏<*)′\n当前查看的目录占用" + current + "磁盘空间哦 ( •̀ ω •́ )✧")
+			}
+			loadFileList(dirOperating, true);
+		} else if (c == 1001) {
+			alert("您当前查看的目录不存在，可能已经被删除惹 /_ \\")
+		} else {
+			alert("出现未知错误惹 /_ \\");
+		}
+	})
+}
+
+/* 从服务器获取文件列表并显示 */
 function loadFileList(dir, fromState) {
 	fileSelected = [];
 	ID("addressBar").innerText = "根目录" + dir.replaceAll("/", " / ");
@@ -817,15 +884,16 @@ function loadFileList(dir, fromState) {
 	}
 }
 
+/* 用于forEach时将每个文件添加到文件列表的html中 */
 function addToFileListHtml(data) {
 	if (data.name != "." && data.name != "..") {
 		fileType = data.name.split(".")[data.name.split(".").length - 1].toLowerCase();
 		fileListOperating.push(data.name);
-		fileListHtml = fileListHtml + `<div class="file" onmouseover="hoverSelect(this)" data-isdir=` + data.dir + ` data-filename="` + data.name + `" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">` + getFileIco(fileType, data.dir) + ` <div class="fileName">` + data.name + `</div> <div class="size">` + humanSize(data.size * 102.4) + `</div>
-			</div>`;
+		fileListHtml = fileListHtml + `<div class="file" onmouseover="hoverSelect(this)" data-isdir=` + data.dir + ` data-filename="` + data.name + `" onclick="viewFile(this)" oncontextmenu="fileContextMenu(this)">` + getFileIco(fileType, data.dir) + ` <div class="fileName">` + data.name + `</div> <div class="size">` + humanSize(data.size * 102.4) + `</div></div>`;
 	}
 }
 
+/* 用于按照文件类型获取文件图标的html，在搜索文件的列表显示中也用到这个 */
 function getFileIco(type, dir) {
 	if (dir) {
 		return `<svg style='padding:2px' viewBox="0 0 16 16" version="1.1" class="fileIco" fill="#1e9fff"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>`;
@@ -844,6 +912,7 @@ function getFileIco(type, dir) {
 	}
 }
 
+/* 用于编辑文件地址栏（文件列表顶部的那个）的函数 */
 function editAddressBar() {
 	let newDir = prompt("请输入想转到的路径 (o゜▽゜)o☆", dirOperating);
 	if (newDir) {
@@ -858,6 +927,7 @@ function editAddressBar() {
 	}
 }
 
+/* 当鼠标在文件列表开始拖动时，开始进行快速多选操作 */
 function startHoverSelect(ele) {
 	if (event.target.getAttribute("data-filename")) {
 		fileName = event.target.getAttribute("data-filename")
@@ -871,6 +941,7 @@ function startHoverSelect(ele) {
 	}
 }
 
+/* 当鼠标经过文件列表上方即触发，如果此时正在进行快速多选，则选中鼠标经过的文件，否则啥也不干 */
 function hoverSelect(ele) {
 	fileName = ele.getAttribute("data-filename");
 	if (fileHoverSelecting) {
@@ -886,7 +957,9 @@ function hoverSelect(ele) {
 	}
 }
 
+/* 处理点击文件后打开文件及选择的操作 */
 function viewFile(ele, byname, restoreDirOperating) {
+    /* byname就是直接按照文件名打开文件，如果byname是true，则ele应该是一个字符串代表文件名；如果byname是false那就是从输入的元素获取相关信息，ele就是一个html元素 */
 	if (!byname) {
 		fileIsDir = ele.getAttribute("data-isdir");
 		fileName = ele.getAttribute("data-filename");
@@ -894,6 +967,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 		fileIsDir = false;
 		fileName = ele;
 	}
+	/* 判断一下有没有文件选中，如果选中了文件，则点击操作变为选中或取消选中文件，否则就是打开文件 */
 	if (fileSelected.length == 0) {
 		offsetBeforeEditing = pageYOffset;
 		fileType = fileName.split(".")[fileName.split(".").length - 1].toLowerCase();
@@ -902,9 +976,11 @@ function viewFile(ele, byname, restoreDirOperating) {
 			dirOperating = dirOperating + fileName + "/";
 			loadFileList(dirOperating);
 		} else {
+		    /* 这里根据不同的文件类型选择不同的textType，这个type是直接用于选择ace编辑器编辑模式的；如果到最后textType还是null，而且不能用其他查看器打开文件，则会提示fa打不开此文件 */
 			textMode = null;
 			if (fileType == "html" || fileType == "htm" || fileType == "txt") {
 				textMode = "html";
+				/* 这个fastinput是移动端下方出现的快速输入按钮，电脑端看不到这东西；下方代码也同理 */
 				ID("fastInputHtm").style.display = "block";
 				ID("fastInputCss").style.display = "none";
 				ID("fastInputJs").style.display = "none";
@@ -922,6 +998,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 			} else if (fileType == "xml" || fileType == "yml" || fileType == "xaml") {
 				textMode = "xml";
 			} else if (fileType == "zip") {
+			    /* 如果是zip文件则执行解包逻辑 */
 				if (confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")) {
 					let destDir = prompt("要解压到哪个目录捏 (*^▽^*)", dirOperating);
 					if (destDir) {
@@ -947,24 +1024,29 @@ function viewFile(ele, byname, restoreDirOperating) {
 					}
 				}
 			} else if (fileType == "rar" || fileType == "7z") {
+			    /* rar和7z不会写，如果有人有现成轮子也可以提交个issue */
 				alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");
 			} else if (fileType == "jpg" || fileType == "png" || fileType == "jpeg" || fileType == "gif" || fileType == "webp" || fileType == "ico" || fileType == "svg") {
+			    /* 图片查看器 */
 				showModule("imgviewer");
 				showMenu("imgviewer");
 				imageViewingUrl = "?a=down&pwd=" + encodeURIComponent(localStorage.getItem("FileAdmin_Password")) + "&name=" + encodeURI(dirOperating + fileName);
 				ID("imgviewer").src = imageViewingUrl;
 			} else if (fileType == "mp4" || fileType == "webm" || fileType == "mp3") {
+			    /* 音视频预览器，反正音视频通用<video>就偷懒了 */
 				showModule("vidviewer");
 				showMenu("vidviewer");
 				vidViewingUrl = "?a=down&pwd=" + encodeURIComponent(localStorage.getItem("FileAdmin_Password")) + "&name=" + encodeURI(dirOperating + fileName);
 				ID("vidviewer").src = vidViewingUrl;
 			} else if (fileType == "fajs") {
+			    /* 直接打开.fajs以后保存文件会出问题，生成xxx.fajs.fajs文件，所以不让打开 */
 				alert("您不能直接打开.fajs文件，请打开同名的.js文件哦~")
 			} else {
 				if (confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")) {
 					textMode = "html"
 				}
 			}
+			/* 如果有textMode则使用文本编辑器 */
 			if (textMode) {
 				showModule("loading");
 				request("getfile", "name=" + dirOperating + fileName, function(c, d, file) {
@@ -984,6 +1066,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 					if (navigator.maxTouchPoints > 0) {
 						document.body.classList.add("mobileInputAdded")
 					}
+					/* 进行一些ace的相关配置 */
 					ace.config.set('basePath', 'https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/');
 					textEditor = ace.edit("textEditor");
 					textEditor.setOption("enableLiveAutocompletion", true);
@@ -992,8 +1075,10 @@ function viewFile(ele, byname, restoreDirOperating) {
 					textEditor.gotoLine(1);
 					textEditor.setShowPrintMargin(false);
 					textEditor.session.setMode("ace/mode/" + textMode);
+					/* 显示texteditor的菜单和主体 */
 					showModule("texteditor");
 					showMenu("texteditor");
+					/* 更改页面标题方便用户区分窗口 */
 					document.title = fileName + " | FileAdmin";
 					lastSaveContent = textEditor.getValue();
 				});
@@ -1013,14 +1098,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 	}
 }
 
-function previousDir() {
-	history.back(-1)
-}
-
-function arrToDir(item) {
-	dirName += item + "/"
-}
-
+/* 根据没选文件、选一个文件、选一堆文件显示不同的功能菜单 */
 function loadFileMenu() {
 	if ($(".files.shown")) {
 		if (fileSelected.length == 0) {
@@ -1038,11 +1116,13 @@ function loadFileMenu() {
 	}
 }
 
+/* 加载选择的文件列表 */
 function loadFileSelected() {
 	Array.prototype.slice.call(document.getElementsByClassName("file")).forEach(checkFileSelected);
 	loadFileMenu();
 }
 
+/* 如果输入的ele代表的文件被选中了，则给他classList添加被选中，否则移除 */
 function checkFileSelected(ele) {
 	if (fileSelected.indexOf(ele.getAttribute("data-filename")) == -1) {
 		ele.classList.remove("selected")
@@ -1051,6 +1131,7 @@ function checkFileSelected(ele) {
 	}
 }
 
+/* 打包目录 */
 function zipCurrentDir() {
 	if (confirm("您确实想将当前目录打包为Zip文件嘛 (⊙_⊙)？\nTip: 部分环境可能不支持此功能")) {
 		showModule("loading");
@@ -1063,6 +1144,7 @@ function zipCurrentDir() {
 	}
 }
 
+/* 创建文件 */
 function newFile() {
 	let filename = prompt("📄 请输入新文件名称 (●'◡'●)");
 	if (filename) {
@@ -1077,6 +1159,7 @@ function newFile() {
 	}
 }
 
+/* 创建目录 */
 function newDir() {
 	let filename = prompt("📂 请输入新目录名称 (●'◡'●)");
 	if (filename) {
@@ -1091,6 +1174,7 @@ function newDir() {
 	}
 }
 
+/* 打开文件搜索界面 */
 function openFileFinder() {
 	ID("searchAddrBar").innerText = "当前查找目录：" + ID("addressBar").innerText;
 	showModule("search");
@@ -1099,6 +1183,7 @@ function openFileFinder() {
 	ID("replaceBtn").style.display = "none";
 }
 
+/* 重命名文件 */
 function renameFile() {
 	let newName = prompt("请输入文件的新名称(*^▽^*)", fileSelected[0]);
 	if (newName) {
@@ -1118,6 +1203,7 @@ function renameFile() {
 	}
 }
 
+/* 下载文件（只支持一个文件，多的用户要先打包再下载） */
 function downCurrFile() {
 	if ($(".file.selected").getAttribute("data-isdir") == "true") {
 		alert("不支持直接下载文件夹捏..")
@@ -1127,6 +1213,7 @@ function downCurrFile() {
 	}
 }
 
+/* 删除 */
 function delFile() {
 	let fileDelStr = JSON.stringify(fileSelected);
 	if (confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")) {
@@ -1137,6 +1224,7 @@ function delFile() {
 	}
 }
 
+/* “剪切”按钮处理，记录等会要进行的操作是剪切，以及要剪切的文件是哪些 */
 function setMoveFiles() {
 	moveOrCopyMode = "move";
 	moveOrCopyFromDir = dirOperating;
@@ -1145,6 +1233,7 @@ function setMoveFiles() {
 	loadFileSelected();
 }
 
+/* “复制”按钮处理，记录等会要进行的操作是复制，以及要复制的文件是哪些 */
 function setCopyFiles() {
 	moveOrCopyMode = "copy";
 	moveOrCopyFromDir = dirOperating;
@@ -1153,6 +1242,7 @@ function setCopyFiles() {
 	loadFileSelected();
 }
 
+/* 粘贴文件时post 要进行的操作&要对他进行操作的文件&目标目录 给服务器进行处理 */
 function filePaste() {
 	if (moveOrCopyMode) {
 		showModule("loading");
@@ -1164,6 +1254,12 @@ function filePaste() {
 	}
 }
 
+
+
+
+/* ==================== 文本编辑器部分 ==================== */
+
+/* 保存文件 */
 function saveFile(forceDisableObfuscator) {
 	textEditor.focus();
 	ID("saveMenuText").innerText = "······";
@@ -1214,6 +1310,7 @@ function saveFile(forceDisableObfuscator) {
 	}
 }
 
+/* 设置自动换行方式 */
 function setWrap(ele) {
 	if (textEditor.getSession().getUseWrapMode() == true) {
 		textEditor.getSession().setUseWrapMode(false);
@@ -1230,6 +1327,7 @@ function setWrap(ele) {
 	}
 }
 
+/* 设置js是否进行混淆 */
 function setObfuscate() {
 	if (localStorage.getItem("FileAdmin_Settings_Obfuscator") == "1") {
 		localStorage.setItem("FileAdmin_Settings_Obfuscator", "0");
@@ -1242,6 +1340,7 @@ function setObfuscate() {
 	}
 }
 
+/* 重载编辑器和文件 */
 function reloadEditor() {
 	if (textEditor.getValue() != lastSaveContent) {
 		if (confirm("您有内容还没有保存哦，确实要刷新嘛？")) {
@@ -1252,6 +1351,11 @@ function reloadEditor() {
 	}
 }
 
+
+
+/* ==================== PC右键菜单 ==================== */
+
+/* 显示右键菜单 */
 function showContextMenu() {
 	if (navigator.maxTouchPoints == 0) {
 		hideContextMenu();
@@ -1276,12 +1380,14 @@ function showContextMenu() {
 	}
 }
 
+/* 隐藏右键菜单 */
 function hideContextMenu() {
 	if ($("contextmenu")) {
 		$("contextmenu").remove()
 	}
 }
 
+/* 在文件列表右键的事件处理 根据选择文件数判断只弹菜单还是选中+弹菜单 */
 function fileContextMenu(ele) {
 	if (fileSelected.length < 2) {
 		event.stopPropagation();
@@ -1294,6 +1400,12 @@ function fileContextMenu(ele) {
 	}
 }
 
+
+
+
+/* ==================== 搜索器部分 ==================== */
+
+/* post搜索文件请求 */
 function startSearch() {
 	showModule("loading");
 	if (ID("searchMode").value == "1") {
@@ -1327,11 +1439,13 @@ function startSearch() {
 	}
 }
 
+/* 将搜到的东西添加到搜索结果html中 */
 function addToSearchResultHtml(data) {
 	fileType = data.split(".")[data.split(".").length - 1].toLowerCase();
 	searchResultHtml = searchResultHtml + `<div class="file" data-filename="` + data.replace("//", "/") + `" onclick='viewFile("` + data.replace("//", "/") + `",true,true)'>` + getFileIco(fileType, false) + `	<div class="fileName">` + data.replace("//", "/") + `</div>	</div>`;
 }
 
+/* 根据不同的搜索模式显示不同的功能 */
 function loadSearchMode(ele) {
 	if (ele.value == "3") {
 		ID("replaceOptnInput").style.display = "block";
@@ -1344,6 +1458,7 @@ function loadSearchMode(ele) {
 	}
 }
 
+/* 在点击替换时显示警告后发送请求 */
 function startChange() {
 	if (confirm("替换操作具有危险性且不支持撤销，强烈建议执行前仔细核对文件列表并对整个目录打包备份。是否确认要继续 (⊙_⊙)？")) {
 		showModule("loading");
@@ -1354,11 +1469,17 @@ function startChange() {
 	}
 }
 
+
+
+/* ==================== 移动端符号输入器 ==================== */
+
+/* 移动输入器点击后插入相应文本 */
 function mobileInput(ele) {
 	textEditor.insert(ele.innerText);
 	textEditor.focus();
 }
 
+/* 输入器前箭头按钮处理 */
 function mobileEditorPrevious() {
 	currentLine = textEditor.selection.getCursor().row + 1;
 	currentChar = textEditor.selection.getCursor().column;
@@ -1366,6 +1487,7 @@ function mobileEditorPrevious() {
 	textEditor.focus();
 }
 
+/* 输入器后箭头按钮处理 */
 function mobileEditorNext() {
 	currentLine = textEditor.selection.getCursor().row + 1;
 	currentChar = textEditor.selection.getCursor().column;
@@ -1373,6 +1495,7 @@ function mobileEditorNext() {
 	textEditor.focus();
 }
 
+/* 输入器切换语言模式 */
 function changeMobileInputMode(id) {
 	ID("fastInputHtm").style.display = "none";
 	ID("fastInputCss").style.display = "none";
@@ -1381,32 +1504,11 @@ function changeMobileInputMode(id) {
 	textEditor.focus();
 }
 
-function getDiskSpaceInfo() {
-	showModule("loading");
-	request("space", "name=" + encodeURIComponent(dirOperating), function(c, data, d) {
-		if (c == 200) {
-			let returnData = d.split("||");
-			let total = humanSize(returnData[1] / 10);
-			let free = humanSize(returnData[2] / 10);
-			let freepercent = Math.round(returnData[2] / returnData[1] * 10000) / 100;
-			let used = humanSize(returnData[3] / 10);
-			let usedpercent = Math.round(returnData[3] / returnData[1] * 10000) / 100;
-			let current = humanSize(returnData[4] / 10);
-			let currentpercent = Math.round(returnData[4] / returnData[1] * 10000) / 100;
-			if (returnData[1] != 0) {
-				alert("空间信息获取成功啦 ( •̀ ω •́ )✧\n\n磁盘空间合计：" + total + "\n可用磁盘空间：" + free + "（占总空间的" + freepercent + "%）" + "\n已用磁盘空间：" + used + "（占总空间的" + usedpercent + "%）" + "\n当前目录占用：" + current + "（占总空间的" + currentpercent + "%）");
-			} else {
-				alert("磁盘总空间获取失败，您使用的环境可能不允许此操作 `(*>﹏<*)′\n当前查看的目录占用" + current + "磁盘空间哦 ( •̀ ω •́ )✧")
-			}
-			loadFileList(dirOperating, true);
-		} else if (c == 1001) {
-			alert("您当前查看的目录不存在，可能已经被删除惹 /_ \\")
-		} else {
-			alert("出现未知错误惹 /_ \\");
-		}
-	})
-}
 
+
+/* ==================== 本体更新 ==================== */
+
+/* 检查更新 */
 function chkupd() {
 	showModule("loading");
 	request("chkupd", null, function(c, d, o) {
@@ -1424,6 +1526,7 @@ function chkupd() {
 	})
 }
 
+/* 应用更新 */
 function applupd() {
 	showModule("loading");
 	request("applyversion", null, function(c) {
@@ -1437,12 +1540,6 @@ function applupd() {
 	})
 }
 
-function logout() {
-	if (confirm("您真的要退出登录嘛？＞﹏＜")) {
-		localStorage.setItem("FileAdmin_Password", 0);
-		showModule("login");
-	}
-}
 //</script><?php }else{ ?>
 <!DOCTYPE html>
 <html onmousedown="hideContextMenu()" oncontextmenu="showContextMenu()" onclick="if(!fileHoverSelecting){fileSelected=[];loadFileSelected();}" onmouseup="setTimeout(function(){fileHoverSelecting=false;},50)">
@@ -1474,7 +1571,7 @@ function logout() {
 		
 		<!--文件列表页-->
 		<div class="module files" data-module="files">
-			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="回退" onclick="previousDir()"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
+			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="回退" onclick="history.back(-1)"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
 			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){startHoverSelect(this)}"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
