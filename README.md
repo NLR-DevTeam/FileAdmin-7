@@ -70,7 +70,7 @@ FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者
 - 介绍：https://www.bilibili.com/video/BV1XZ4y1m7WK
 - 捐赠：https://yanji.pro/#donate
 
-## 版本(即将上线)
+## 版本
 
 FileAdmin 目前共有三个版本开放安装。
 - 安装版：旨在使您获得最小化的代码体积。[ [点击下载](https://api.simsoft.top/fileadmin/download/) ]
