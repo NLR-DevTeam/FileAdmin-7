@@ -12,7 +12,7 @@
 实测兼容多数宝塔分销虚拟主机及Kangle虚拟主机，部分没有真实文件系统的特殊环境可能无法运行。
 
 ## 安装
-- 从Github存储库直接下载fileadmin.php。
+- 从[氢软API](https:///api.simsoft.top/fileadmin/download/)直接下载FileAdmin安装版。**您也可以下载安装版之外的其他版本，详见本文“版本”章节**
 - 到你的主机直接上传刚才下载的fileadmin.php。
 - 如果认为原文件名不安全，您可以对此文件进行重命名。尽量将其安装在您的网站根目录。
 - **[重要]打开此文件，在第一行修改$PASSWORD变量，输入您自己设定的密码。不更改此处设置会导致他人可以随意查看并修改您的文件，非常危险。**
@@ -70,6 +70,14 @@ FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者
 - 介绍：https://www.bilibili.com/video/BV1XZ4y1m7WK
 - 捐赠：https://yanji.pro/#donate
 
+## 版本(即将上线)
+
+FileAdmin 目前共有三个版本开放安装。
+- 安装版：旨在使您获得最小化的代码体积。[[https:///api.simsoft.top/fileadmin/download/](点击下载)]
+- 维护版：从Github直接获取源码，包含完整的注释和缩进。[[https:///api.simsoft.top/fileadmin/download/maintain.php](点击下载)]
+- 安装版：氢软官方的实时开发版，可获知最新的开发进度。[[https:///api.simsoft.top/fileadmin/download/dev.php](点击下载)]
+
+Tip：无论选择哪个版本，内嵌的自动更新皆以安装版发版为准，且会使用安装版更新覆盖其他版本。如需长期使用非安装版的版本，请直接从上方渠道手动更新而非使用自动更新。
 
 ## 版权&免责
 - 本程序使用AGPL-3.0协议开源，任何二开作品需以相同协议开源，不推荐用于商业用途。
