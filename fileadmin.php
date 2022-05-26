@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.01;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.02;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -1155,6 +1155,7 @@ function newFile() {
 			});
 		} else {
 			alert("文件名不能包含特殊字符呐 (；′⌒`)");
+			loadFileList(dirOperating, true)
 		}
 	}
 }
@@ -1170,6 +1171,7 @@ function newDir() {
 			});
 		} else {
 			alert("目录名不能包含特殊字符呐 (；′⌒`)");
+			loadFileList(dirOperating, true)
 		}
 	}
 }
@@ -1198,7 +1200,8 @@ function renameFile() {
 				loadFileList(dirOperating, true)
 			});
 		} else {
-			alert("文件名不可包含特殊字符哦 (；′⌒`)")
+			alert("文件名不可包含特殊字符哦 (；′⌒`)");
+			loadFileList(dirOperating, true)
 		}
 	}
 }
@@ -1556,9 +1559,9 @@ function applupd() {
 		</div>
 		<div class="module loading shown" data-module="loading" id="loadingAnimations">
 			<div class="loadingAnimation">
-				<div class="loadingAnimationDot" id="dot1">·</div>
-				<div class="loadingAnimationDot" id="dot2">·</div>
-				<div class="loadingAnimationDot" id="dot3">·</div>
+				<div class="loadingAnimationDot" id="dot1">·</div> 
+				<div class="loadingAnimationDot" id="dot2">·</div> 
+				<div class="loadingAnimationDot" id="dot3">·</div> 
 			</div>
 		</div>
 
