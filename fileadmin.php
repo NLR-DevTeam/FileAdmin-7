@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.02;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.03;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -327,7 +327,8 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 .appName b{color:#1e9fff;}
 #versionNote{border-radius:10px 10px 10px 0;background:#f5f5f5;display:inline-block;margin-left:5px;color:#ababab;padding:0 5px;font-size:.4em;vertical-align:top}
 #versionNote.active{background:#1e9fff;color:white}
-.title svg{position:absolute;top:0;bottom:0;right:10px;margin:auto;transform:rotate(180deg)}
+.title #logoutBtn{position:absolute;top:0;bottom:0;right:35px;margin:auto;transform:rotate(180deg)}
+.title .themeSelect{position:absolute;top:0;bottom:0;right:10px;margin:auto;}
 .module{display:none;background:white;}
 .module.shown{display:block;animation:showModule .3s ease;}
 .loading, .texteditor.shown{animation:none!important;}
@@ -401,6 +402,8 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 .mobileInputBtn:active{background:#eeeeee;}
 contextmenu #saveMenuText{display:none}
 .menu #saveContextMenuText{display:none}
+#darkBtn{display:block}
+#lightBtn{display:none}
 @keyframes loadingDot{
 	0%{transform:translateY(0px)}
 	15%{transform:translateY(10px)}
@@ -410,7 +413,7 @@ contextmenu #saveMenuText{display:none}
 	75%{transform:translateY(0)}
 }
 @media screen and (min-width:701px) {
-	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:40px;left:150px;height:24px;text-align:right;}
+	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:65px;left:150px;height:24px;text-align:right;}
 	.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;margin-left:5px;}
 	.menu button.big{width:70px}
 	.menu button:hover{background:#f9f9f9}
@@ -425,6 +428,37 @@ contextmenu #saveMenuText{display:none}
 	.menu.shown{bottom:0;}
 	#textEditor{height:calc(100% - 90px)}
 }
+
+/* 暗色适配开始 */
+.dark #darkBtn{display:none}
+.dark #lightBtn{display:block}
+body.dark{background:#2f3129;color:white}
+.dark .title{background:black;}
+.dark .title svg{filter:invert(1)}
+.dark .appName{color:white;}
+.dark #versionNote{background:#2f3129;color:#ccc}
+.dark::-webkit-scrollbar{background:black}
+.dark::-webkit-scrollbar-thumb{background:#2f3129}
+.dark .menu button{color:white;}
+@media screen and (min-width:701px) {.dark .menu button{background:#2f3129}}
+@media screen and (max-width:700px) {.dark .menu{background:black}}
+.dark .loadingDot{color:white;}
+.dark #mobileFastInput{background:black}
+.dark .mobileInputBtn.mode{background:#2f3129}
+.dark .module{background:black}
+.dark #loginPassword{background:black!important;color:white!important;border:1px solid #2f3129;border-right:0;}
+.dark .files,.dark .search{background:transparent}
+.dark .addressBar,.dark #fileList{background:black}
+.dark .addressBar button{border-right:1px solid #2f3129;color:white;}
+.dark img.fileIco{filter:invert(1)}
+.dark .file.selected{background:#1674ba!important}
+.dark contextmenu{border:1px solid #33362d}
+.dark contextmenu button{background:black;color:white;}
+.dark #searchOptnArea,.dark #searchResult,.dark #searchOptnArea input,.dark #searchOptnArea select{background:black;color:white;}
+.dark #searchOptnArea input,.dark #searchOptnArea select{border-bottom:1px solid #2f3129}
+.dark #vidviewer,.dark #imgviewer,.dark #textEditor{background:black;border:1px solid #2f3129}
+.dark .imgviewer,.dark .vidviewer{background:transparent!important}
+
 /* </style> */
 <?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>
 /* <script> */
@@ -515,7 +549,11 @@ window.onload = function() {
 		} else {
 			forwardFromConfirm = false;
 		}
-	}
+	};
+	/* 初始化颜色设定 */
+    if(localStorage.getItem("FileAdmin_Settings_Theme")=="dark"){
+        document.body.classList.add("dark");
+    }
 };
 
 /* 绑定键盘快捷键 */
@@ -668,7 +706,18 @@ function $(selector) {
 	return document.querySelector(selector);
 }
 
-
+/* 切换夜间/白天模式 */
+function changeTheme(){
+    if(localStorage.getItem("FileAdmin_Settings_Theme")=="dark"){
+        localStorage.setItem("FileAdmin_Settings_Theme","light");
+        document.body.classList.remove("dark");
+        if(window.textEditor.setTheme){textEditor.setTheme("ace/theme/chrome");}
+    }else{
+        localStorage.setItem("FileAdmin_Settings_Theme","dark");
+        document.body.classList.add("dark");
+        if(window.textEditor.setTheme){textEditor.setTheme("ace/theme/monokai");}
+    }
+}
 
 /* ==================== 登录部分 ==================== */
 
@@ -1071,7 +1120,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 					textEditor = ace.edit("textEditor");
 					textEditor.setOption("enableLiveAutocompletion", true);
 					textEditor.session.setValue(file);
-					textEditor.setTheme("ace/theme/chrome");
+					if(localStorage.getItem("FileAdmin_Settings_Theme")=="dark"){textEditor.setTheme("ace/theme/monokai");}else{textEditor.setTheme("ace/theme/chrome");}
 					textEditor.gotoLine(1);
 					textEditor.setShowPrintMargin(false);
 					textEditor.session.setMode("ace/mode/" + textMode);
@@ -1555,6 +1604,8 @@ function applupd() {
 	<body>
 		<div class="title">
 			<div class="appName" onclick="chkupd()">File<b>Admin</b><div id="versionNote">正在获取</div></div>
+			<svg id="lightBtn" class="themeSelect" onclick="changeTheme()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path fill-rule="evenodd" clip-rule="evenodd" d="M24 3V6.15V3Z" fill="#000000"/><path d="M24 3V6.15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M38.8492 9.15076L36.6219 11.3781L38.8492 9.15076Z" fill="#000000"/><path d="M38.8492 9.15076L36.6219 11.3781" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M45 24H41.85H45Z" fill="#000000"/><path d="M45 24H41.85" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M38.8492 38.8492L36.6219 36.6219L38.8492 38.8492Z" fill="#000000"/><path d="M38.8492 38.8492L36.6219 36.6219" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M24 45V41.85V45Z" fill="#000000"/><path d="M24 45V41.85" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.15076 38.8492L11.3781 36.6219L9.15076 38.8492Z" fill="#000000"/><path d="M9.15076 38.8492L11.3781 36.6219" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M3 24H6.15H3Z" fill="#000000"/><path d="M3 24H6.15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.15076 9.15076L11.3781 11.3781L9.15076 9.15076Z" fill="#000000"/><path d="M9.15076 9.15076L11.3781 11.3781" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 36C30.6274 36 36 30.6274 36 24C36 17.3726 30.6274 12 24 12C17.3726 12 12 17.3726 12 24C12 30.6274 17.3726 36 24 36Z" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="round"/></svg>
+			<svg id="darkBtn" class="themeSelect" onclick="changeTheme()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M28.0527 4.41085C22.5828 5.83695 18.5455 10.8106 18.5455 16.7273C18.5455 23.7564 24.2436 29.4545 31.2727 29.4545C37.1894 29.4545 42.1631 25.4172 43.5891 19.9473C43.8585 21.256 44 22.6115 44 24C44 35.0457 35.0457 44 24 44C12.9543 44 4 35.0457 4 24C4 12.9543 12.9543 4 24 4C25.3885 4 26.744 4.14149 28.0527 4.41085Z" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="round"/></svg>
 			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
 		<div class="module loading shown" data-module="loading" id="loadingAnimations">
