@@ -3,6 +3,8 @@
 
 项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用其任何代码
 
+本项目基本功能已开发完成，进入缓慢迭代阶段，如果您有Bug反馈或新功能建议请提交Issue~
+
 如果这个项目有帮助到你，点个 Star 再走呗
 
 ## 兼容性
