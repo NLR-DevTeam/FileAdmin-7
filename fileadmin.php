@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.03;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.04;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -432,31 +432,31 @@ contextmenu #saveMenuText{display:none}
 /* 暗色适配开始 */
 .dark #darkBtn{display:none}
 .dark #lightBtn{display:block}
-body.dark{background:#2f3129;color:white}
+body.dark{background:#1c1c1c;color:white}
 .dark .title{background:black;}
 .dark .title svg{filter:invert(1)}
 .dark .appName{color:white;}
-.dark #versionNote{background:#2f3129;color:#ccc}
+.dark #versionNote{background:#1c1c1c;color:#ccc}
 .dark::-webkit-scrollbar{background:black}
-.dark::-webkit-scrollbar-thumb{background:#2f3129}
+.dark::-webkit-scrollbar-thumb{background:#1c1c1c}
 .dark .menu button{color:white;}
-@media screen and (min-width:701px) {.dark .menu button{background:#2f3129}}
+@media screen and (min-width:701px) {.dark .menu button{background:#1c1c1c}}
 @media screen and (max-width:700px) {.dark .menu{background:black}}
 .dark .loadingDot{color:white;}
 .dark #mobileFastInput{background:black}
-.dark .mobileInputBtn.mode{background:#2f3129}
+.dark .mobileInputBtn.mode{background:#1c1c1c}
 .dark .module{background:black}
-.dark #loginPassword{background:black!important;color:white!important;border:1px solid #2f3129;border-right:0;}
+.dark #loginPassword{background:black!important;color:white!important;border:1px solid #1c1c1c;border-right:0;}
 .dark .files,.dark .search{background:transparent}
 .dark .addressBar,.dark #fileList{background:black}
-.dark .addressBar button{border-right:1px solid #2f3129;color:white;}
+.dark .addressBar button{border-right:1px solid #1c1c1c;color:white;}
 .dark img.fileIco{filter:invert(1)}
 .dark .file.selected{background:#1674ba!important}
 .dark contextmenu{border:1px solid #33362d}
 .dark contextmenu button{background:black;color:white;}
 .dark #searchOptnArea,.dark #searchResult,.dark #searchOptnArea input,.dark #searchOptnArea select{background:black;color:white;}
-.dark #searchOptnArea input,.dark #searchOptnArea select{border-bottom:1px solid #2f3129}
-.dark #vidviewer,.dark #imgviewer,.dark #textEditor{background:black;border:1px solid #2f3129}
+.dark #searchOptnArea input,.dark #searchOptnArea select{border-bottom:1px solid #1c1c1c}
+.dark #vidviewer,.dark #imgviewer,.dark #textEditor{background:black;border:1px solid #1c1c1c}
 .dark .imgviewer,.dark .vidviewer{background:transparent!important}
 
 /* </style> */
