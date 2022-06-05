@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.04;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.05;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -458,6 +458,8 @@ body.dark{background:#1c1c1c;color:white}
 .dark #searchOptnArea input,.dark #searchOptnArea select{border-bottom:1px solid #1c1c1c}
 .dark #vidviewer,.dark #imgviewer,.dark #textEditor{background:black;border:1px solid #1c1c1c}
 .dark .imgviewer,.dark .vidviewer{background:transparent!important}
+.dark #textEditor *::-webkit-scrollbar{background:#2f3129!important;}
+.dark #textEditor *::-webkit-scrollbar-thumb{background:#8f908a!important;}
 
 /* </style> */
 <?php }elseif($_GET["a"]=="js"){header("content-type: text/javascript"); ?>
@@ -566,7 +568,7 @@ window.onkeydown = function() {
 			event.preventDefault();
 			ID("loginPassword").focus();/* 聚焦登录密码 */
 		}
-	} else if (event.ctrlKey == true && event.keyCode == 83) {
+	} else if ((event.ctrlKey == true || event.metaKey == true) && event.keyCode == 83) {
 		event.preventDefault();
 		if ($(".texteditor.shown")) {
 			saveFile();/* 保存文件 */
@@ -577,7 +579,7 @@ window.onkeydown = function() {
 		} else if ($(".files.shown")) {
 			history.back(-1);/* 上级目录 */
 		}
-	} else if (event.ctrlKey == true && event.keyCode == 65) {
+	} else if ((event.ctrlKey == true || event.metaKey == true) && event.keyCode == 65) {
 		if ($(".files.shown")) {
 			event.preventDefault();
 			fileSelected = fileListOperating;
@@ -587,15 +589,15 @@ window.onkeydown = function() {
 		if ($(".files.shown")) {
 			delFile();/* 删除文件 */
 		}
-	} else if (event.ctrlKey == true && event.keyCode == 67) {
+	} else if ((event.ctrlKey == true || event.metaKey == true) && event.keyCode == 67) {
 		if ($(".files.shown")) {
 			setCopyFiles();/* 复制文件 */
 		}
-	} else if (event.ctrlKey == true && event.keyCode == 88) {
+	} else if ((event.ctrlKey == true || event.metaKey == true) && event.keyCode == 88) {
 		if ($(".files.shown")) {
 			setMoveFiles();/* 剪切文件 */
 		}
-	} else if (event.ctrlKey == true && event.keyCode == 86) {
+	} else if ((event.ctrlKey == true || event.metaKey == true) && event.keyCode == 86) {
 		if ($(".files.shown")) {
 			filePaste();/* 粘贴文件 */
 		}
