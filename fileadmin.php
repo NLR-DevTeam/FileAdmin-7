@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.05;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.06;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -387,6 +387,10 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 #searchOptnArea div span{width:100px;display:inline-block;vertical-align:middle;padding:5px;}
 #searchOptnArea div input,#searchOptnArea div select{background:white;padding:3px;padding-left:0;display:inline-block;vertical-align:middle;width:calc(100% - 105px);border:0;border-bottom:1px solid #f5f5f5;outline:none;}
 #searchOptnArea div input{padding-left:5px;}
+#filesUploadInputContainer{display:none;position:fixed;inset:0;background:rgba(100,100,100,.5);z-index:30;}
+#filesUploadInputContainer div{width:250px;height:fit-content;inset:0;margin:auto;position:fixed;padding:20px;border-radius:10px;text-align:center;border:2px dotted white;color:white}
+#filesUploadInputContainer span{display:block;font-size:2em;}
+#filesUploadInputContainer input{position:fixed;inset:0;width:100%;height:100%;opacity:0;}
 @media screen and (max-width:700px) {
 	.mobileInputAdded #mobileFastInput{bottom:0;}
 	.mobileInputAdded .menu.shown{bottom:40px}
@@ -500,7 +504,14 @@ window.onload = function() {
 			"dir": dirOperating
 		}, document.title)
 	});
-
+	
+	/* 设置文件拖过事件 */
+    document.documentElement.ondragover=function(){
+        if($(".files.shown")){
+            ID("filesUploadInputContainer").style.display="block";
+        }
+    };
+    
 	/* 在首次用非Chromium浏览器访问时弹出兼容性提示(官网和视频都明确说明仅兼容Chromium，别的浏览器没试过) */
 	if (navigator.userAgent.indexOf("Chrome") == -1 && !localStorage.getItem("FileAdmin_Settings_BrowserAlert")) {
 		alert("FileAdmin 目前仅兼容 Google Chrome 和 Microsoft Edge 的最新版本，使用其他浏览器访问可能导致未知错误。");
@@ -608,6 +619,11 @@ window.onkeydown = function() {
 		}
 		if ($(".texteditor.shown")) {
 			reloadEditor()/* 刷新编辑器 */
+		}
+	} else if (event.keyCode == 113) {
+		event.preventDefault();
+		if ($(".files.shown") && fileSelected.length==1) {
+			renameFile();/* 改名 */
 		}
 	}
 };
@@ -762,6 +778,7 @@ function logout() {
 
 /* 上传文件输入框改变后进行处理 */
 function addFilesToUploads(ele) {
+    ID("filesUploadInputContainer").style="";
 	waitingToUpload = [];
 	waitingToUploadCount = 0;
 	Array.from(ele.files).forEach(addFileToUploadArr);
@@ -1121,6 +1138,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 					ace.config.set('basePath', 'https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/');
 					textEditor = ace.edit("textEditor");
 					textEditor.setOption("enableLiveAutocompletion", true);
+					textEditor.setOption("scrollPastEnd",0.5);
 					textEditor.session.setValue(file);
 					if(localStorage.getItem("FileAdmin_Settings_Theme")=="dark"){textEditor.setTheme("ace/theme/monokai");}else{textEditor.setTheme("ace/theme/chrome");}
 					textEditor.gotoLine(1);
@@ -1627,7 +1645,7 @@ function applupd() {
 		
 		<!--文件列表页-->
 		<div class="module files" data-module="files">
-			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="回退" onclick="history.back(-1)"><</button><div id="addressBar" onclick="editAddressBar()">/</div></div>
+			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="回退" onclick="history.back(-1)"><</button><div id="addressBar" onclick="editAddressBar()" oncontextmenu="event.stopPropagation();event.preventDefault();navigator.clipboard.writeText(dirOperating);alert('当前路径已复制到剪切板 ( •̀ ω •́ )✧')">/</div></div>
 			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){startHoverSelect(this)}"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
@@ -1643,7 +1661,7 @@ function applupd() {
 		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
 			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
 			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
-			<button onclick="renameFile();">改名</button>
+			<button onclick="renameFile();">改名<contextmenukey>F2</contextmenukey></button>
 			<button onclick="downCurrFile();">下载</button>
 			<button onclick="setMoveFiles();">剪切<contextmenukey>Ctrl + X</contextmenukey></button>
 			<button onclick="setCopyFiles();">复制<contextmenukey>Ctrl + C</contextmenukey></button>
@@ -1767,10 +1785,12 @@ function applupd() {
 			<button onclick="history.back()">取消</button>
 		</div>
 		
-		<div style="display:none">
-			<input type="file" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
+		<input type="file" style="display:none" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
+		<div id="filesUploadInputContainer" ondragleave="this.style=''">
+		    <div><span>(•ω•`)</span>扔给我即可上传<br>支持同时上传多个文件哦</div>
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
+		
 	</body>
 	<script src="?a=js"></script>
 	<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-y/ace/1.4.14/ace.min.js"></script>
