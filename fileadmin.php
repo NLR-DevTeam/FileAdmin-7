@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.06;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.07;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -937,18 +937,16 @@ function loadFileList(dir, fromState) {
 		}
 		showModule("files");
 		showMenu("files-noselect");
+    	if (window.offsetBeforeEditing) {
+    		scrollTo(0, offsetBeforeEditing);
+    		offsetBeforeEditing = null;
+    	}
 	});
 	if (!fromState) {
 		history.pushState({
 			"mode": "fileList",
 			"dir": dir
 		}, document.title, "#" + dirOperating)
-	}
-	if (window.offsetBeforeEditing) {
-		setTimeout(function() {
-			scrollTo(0, offsetBeforeEditing);
-			offsetBeforeEditing = null;
-		}, 580);
 	}
 }
 
