@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.07;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.08;
 
 /* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
 	
@@ -626,6 +626,14 @@ window.onkeydown = function() {
 			renameFile();/* 改名 */
 		}
 	}
+	/* 标题栏星号提示 */
+    if ($(".texteditor.shown")) {
+		if(textEditor.getValue() == lastSaveContent){
+		    document.title = fileEditing + " | FileAdmin";
+		}else{
+		    document.title = "* " + fileEditing + " | FileAdmin";
+		}
+	}
 };
 
 /* 网络请求函数 */
@@ -662,6 +670,20 @@ function request(act, txt, callback) {
 		.catch(err => {
 			alert(err);
 		})
+}
+
+/* 加法小游戏（根目录/危险操作确认提示） */
+function confirmRootDirAccess(txt){
+    if(dirOperating=="/"){
+        let numx = Math.round(Math.random()*5 + 1);
+        let numy = Math.round(Math.random()*5 + 1);
+        let answer = numx + numy;
+        let userAnswer = prompt(txt+"\n请输入计算结果以确认操作：" + numx + " + " + numy);
+        if(userAnswer && Number(userAnswer) == answer){return true;}
+    }else{
+        if(confirm(txt)){return true;}
+    }
+    return false;
 }
 
 /* 显示模块函数 */
@@ -1286,7 +1308,7 @@ function downCurrFile() {
 /* 删除 */
 function delFile() {
 	let fileDelStr = JSON.stringify(fileSelected);
-	if (confirm("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")) {
+	if (confirmRootDirAccess("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")) {
 		showModule("loading");
 		request("del", "files=" + encodeURIComponent(fileDelStr) + "&dir=" + dirOperating, function() {
 			loadFileList(dirOperating, true)
@@ -1351,6 +1373,7 @@ function saveFile(forceDisableObfuscator) {
 				if (code == 200) {
 					lastSaveContent = textEditor.getValue();
 					ID("saveMenuText").innerText = "完成";
+					document.title = fileEditing + " | FileAdmin";
 					setTimeout(function() {
 						ID("saveMenuText").innerHTML = "保存";
 					}, 700)
@@ -1369,6 +1392,7 @@ function saveFile(forceDisableObfuscator) {
 			if (code == 200) {
 				lastSaveContent = textEditor.getValue();
 				ID("saveMenuText").innerText = "完成";
+				document.title = fileEditing + " | FileAdmin";
 				setTimeout(function() {
 					ID("saveMenuText").innerHTML = "保存";
 				}, 700)
