@@ -1,7 +1,5 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.08;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.09;
 
-/* 您当前正在使用FileAdmin维护版。如果您是普通用户，推荐使用FileAdmin安装版，详见Github主页。 */
-	
 	/* 设置不进行报错以免影响运行 */
 	error_reporting(0);
 	
@@ -148,15 +146,15 @@
 				file_put_contents(".".$_POST["name"],$_POST["data"]);
 				/* 这里如果有同名fajs文件则进行删除，因为这个方法是没有加密时进行的，如果fajs不删，下次输出的还是老的fajs文件就对不上了 */
 				if(file_exists(".".$_POST["name"].".fajs")){unlink(".".$_POST["name"].".fajs");}
-				echo "200";
+				if(file_exists(".".$_POST["name"]) && file_get_contents(".".$_POST["name"]) == $_POST["data"]){echo "200";}else{echo "1002";}
 				
 			/* 使用textEditor保存加密的js文件，这里会存俩文件，fa本身没有解密js的能力所以原文件一定要存一份 */
 			}elseif($ACT=="fajssave"){
 				/* 这里原文件存进同名fajs，加密文件存进js，这样方便管理而且用不着用户自己去改资源地址 */
 				file_put_contents(".".$_POST["name"],$_POST["obfuscate"]);
 				file_put_contents(".".$_POST["name"].".fajs",$_POST["original"]);
-				echo "200";
-				
+				if(file_exists((".".$_POST["name"])) && file_get_contents(".".$_POST["name"]) == $_POST["obfuscate"] && file_get_contents(".".$_POST["name"].".fajs") == $_POST["original"]){echo "200";}else{echo "1002";}
+
 			/* 对当前目录进行打包 */
 			}elseif($ACT=="zip"){
 				$zipResult=create_zip(scandirAll(realpath(".".$_POST["name"]),true),".".$_POST["name"]."FileAdmin_".time().".zip",false);
@@ -169,14 +167,18 @@
 			/* 新建目录 */
 			}elseif($ACT=="mkdir"){
 				mkdir(".".$_POST["name"]);
-				echo "200";
+				if(file_exists(".".$_POST["name"])){echo "200";}else{echo "1002";}
 				
 			/* 给文件(夹)改名 */
 			}elseif($ACT=="rename"){
 				/* 这里判断一下是不是存在同名的文件，否则就直接覆盖掉了，寄 */
 				if(!file_exists(".".$_POST["dir"].$_POST["new"])){
 					rename(".".$_POST["dir"].$_POST["old"],".".$_POST["dir"].$_POST["new"]);
-					echo "200";
+					if(file_exists(".".$_POST["dir"].$_POST["new"])){
+					    echo "200";
+					}else{
+					    echo "1003";
+					}
 				}else{
 					echo "1002";
 				}
@@ -188,8 +190,9 @@
 					$trueFileName=".".$_POST["dir"].$filename;
 					/* 这里进行判断，如果是文件就直接干掉，是目录就用上面的unlinkDir干掉 */
 					if(is_dir($trueFileName)){unlinkDir($trueFileName);}else{unlink($trueFileName);}
-					echo "200";
+					if(file_exists($trueFileName)){echo "1";}
 				}
+				echo "200";
 				
 			/* 检查本体更新 */
 			}elseif($ACT=="chkupd"){
@@ -236,7 +239,7 @@
 				$trueDirName=".".implode("/",explode("/",$_POST["dir"]));
 				$filelist=scandirAll($trueDirName);
 				$searchedFiles=[];
-				/* 这个地方设置用户填的文件类型，空格分隔的；用textFile这个名字是因为初期只限 */
+				/* 这个地方设置用户填的文件类型，空格分隔的；用textFile这个名字是因为初期只能搜索文本后来懒得改变量名了 */
 				$textFiles=explode(" ",$_POST["type"]);
 				/* 文件列表进行遍历 */
 				foreach($filelist as $filenameFound){
@@ -308,7 +311,10 @@
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="upload"){
 		$destDir=".".$_GET["dir"];
 		if(!is_dir($destDir)){nbMkdir($destDir);}
-		move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
+		if(file_exists($destDir.$_FILES["file"]["name"])){echo "1002";}else{
+		    move_uploaded_file($_FILES["file"]["tmp_name"],$destDir.$_FILES["file"]["name"]);
+		    if(file_exists($destDir.$_FILES["file"]["name"])){echo "200";}else{echo "1001";}
+		}
 		
 	/* 在加载时获取版本信息 */
 	}elseif($_GET["a"]=="ver"){
@@ -880,6 +886,13 @@ function uploadFileFromList(id) {
 		ID("uploadText-CurrProg").innerText = "0% (正在连接...)";
 		xhr = new XMLHttpRequest();
 		xhr.onload = function() {
+		    if(xhr.responseText == "1002"){alert("目录下已有同名文件存在，上传失败 ＞︿＜");}
+		    else if(xhr.responseText != "200"){alert("文件上传失败，请检查您和服务器的网络状况 ＞︿＜");}
+			id++;
+			uploadFileFromList(id)
+		};
+		xhr.onerror = function() {
+		    alert("文件上传失败，请检查您和服务器的网络状况 ＞︿＜");
 			id++;
 			uploadFileFromList(id)
 		};
@@ -1239,7 +1252,8 @@ function newFile() {
 	if (filename) {
 		showModule("loading");
 		if (filename.indexOf("/") == -1) {
-			request("save", "name=" + encodeURIComponent(dirOperating + filename), function() {
+			request("save", "name=" + encodeURIComponent(dirOperating + filename), function(code) {
+			    if(code != 200){alert("创建失败，请尝试检查当前目录下权限 ╯︿╰");}
 				loadFileList(dirOperating, true)
 			});
 		} else {
@@ -1254,8 +1268,9 @@ function newDir() {
 	let filename = prompt("📂 请输入新目录名称 (●'◡'●)");
 	if (filename) {
 		showModule("loading");
-		if (filename.indexOf("/") == -1) {
-			request("mkdir", "name=" + encodeURIComponent(dirOperating + filename), function() {
+		if (filename.indexOf("/") == -1 && filename.indexOf("<") == -1 && filename.indexOf(">") == -1 && filename.indexOf("&") == -1) {
+			request("mkdir", "name=" + encodeURIComponent(dirOperating + filename), function(code) {
+			    if(code != 200){alert("创建失败，请尝试检查当前目录下权限 ╯︿╰");}
 				loadFileList(dirOperating, true)
 			});
 		} else {
@@ -1284,7 +1299,7 @@ function renameFile() {
 				if (c == 1002) {
 					alert("文件 “" + newName + "” 已经存在啦 (；′⌒`)")
 				} else if (c != 200) {
-					alert("出现未知错误 (；′⌒`)")
+					alert("出现未知错误，请检查文件权限 (；′⌒`)")
 				}
 				loadFileList(dirOperating, true)
 			});
@@ -1310,8 +1325,9 @@ function delFile() {
 	let fileDelStr = JSON.stringify(fileSelected);
 	if (confirmRootDirAccess("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")) {
 		showModule("loading");
-		request("del", "files=" + encodeURIComponent(fileDelStr) + "&dir=" + dirOperating, function() {
-			loadFileList(dirOperating, true)
+		request("del", "files=" + encodeURIComponent(fileDelStr) + "&dir=" + dirOperating, function(code) {
+			if(code != 200){alert("删除部分文件时出现问题，请检查文件权限 ＞﹏＜");}
+			loadFileList(dirOperating, true);
 		});
 	}
 }
@@ -1378,13 +1394,17 @@ function saveFile(forceDisableObfuscator) {
 						ID("saveMenuText").innerHTML = "保存";
 					}, 700)
 				} else {
-					alert("出现未知错误（＞人＜；）");
+					alert("出现未知错误，请检查网络连接和文件权限（＞人＜；）");
 					ID("saveMenuText").innerHTML = "保存";
 				}
 			})
 		} catch (err) {
-			alert("混淆器出现错误，正在为您保存原代码 `(*>﹏<*)′\n\n" + err + "\n\n请检查代码中是否存在错误~");
-			saveFile(true);
+			if(confirm("混淆器出现错误，是否为您保存原代码？ `(*>﹏<*)′\n\n" + err + "\n\n请检查代码中是否存在错误~")){
+			    saveFile(true);
+			}else{
+			    ID("saveMenuText").innerHTML = "保存";
+			    ID("loadingAnimations").classList.remove("shown");
+			}
 		}
 	} else {
 		request("save", "name=" + dirOperating + fileEditing + "&data=" + encodeURIComponent(textEditor.getValue()), function(code) {
@@ -1397,7 +1417,7 @@ function saveFile(forceDisableObfuscator) {
 					ID("saveMenuText").innerHTML = "保存";
 				}, 700)
 			} else {
-				alert("出现未知错误（＞人＜；）");
+				alert("出现未知错误，请检查网络连接和文件权限（＞人＜；）");
 				ID("saveMenuText").innerHTML = "保存";
 			}
 		})
