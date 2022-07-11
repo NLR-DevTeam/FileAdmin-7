@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.09;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.10;
 
 	/* 设置不进行报错以免影响运行 */
 	error_reporting(0);
@@ -367,7 +367,7 @@ body{margin:0;user-select:none;margin-top:45px;font-family:微软雅黑;backgrou
 #fileList .file[data-isdir^=true] .size{opacity:0;}
 #fileList .file.selected{background:#1e9fff;color:white;}
 .texteditor{margin:10px;}
-#textEditor{border-radius:5px;position:absolute;top:50px;left:10px;right:10px;height:calc(100% - 60px);border:1px solid rgba(0,0,0,.1);overflow:hidden;}
+#textEditor{position:absolute;top:40px;left:0;right:0;height:calc(100% - 40px);}
 #textEditor *::-webkit-scrollbar{display:block;width:3px;height:0px;background:#ebebeb;}
 #textEditor *::-webkit-scrollbar:hover{width:15px}
 #textEditor *::-webkit-scrollbar-thumb{border-radius:2px;background:#bababa;}
@@ -401,7 +401,7 @@ contextmenu button contextmenukey{position:absolute;right:10px;top:0;bottom:0;he
 	.mobileInputAdded #mobileFastInput{bottom:0;}
 	.mobileInputAdded .menu.shown{bottom:40px}
 	.mobileInputAdded .title{display:none}
-	.mobileInputAdded #textEditor{top:10px}
+	.mobileInputAdded #textEditor{top:0px}
 }
 #mobileFastInput{position:fixed;bottom:-90px;height:40px;background:white;text-align:center;z-index:15;transition:top .2s;width:100vw;margin:auto;padding:5px 0;}
 .mobileInputBtn.mode{background:#fafafa}
@@ -423,12 +423,12 @@ contextmenu #saveMenuText{display:none}
 	75%{transform:translateY(0)}
 }
 @media screen and (min-width:701px) {
-	.menu{top:-30px;transition:top .2s;position:fixed;z-index:20;right:65px;left:150px;height:24px;text-align:right;}
+	.menu{top:-30px;transition:top .2s,opacity .2s;opacity:0;position:fixed;z-index:20;right:65px;left:150px;height:24px;text-align:right;}
 	.menu button{outline:none;border:0;background:#f5f5f5;height:100%;width:45px;border-radius:5px;margin-left:5px;}
 	.menu button.big{width:70px}
 	.menu button:hover{background:#f9f9f9}
 	.menu button:active{background:#f0f0f0}
-	.menu.shown{top:8px;}
+	.menu.shown{top:8px;opacity:1;}
 }
 @media screen and (max-width:700px) {
 	body{margin-bottom:50px;}
@@ -436,7 +436,7 @@ contextmenu #saveMenuText{display:none}
 	.menu button{outline:none;border:0;height:100%;width:fit-content;background:transparent;width:30px;padding:0;}
 	.menu button.big{width:60px}
 	.menu.shown{bottom:0;}
-	#textEditor{height:calc(100% - 90px)}
+	#textEditor{height:calc(100% - 70px)}
 }
 
 /* 暗色适配开始 */
