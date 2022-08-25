@@ -1,32 +1,32 @@
 # FileAdmin
 一款体验极佳的轻量级PHP文件管理器
 
-项目由 NLR DevTeam 开发与维护 // [加入我们](https://nlr.simsoft.top)
+项目由 NLR DevTeam 开发与维护 // [加入我们](https://join.nlrdev.top)
 
 项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用其任何代码
 
 本项目基本功能已开发完成，进入缓慢迭代阶段，如果您有Bug反馈或新功能建议请提交Issue~
 
-如果这个项目有帮助到你，点个 Star 再走呗
+如果这个项目有帮助到你，点个 Star 再走呗 owo
 
 ## 特色
 - 直接使用浏览器完成所有常见文件操作
-- 内置符合 Windows 操作习惯的快捷键
+- 内置符合 Windows 操作习惯的[快捷键](#使用)
 - 无广告、无统计、无付费
 - 支持自动检查更新、一键进行本体更新
 - 轻量级，无需进行大量配置；单文件，不在环境内创建任何其他文件
 - 内置由 ACE-Editor 提供的强大编辑器
-- 全自动、无干扰的 Js 代码混淆，有效防止源代码被盗
+- 全自动、无干扰的 [Js 代码混淆](Js混淆)，有效防止源代码被盗
 - 可能是最易于使用移动设备使用的文件管理器
 
 ## 兼容性
 - 服务端：完美兼容PHP 7.x - 8.x。
-- 浏览器：仅兼容Google Chrome / Microsoft Edge的最新版本。
+- 浏览器：仅兼容 Google Chrome / Microsoft Edge 的最新版本。
 
 实测兼容多数宝塔分销虚拟主机及Kangle虚拟主机，部分没有真实文件系统的特殊环境可能无法运行。
 
 ## 安装
-- 从[氢软API](https://api.simsoft.top/fileadmin/download/)直接下载FileAdmin安装版。**您也可以下载安装版之外的其他版本，详见本文“版本”章节**
+- 从[氢软API](https://api.simsoft.top/fileadmin/download/)直接下载FileAdmin安装版。**您也可以下载安装版之外的其他版本，详见本文“[版本](#版本)”章节**
 - 到你的主机直接上传刚才下载的fileadmin.php。
 - 如果认为原文件名不安全，您可以对此文件进行重命名。尽量将其安装在您的网站根目录。
 - **[重要]打开此文件，在第一行修改$PASSWORD变量，输入您自己设定的密码。不更改此处设置会导致他人可以随意查看并修改您的文件，非常危险。**
@@ -101,5 +101,4 @@ Tip：无论选择哪个版本，内嵌的自动更新皆以安装版发版为�
 ## 感谢
 - [星辰云](https://starxn.com)提供开发环境支持
 - [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
-- [AdminX](https://github.com/1689295608/AdminX)提供部分函数实现
 - [Javascript Obfuscator](https://obfuscator.io)提供Js混淆技术支持
