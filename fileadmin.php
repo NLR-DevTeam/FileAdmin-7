@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.11;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.12;
 
 	/* 设置不进行报错以免影响运行 */
 	error_reporting(0);
@@ -1144,6 +1144,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 					textEditor.gotoLine(1);
 					textEditor.setShowPrintMargin(false);
 					textEditor.session.setMode("ace/mode/" + textMode);
+					loadEditorFontSize();
 					/* 显示texteditor的菜单和主体 */
 					showModule("texteditor");
 					showMenu("texteditor");
@@ -1165,6 +1166,29 @@ function viewFile(ele, byname, restoreDirOperating) {
 	if (restoreDirOperating) {
 		dirOperating = "/";
 	}
+}
+
+/* 加载编辑器字体大小 */
+function loadEditorFontSize(){
+    if(localStorage.FileAdmin_Settings_Editor_Font){
+        ID("textEditor").style.fontSize=localStorage.FileAdmin_Settings_Editor_Font+"px";
+    }else{
+        ID("textEditor").style.fontSize="12px";
+    }
+}
+
+/* 修改编辑器字体大小 */
+function editEditorFontSize(){
+    if(localStorage.FileAdmin_Settings_Editor_Font){
+        currentSet=localStorage.FileAdmin_Settings_Editor_Font;
+    }else{
+        currentSet="12";
+    }
+    let newSet=Number(prompt("请输入需要设置的字体大小，推荐 12-20 之间 (。・∀・)ノ",currentSet));
+    if(newSet){
+        localStorage.FileAdmin_Settings_Editor_Font=newSet;
+        loadEditorFontSize();
+    }
 }
 
 /* 根据没选文件、选一个文件、选一堆文件显示不同的功能菜单 */
@@ -1590,7 +1614,7 @@ function changeMobileInputMode(id) {
 /* ==================== 主题切换 ==================== */
 function loadThemeList(){
     showModule("loading");
-    fetch("https://fa.yanji.pro/styles/api.json?stamp="+ new Date().getTime()).then(function(d){return d.json()}).then(function(d){
+    fetch("https://fa.yanji.pro/styles/api.php?stamp="+ new Date().getTime()).then(function(d){return d.json()}).then(function(d){
         ID("themeMain").innerHTML='';
         d.forEach(function(theme){
             ID("themeMain").innerHTML+=`
@@ -1788,6 +1812,7 @@ function applupd() {
 			<button onclick="saveFile()" id="saveBtn"><span id="saveMenuText">保存</span><span id="saveContextMenuText">保存</span><contextmenukey>Ctrl + S</contextmenukey></button>
 			<button onclick="reloadEditor()">刷新<contextmenukey>F5</contextmenukey></button>
 			<button onclick="setWrap(this)">换行</button>
+			<button onclick="editEditorFontSize()">字体</button>
 			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
 			<button onclick="history.back()">返回<contextmenukey>ESC</contextmenukey></button>
 		</div>
