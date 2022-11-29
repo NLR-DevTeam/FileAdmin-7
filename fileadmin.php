@@ -1,4 +1,5 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.12;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.13;
+
 
 	/* 设置不进行报错以免影响运行 */
 	error_reporting(0);
@@ -1614,7 +1615,7 @@ function changeMobileInputMode(id) {
 /* ==================== 主题切换 ==================== */
 function loadThemeList(){
     showModule("loading");
-    fetch("https://fa.yanji.pro/styles/api.php?stamp="+ new Date().getTime()).then(function(d){return d.json()}).then(function(d){
+    fetch("https://fa.nlrdev.top/styles/api.php?stamp="+ new Date().getTime()).then(function(d){return d.json()}).then(function(d){
         ID("themeMain").innerHTML='';
         d.forEach(function(theme){
             ID("themeMain").innerHTML+=`
