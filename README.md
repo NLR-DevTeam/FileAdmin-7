@@ -80,10 +80,9 @@ FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者
 其余防火墙配置同理
 
 ## 官网
-- 官网：https://fa.yanji.pro/
-- 演示：http://demo.fa.yanji.pro/
+- 官网：https://fa.nlrdev.top/
 - 介绍：https://www.bilibili.com/video/BV1XZ4y1m7WK
-- 捐赠：https://yanji.pro/#donate
+- 捐赠：https://i.simsoft.top/#donate
 
 ## 版本
 
