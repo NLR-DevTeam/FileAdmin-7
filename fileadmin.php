@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.13;
+<?php $PASSWORD="kotaserang12"; $VERSION=7.13;
 
 
 	/* 设置不进行报错以免影响运行 */
@@ -102,11 +102,11 @@
 		/* 如果密码验证成功 */
 		}elseif(password_verify($PASSWORD.date("Ymd"),$PWD)){
 			
-			/* 页面加载时验证状态，密码正确时始终返回成功 */
+			/* 页面加载时验证状态，密码正确时始终kembali成功 */
 			if($ACT=="check"){
 				echo "200";
 				
-			/* 返回指定目录的文件列表 */
+			/* kembali指定目录的文件列表 */
 			}elseif($ACT=="files"){
 				/* 阻止用户访问上级目录 */
 				if(strstr($_POST["name"],"./")){
@@ -142,14 +142,14 @@
 				/* 此处为js加密适配，如果请求的文件有同名的.fajs文件存在，则输出.fajs中没加密的内容便于用户进行编辑，如果没有就直接输出原文件内容 */
 				if(file_exists(".".$_POST["name"].".fajs")){echo file_get_contents(".".$_POST["name"].".fajs");}else{echo file_get_contents(".".$_POST["name"]);}
 				
-			/* 使用textEditor保存普通文件 */
+			/* 使用textEditorsave普通文件 */
 			}elseif($ACT=="save"){
 				file_put_contents(".".$_POST["name"],$_POST["data"]);
 				/* 这里如果有同名fajs文件则进行删除，因为这个方法是没有加密时进行的，如果fajs不删，下次输出的还是老的fajs文件就对不上了 */
 				if(file_exists(".".$_POST["name"].".fajs")){unlink(".".$_POST["name"].".fajs");}
 				if(file_exists(".".$_POST["name"]) && file_get_contents(".".$_POST["name"]) == $_POST["data"]){echo "200";}else{echo "1002";}
 				
-			/* 使用textEditor保存加密的js文件，这里会存俩文件，fa本身没有解密js的能力所以原文件一定要存一份 */
+			/* 使用textEditorsave加密的js文件，这里会存俩文件，fa本身没有解密js的能力所以原文件一定要存一份 */
 			}elseif($ACT=="fajssave"){
 				/* 这里原文件存进同名fajs，加密文件存进js，这样方便管理而且用不着用户自己去改资源地址 */
 				file_put_contents(".".$_POST["name"],$_POST["obfuscate"]);
@@ -308,7 +308,7 @@
 		header("content-disposition: attachment;filename=".rawurlencode(end(explode("/",$_GET["name"]))));
 		echo file_get_contents(".".$_GET["name"]);
 		
-	/* 上传文件 */
+	/* upload文件 */
 	}elseif(password_verify($PASSWORD.date("Ymd"),$_GET["pwd"]) && $_GET["a"]=="upload"){
 		$destDir=".".$_GET["dir"];
 		if(!is_dir($destDir)){nbMkdir($destDir);}
@@ -458,7 +458,7 @@ contextmenu #saveMenuText{display:none}
 /* 加载时进行初始化 */
 window.onload = function() {
 
-	/* 如果url后面有设定目录，就按目录来，否则默认打开根目录，主要用于提升使用中刷新页面后的体验 */
+	/* 如果url后面有设定目录，就按目录来，否则默认打开根目录，主要用于提升使用中refres页面后的体验 */
 	if (location.href.split("#")[1]) {
 		newdirn = location.href.split("#")[1];
 		if (newdirn.split("")[0] != "/") {
@@ -500,7 +500,7 @@ window.onload = function() {
 		localStorage.setItem("FileAdmin_Settings_BrowserAlert", "0");
 	}
 
-	/* 这个是让浏览器保存密码时可以给他一个默认的用户名，否则浏览器会存进去一个“无用户名”，容易被别的密码覆盖掉，用户体验消失 */
+	/* 这个是让浏览器save密码时可以给他一个默认的用户名，否则浏览器会存进去一个“无用户名”，容易被别的密码覆盖掉，用户体验消失 */
 	ID("passwordManagerUsername").value = "FileAdmin（" + location.host + "）";
 
 	/* 加载时检察更新，有更新的话版本标识就变蓝+提示 */
@@ -508,20 +508,20 @@ window.onload = function() {
 		return d.text()
 	}).then(function(d) {
 		if (d == "1001") {
-			ID("versionNote").innerText = "点击更新";
+			ID("versionNote").innerText = "klik perbarui";
 			ID("versionNote").classList.add("active")
 		} else {
 			ID("versionNote").innerText = d;
 		}
 	}).catch(function(err) {
-		ID("versionNote").innerText = "出错"
+		ID("versionNote").innerText = "salah"
 	});
 
 	/* 处理用户前进、后退的事件 */
 	window.onpopstate = function() {
 		if (!forwardFromConfirm) {
 			if ($(".texteditor.shown")) {
-				if (textEditor.getValue() != lastSaveContent && !confirm("您有内容还没有保存哦，确实要退出嘛？")) {
+				if (textEditor.getValue() != lastSaveContent && !confirm("Anda memiliki konten yang belum disimpan, apakah Anda benar-benar ingin keluar?")) {
 					forwardFromConfirm = true;
 					history.forward();
 					return;
@@ -568,11 +568,11 @@ window.onkeydown = function() {
 	} else if ((event.ctrlKey == true || event.metaKey == true) && event.keyCode == 83) {
 		event.preventDefault();
 		if ($(".texteditor.shown")) {
-			saveFile();/* 保存文件 */
+			saveFile();/* save文件 */
 		}
 	} else if (event.keyCode == 27) {
 		if ($(".texteditor.shown")) {
-			history.back();/* 退出文本编辑器 */
+			history.back();/* berhenti文本编辑器 */
 		} else if ($(".files.shown")) {
 			history.back(-1);/* 上级目录 */
 		}
@@ -580,7 +580,7 @@ window.onkeydown = function() {
 		if ($(".files.shown")) {
 			event.preventDefault();
 			fileSelected = fileListOperating;
-			loadFileSelected();/* 全选文件 */
+			loadFileSelected();/* pilih semua文件 */
 		}
 	} else if (event.keyCode == 46) {
 		if ($(".files.shown")) {
@@ -601,10 +601,10 @@ window.onkeydown = function() {
 	} else if (event.keyCode == 116) {
 		event.preventDefault();
 		if ($(".files.shown")) {
-			loadFileList(dirOperating, true);/* 刷新文件列表 */
+			loadFileList(dirOperating, true);/* refres文件列表 */
 		}
 		if ($(".texteditor.shown")) {
-			reloadEditor()/* 刷新编辑器 */
+			reloadEditor()/* refres编辑器 */
 		}
 	} else if (event.keyCode == 113) {
 		event.preventDefault();
@@ -664,7 +664,7 @@ function confirmRootDirAccess(txt){
         let numx = Math.round(Math.random()*5 + 1);
         let numy = Math.round(Math.random()*5 + 1);
         let answer = numx + numy;
-        let userAnswer = prompt(txt+"\n请输入计算结果以确认操作：" + numx + " + " + numy);
+        let userAnswer = prompt(txt+"\nSilakan masukkan hasil perhitungan untuk mengkonfirmasi operasi：" + numx + " + " + numy);
         if(userAnswer && Number(userAnswer) == answer){return true;}
     }else{
         if(confirm(txt)){return true;}
@@ -755,14 +755,14 @@ function login() {
 			}, document.title)
 		} else {
 			showModule("login");
-			alert("密码输入错误 (⊙x⊙;)");
+			alert("password salah (⊙x⊙;)");
 		}
 	})
 }
 
 /* 右上角退登按钮 */
 function logout() {
-	if (confirm("您真的要退出登录嘛？＞﹏＜")) {
+	if (confirm("Apakah Anda benar-benar ingin keluar？＞﹏＜")) {
 		localStorage.setItem("FileAdmin_Password", 0);
 		showModule("login");
 	}
@@ -770,9 +770,9 @@ function logout() {
 
 
 
-/* ==================== 上传文件 ==================== */
+/* ==================== upload文件 ==================== */
 
-/* 上传文件输入框改变后进行处理 */
+/* upload文件输入框改变后进行处理 */
 function addFilesToUploads(ele) {
     ID("filesUploadInputContainer").style="";
 	waitingToUpload = [];
@@ -784,7 +784,7 @@ function addFilesToUploads(ele) {
 	uploadNotFinished = true;
 }
 
-/* 当检测到粘贴事件后将剪切板内容添加到上传列表（即ctrl+v上传）的实现 */
+/* 当检测到粘贴事件后将剪切板内容添加到upload列表（即ctrl+vupload）的实现 */
 document.addEventListener('paste', function(event) {
 	if ($(".files.shown") && !moveOrCopyMode) {
 		var items = event.clipboardData && event.clipboardData.items;
@@ -805,7 +805,7 @@ document.addEventListener('paste', function(event) {
 	}
 });
 
-/* 将【文件】添加到待上传Array的函数 */
+/* 将【文件】添加到待uploadArray的函数 */
 function addFileToUploadArr(file) {
 	waitingToUpload.push({
 		"file": file,
@@ -814,7 +814,7 @@ function addFileToUploadArr(file) {
 	waitingToUploadCount++;
 }
 
-/* 目录上传输入框内容变化处理 */
+/* 目录upload输入框内容变化处理 */
 function addDirToUploads(ele) {
 	waitingToUpload = [];
 	waitingToUploadCount = 0;
@@ -824,7 +824,7 @@ function addDirToUploads(ele) {
 	ele.value = '';
 }
 
-/* 将【目录】添加到待上传Array的函数 */
+/* 将【目录】添加到待uploadArray的函数 */
 function addDirToUploadArr(file) {
 	let relativeDir = file.webkitRelativePath.split("/").slice(0, file.webkitRelativePath.split("/").length - 1).join("/") + "/";
 	waitingToUpload.push({
@@ -834,7 +834,7 @@ function addDirToUploadArr(file) {
 	waitingToUploadCount++;
 }
 
-/* 从待上传Array中的第id个文件发送上传请求的函数 */
+/* 从待uploadArray中的第id个文件发送upload请求的函数 */
 function uploadFileFromList(id) {
 	lastUploadTime = new Date().getTime();
 	lastUploadProgress = 0;
@@ -851,16 +851,16 @@ function uploadFileFromList(id) {
 			ID("uploadProgressBar").style.width = "0%";
 			ID("uploadProgressBar").style.display = "block";
 		}, 50);
-		ID("uploadText-CurrProg").innerText = "0% (正在连接...)";
+		ID("uploadText-CurrProg").innerText = "0% (menghubungkan...)";
 		xhr = new XMLHttpRequest();
 		xhr.onload = function() {
-		    if(xhr.responseText == "1002"){alert("目录下已有同名文件存在，上传失败 ＞︿＜");}
-		    else if(xhr.responseText != "200"){alert("文件上传失败，请检查您和服务器的网络状况 ＞︿＜");}
+		    if(xhr.responseText == "1002"){alert("File dengan nama yang sama sudah ada di direktori，upload gagal ＞︿＜");}
+		    else if(xhr.responseText != "200"){alert("Pengunggahan file gagal, harap periksa status jaringan Anda dan server＞︿＜");}
 			id++;
 			uploadFileFromList(id)
 		};
 		xhr.onerror = function() {
-		    alert("文件上传失败，请检查您和服务器的网络状况 ＞︿＜");
+		    alert("Pengunggahan file gagal, harap periksa status jaringan Anda dan server ＞︿＜");
 			id++;
 			uploadFileFromList(id)
 		};
@@ -876,7 +876,7 @@ function uploadFileFromList(id) {
 			uploadSpeed = humanSize((eve.loaded - lastUploadProgress) / (new Date().getTime() - lastUploadTime) * 100) + "/S";
 			ID("uploadText-CurrSpeed").innerText = uploadSpeed;
 			if (percent == "100%") {
-				ID("uploadText-CurrProg").innerText = percent + " (正在处理...)";
+				ID("uploadText-CurrProg").innerText = percent + " (loading...)";
 			}
 			lastUploadTime = new Date().getTime();
 			lastUploadProgress = eve.loaded;
@@ -904,16 +904,16 @@ function getDiskSpaceInfo() {
 			let current = humanSize(returnData[4] / 10);
 			let currentpercent = Math.round(returnData[4] / returnData[1] * 10000) / 100;
 			if (returnData[1] != 0) {
-				alert("空间信息获取成功啦 ( •̀ ω •́ )✧\n\n磁盘空间合计：" + total + "\n可用磁盘空间：" + free + "（占总空间的" + freepercent + "%）" + "\n已用磁盘空间：" + used + "（占总空间的" + usedpercent + "%）" + "\n当前目录占用：" + current + "（占总空间的" + currentpercent + "%）");
+				alert("Informasi sisa penyimpanan berhasil diperoleh( •̀ ω •́ )✧\n\nTotal ruang disk：" + total + "\nruang disk kosong：" + free + "（dari ruang total" + freepercent + "%）" + "\nruang disk yang digunakan：" + used + "（dari ruang total" + usedpercent + "%）" + "\nPenyimpanan di gunakan：" + current + "（dari ruang total" + currentpercent + "%）");
 			} else {
 			    /* 某些环境（比如kangle虚拟主机）没法获取总空间，这里进行错误处理 */
-				alert("磁盘总空间获取失败，您使用的环境可能不允许此操作 `(*>﹏<*)′\n当前查看的目录占用" + current + "磁盘空间哦 ( •̀ ω •́ )✧")
+				alert("Gagal mendapatkan ruang disk total, lingkungan Anda mungkin tidak mengizinkan operasi ini `(*>﹏<*)′\nDirektori yang sedang dilihat menempati" + current + "ruang disk ( •̀ ω •́ )✧")
 			}
 			loadFileList(dirOperating, true);
 		} else if (c == 1001) {
-			alert("您当前查看的目录不存在，可能已经被删除惹 /_ \\")
+			alert("Direktori yang sedang Anda lihat tidak ada, mungkin telah dihapus /_ \\")
 		} else {
-			alert("出现未知错误惹 /_ \\");
+			alert("Terjadi kesalahan yang tidak diketahui /_ \\");
 		}
 	})
 }
@@ -921,7 +921,7 @@ function getDiskSpaceInfo() {
 /* 从服务器获取文件列表并显示 */
 function loadFileList(dir, fromState) {
 	fileSelected = [];
-	ID("addressBar").innerText = "根目录" + dir.replaceAll("/", " / ");
+	ID("addressBar").innerText = "Direktori akar" + dir.replaceAll("/", " / ");
 	showModule("loading");
 	request("files", "name=" + dir, function(code, data) {
 		if (code == 200) {
@@ -931,12 +931,12 @@ function loadFileList(dir, fromState) {
 			fileListArr.forEach(addToFileListHtml);
 			ID("fileList").innerHTML = fileListHtml;
 			if (fileListHtml == "") {
-				ID("fileList").innerHTML = "<center>请求的目录为空 ヽ(*。>Д<)o゜</center>"
+				ID("fileList").innerHTML = "<center>Direktori yang diminta kosong ヽ(*。>Д<)o゜</center>"
 			}
 		} else if (code == "1001") {
-			ID("fileList").innerHTML = "<center>请求的目录不存在捏 (ノへ￣、)</center>"
+			ID("fileList").innerHTML = "<center>Direktori yang diminta tidak ada (ノへ￣、)</center>"
 		} else if (code = "1002") {
-			ID("fileList").innerHTML = "<center>目录名称格式有误 (ﾟДﾟ*)ﾉ</center>"
+			ID("fileList").innerHTML = "<center>Format nama direktori salah(ﾟДﾟ*)ﾉ</center>"
 		}
 		showModule("files");
 		showMenu("files-noselect");
@@ -983,7 +983,7 @@ function getFileIco(type, dir) {
 
 /* 用于编辑文件地址栏（文件列表顶部的那个）的函数 */
 function editAddressBar() {
-	let newDir = prompt("请输入想转到的路径 (o゜▽゜)o☆", dirOperating);
+	let newDir = prompt("Silakan masukkan jalur yang ingin Anda tuju (o゜▽゜)o☆", dirOperating);
 	if (newDir) {
 		if (newDir.split("")[0] != "/") {
 			newDir = "/" + newDir;
@@ -1068,8 +1068,8 @@ function viewFile(ele, byname, restoreDirOperating) {
 				textMode = "xml";
 			} else if (fileType == "zip") {
 			    /* 如果是zip文件则执行解包逻辑 */
-				if (confirm("您是否想解压此文件 ~(￣▽￣)~*\nTip: 部分环境可能不支持此功能")) {
-					let destDir = prompt("要解压到哪个目录捏 (*^▽^*)", dirOperating);
+				if (confirm("Apakah Anda ingin meng-unzip file ini ~(￣▽￣)~*\nTip: Beberapa lingkungan mungkin tidak mendukung fungsi ini")) {
+					let destDir = prompt("Direktori mana yang ingin Anda unzip? (*^▽^*)", dirOperating);
 					if (destDir) {
 						if (destDir.split("")[0] != "/") {
 							destDir = "/" + destDir;
@@ -1080,13 +1080,13 @@ function viewFile(ele, byname, restoreDirOperating) {
 						showModule("loading");
 						request("unzip", "name=" + dirOperating + fileName + "&dir=" + destDir, function(code) {
 							if (code == 1001) {
-								alert("您使用的环境貌似不支持此功能（＞人＜；）")
+								alert("Lingkungan yang Anda gunakan tampaknya tidak mendukung fitur ini")
 							} else if (code == 1002) {
-								alert("您指定的目录不存在 (´。＿。｀)")
+								alert("Direktori yang Anda tentukan tidak ada (´。＿。｀)")
 							} else if (code == 1003) {
-								alert("找不到此压缩包，请尝试刷新此页面（＞人＜；）");
+								alert("Tidak dapat menemukan tarbal ini, coba segarkan halaman ini");
 							} else {
-								alert("可能出现未知错误，请尝试刷新此页面（＞人＜；）");
+								alert("Terjadi error yang tidak diketahui, coba segarkan halaman ini");
 							}
 							loadFileList(dirOperating, true);
 						})
@@ -1094,7 +1094,7 @@ function viewFile(ele, byname, restoreDirOperating) {
 				}
 			} else if (fileType == "rar" || fileType == "7z") {
 			    /* rar和7z不会写，如果有人有现成轮子也可以提交个issue */
-				alert("不支持此类文件解压，请使用.zip格式 (っ´Ι`)っ");
+				alert("Jenis dekompresi file ini tidak didukung, harap gunakan format .zip");
 			} else if (fileType == "jpg" || fileType == "png" || fileType == "jpeg" || fileType == "gif" || fileType == "webp" || fileType == "ico" || fileType == "svg") {
 			    /* 图片查看器 */
 				showModule("imgviewer");
@@ -1108,10 +1108,10 @@ function viewFile(ele, byname, restoreDirOperating) {
 				vidViewingUrl = "?a=down&pwd=" + encodeURIComponent(localStorage.getItem("FileAdmin_Password")) + "&name=" + encodeURI(dirOperating + fileName);
 				ID("vidviewer").src = vidViewingUrl;
 			} else if (fileType == "fajs") {
-			    /* 直接打开.fajs以后保存文件会出问题，生成xxx.fajs.fajs文件，所以不让打开 */
-				alert("您不能直接打开.fajs文件，请打开同名的.js文件哦~")
+			    /* 直接打开.fajs以后save文件会出问题，生成xxx.fajs.fajs文件，所以不让打开 */
+				alert("File .fajs tidak bisa langsung dibuka, silahkan buka file .js dengan nama yang sama~")
 			} else {
-				if (confirm("此文件的格式目前不被支持捏..\n您是否希望尝试使用文本编辑器打开 (⊙_⊙)？")) {
+				if (confirm("Format file ini saat ini tidak didukung pinch..\Apakah Anda ingin mencoba membuka (⊙_⊙)？")) {
 					textMode = "html"
 				}
 			}
@@ -1122,9 +1122,9 @@ function viewFile(ele, byname, restoreDirOperating) {
 					if (fileType == "js") {
 						ID("obfuscateBtn").style.display = "inline-block";
 						if (localStorage.getItem("FileAdmin_Settings_Obfuscator") == "1") {
-							ID("obfuscateBtn").innerText = "关闭混淆"
+							ID("obfuscateBtn").innerText = "matikan kebingungan"
 						} else {
-							ID("obfuscateBtn").innerText = "启用混淆"
+							ID("obfuscateBtn").innerText = "mengaktifkan kebingungan"
 						}
 						ID("fastInputHtm").style.display = "none";
 						ID("fastInputCss").style.display = "none";
@@ -1185,7 +1185,7 @@ function editEditorFontSize(){
     }else{
         currentSet="12";
     }
-    let newSet=Number(prompt("请输入需要设置的字体大小，推荐 12-20 之间 (。・∀・)ノ",currentSet));
+    let newSet=Number(prompt("Silakan masukkan ukuran font yang akan diatur, disarankan antara 12-20(。・∀・)ノ",currentSet));
     if(newSet){
         localStorage.FileAdmin_Settings_Editor_Font=newSet;
         loadEditorFontSize();
@@ -1227,11 +1227,11 @@ function checkFileSelected(ele) {
 
 /* 打包目录 */
 function zipCurrentDir() {
-	if (confirm("您确实想将当前目录打包为Zip文件嘛 (⊙_⊙)？\nTip: 部分环境可能不支持此功能")) {
+	if (confirm("Apakah Anda benar-benar ingin mengemas direktori saat ini sebagai file Zip? (⊙_⊙)？\nTip: Beberapa lingkungan mungkin tidak mendukung fungsi ini")) {
 		showModule("loading");
 		request("zip", "name=" + encodeURIComponent(dirOperating), function(code) {
 			if (code == 1001) {
-				alert("文件打包失败..（＞人＜；）")
+				alert("Pengemasan file gagal..（＞人＜；）")
 			}
 			loadFileList(dirOperating, true);
 		})
@@ -1240,16 +1240,16 @@ function zipCurrentDir() {
 
 /* 创建文件 */
 function newFile() {
-	let filename = prompt("📄 请输入新文件名称 (●'◡'●)");
+	let filename = prompt("📄 Masukkan nama file baru (●'◡'●)");
 	if (filename) {
 		showModule("loading");
 		if (filename.indexOf("/") == -1) {
 			request("save", "name=" + encodeURIComponent(dirOperating + filename), function(code) {
-			    if(code != 200){alert("创建失败，请尝试检查当前目录下权限 ╯︿╰");}
+			    if(code != 200){alert("Pembuatan gagal, coba periksa izin di bawah direktori saat ini ╯︿╰");}
 				loadFileList(dirOperating, true)
 			});
 		} else {
-			alert("文件名不能包含特殊字符呐 (；′⌒`)");
+			alert("Nama file tidak boleh berisi karakter khusus (；′⌒`)");
 			loadFileList(dirOperating, true)
 		}
 	}
@@ -1257,16 +1257,16 @@ function newFile() {
 
 /* 创建目录 */
 function newDir() {
-	let filename = prompt("📂 请输入新目录名称 (●'◡'●)");
+	let filename = prompt("📂 Masukkan nama direktori baru (●'◡'●)");
 	if (filename) {
 		showModule("loading");
 		if (filename.indexOf("/") == -1 && filename.indexOf("<") == -1 && filename.indexOf(">") == -1 && filename.indexOf("&") == -1) {
 			request("mkdir", "name=" + encodeURIComponent(dirOperating + filename), function(code) {
-			    if(code != 200){alert("创建失败，请尝试检查当前目录下权限 ╯︿╰");}
+			    if(code != 200){alert("Pembuatan gagal, coba periksa izin di bawah direktori saat ini ╯︿╰");}
 				loadFileList(dirOperating, true)
 			});
 		} else {
-			alert("目录名不能包含特殊字符呐 (；′⌒`)");
+			alert("Nama direktori tidak boleh berisi karakter khusus (；′⌒`)");
 			loadFileList(dirOperating, true)
 		}
 	}
@@ -1274,29 +1274,29 @@ function newDir() {
 
 /* 打开文件搜索界面 */
 function openFileFinder() {
-	ID("searchAddrBar").innerText = "当前查找目录：" + ID("addressBar").innerText;
+	ID("searchAddrBar").innerText = "Direktori pencarian saat ini:" + ID("addressBar").innerText;
 	showModule("search");
 	showMenu("search");
-	ID("searchResult").innerHTML = '<div style="padding:50px 0;opacity:.5;text-align:center">您还没有发起搜索 ㄟ( ▔, ▔ )ㄏ</div>';
+	ID("searchResult").innerHTML = '<div style="padding:50px 0;opacity:.5;text-align:center">Anda belum memulai pencarian ㄟ( ▔, ▔ )ㄏ</div>';
 	ID("replaceBtn").style.display = "none";
 }
 
 /* 重命名文件 */
 function renameFile() {
-	let newName = prompt("请输入文件的新名称(*^▽^*)", fileSelected[0]);
+	let newName = prompt("Harap masukkan nama baru untuk file tersebut(*^▽^*)", fileSelected[0]);
 	if (newName) {
 		if (newName.indexOf("/") == -1 && newName.indexOf("&") == -1) {
 			showModule("loading");
 			request("rename", "dir=" + encodeURIComponent(dirOperating) + "&old=" + encodeURIComponent(fileSelected[0]) + "&new=" + encodeURIComponent(newName), function(c) {
 				if (c == 1002) {
-					alert("文件 “" + newName + "” 已经存在啦 (；′⌒`)")
+					alert("Dokumen “" + newName + "” sudah ada (；′⌒`)")
 				} else if (c != 200) {
-					alert("出现未知错误，请检查文件权限 (；′⌒`)")
+					alert("Terjadi kesalahan yang tidak diketahui, harap periksa izin file (；′⌒`)")
 				}
 				loadFileList(dirOperating, true)
 			});
 		} else {
-			alert("文件名不可包含特殊字符哦 (；′⌒`)");
+			alert("Nama file tidak boleh berisi karakter khusus (；′⌒`)");
 			loadFileList(dirOperating, true)
 		}
 	}
@@ -1305,7 +1305,7 @@ function renameFile() {
 /* 下载文件（只支持一个文件，多的用户要先打包再下载） */
 function downCurrFile() {
 	if ($(".file.selected").getAttribute("data-isdir") == "true") {
-		alert("不支持直接下载文件夹捏..")
+		alert("Tidak mendukung unduhan folder unduhan langsung..")
 	} else {
 		downUrl = "?a=down&pwd=" + encodeURIComponent(localStorage.getItem("FileAdmin_Password")) + "&name=" + encodeURI(dirOperating + fileSelected[0]);
 		location = downUrl;
@@ -1315,10 +1315,10 @@ function downCurrFile() {
 /* 删除 */
 function delFile() {
 	let fileDelStr = JSON.stringify(fileSelected);
-	if (confirmRootDirAccess("您确实要永久删除选中的文件和目录嘛 (⊙_⊙)？")) {
+	if (confirmRootDirAccess("Apakah Anda yakin ingin menghapus file dan direktori yang dipilih secara permanen (⊙_⊙)？")) {
 		showModule("loading");
 		request("del", "files=" + encodeURIComponent(fileDelStr) + "&dir=" + dirOperating, function(code) {
-			if(code != 200){alert("删除部分文件时出现问题，请检查文件权限 ＞﹏＜");}
+			if(code != 200){alert("Terjadi masalah saat menghapus beberapa file, harap periksa izin file ＞﹏＜");}
 			loadFileList(dirOperating, true);
 		});
 	}
@@ -1359,7 +1359,7 @@ function filePaste() {
 
 /* ==================== 文本编辑器部分 ==================== */
 
-/* 保存文件 */
+/* save文件 */
 function saveFile(forceDisableObfuscator) {
 	textEditor.focus();
 	ID("saveMenuText").innerText = "······";
@@ -1380,21 +1380,21 @@ function saveFile(forceDisableObfuscator) {
 				ID("loadingAnimations").classList.remove("shown");
 				if (code == 200) {
 					lastSaveContent = textEditor.getValue();
-					ID("saveMenuText").innerText = "完成";
+					ID("saveMenuText").innerText = "Menyelesaikan";
 					document.title = fileEditing + " | FileAdmin";
 					setTimeout(function() {
-						ID("saveMenuText").innerHTML = "保存";
+						ID("saveMenuText").innerHTML = "save";
 					}, 700)
 				} else {
-					alert("出现未知错误，请检查网络连接和文件权限（＞人＜；）");
-					ID("saveMenuText").innerHTML = "保存";
+					alert("Terjadi kesalahan yang tidak diketahui, harap periksa koneksi jaringan dan izin file Anda");
+					ID("saveMenuText").innerHTML = "save";
 				}
 			})
 		} catch (err) {
-			if(confirm("混淆器出现错误，是否为您保存原代码？ `(*>﹏<*)′\n\n" + err + "\n\n请检查代码中是否存在错误~")){
+			if(confirm("Ada kesalahan di obfuscator, apakah Anda ingin menyimpan kode asli untuk Anda? `(*>﹏<*)′\n\n" + err + "\n\nSilakan periksa kode untuk kesalahan~")){
 			    saveFile(true);
 			}else{
-			    ID("saveMenuText").innerHTML = "保存";
+			    ID("saveMenuText").innerHTML = "save";
 			    ID("loadingAnimations").classList.remove("shown");
 			}
 		}
@@ -1403,32 +1403,32 @@ function saveFile(forceDisableObfuscator) {
 			ID("loadingAnimations").classList.remove("shown");
 			if (code == 200) {
 				lastSaveContent = textEditor.getValue();
-				ID("saveMenuText").innerText = "完成";
+				ID("saveMenuText").innerText = "Menyelesaikan";
 				document.title = fileEditing + " | FileAdmin";
 				setTimeout(function() {
-					ID("saveMenuText").innerHTML = "保存";
+					ID("saveMenuText").innerHTML = "save";
 				}, 700)
 			} else {
-				alert("出现未知错误，请检查网络连接和文件权限（＞人＜；）");
-				ID("saveMenuText").innerHTML = "保存";
+				alert("Terjadi kesalahan yang tidak diketahui, harap periksa koneksi jaringan dan izin file Anda");
+				ID("saveMenuText").innerHTML = "save";
 			}
 		})
 	}
 }
 
-/* 设置自动换行方式 */
+/* 设置自动garis baru方式 */
 function setWrap(ele) {
 	if (textEditor.getSession().getUseWrapMode() == true) {
 		textEditor.getSession().setUseWrapMode(false);
-		ele.innerText = "关闭";
+		ele.innerText = "penutup";
 		setTimeout(function() {
-			ele.innerText = "换行"
+			ele.innerText = "garis baru"
 		}, 700)
 	} else {
 		textEditor.getSession().setUseWrapMode(true);
-		ele.innerText = "启用";
+		ele.innerText = "memungkinkan";
 		setTimeout(function() {
-			ele.innerText = "换行"
+			ele.innerText = "garis baru"
 		}, 700)
 	}
 }
@@ -1437,11 +1437,11 @@ function setWrap(ele) {
 function setObfuscate() {
 	if (localStorage.getItem("FileAdmin_Settings_Obfuscator") == "1") {
 		localStorage.setItem("FileAdmin_Settings_Obfuscator", "0");
-		ID('obfuscateBtn').innerText = "启用混淆"
+		ID('obfuscateBtn').innerText = "mengaktifkan kebingungan"
 	} else {
-		if (confirm("开启Js混淆前，请仔细阅读以下说明：\n\n- Js混淆可有效防止他人窃取您的Js源码\n- Js混淆会使您的Js文件存储占用成倍上涨\n- Js混淆可能会导致部分代码无法运行\n- 您可能难以调试混淆后的Js代码\n- Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件\n- 请务必使用防火墙屏蔽他人对.fajs文件的访问\n- 请勿直接修改、移动或删除.fajs文件\n\n更多说明详见Github项目主页，是否仍要开启Js混淆功能？")) {
+		if (confirm("Sebelum mengaktifkan penyamaran Js, harap baca petunjuk berikut dengan cermat:\n\n- Penyamaran Js dapat secara efektif mencegah orang lain mencuri kode sumber Js Anda\n- Penyamaran Js akan menggandakan penggunaan penyimpanan file Js Anda\n- Penyamaran Js mungkin Beberapa kode tidak dapat jalankan\n- Mungkin sulit bagi Anda untuk men-debug kode Js yang di-obfuscate\n- Setelah obfuscation Js diaktifkan, file .fajs akan dibuat di direktori saat ini untuk menyimpan file sumber Js\n- Pastikan untuk menggunakan firewall untuk melindungi orang lain Akses ke file .fajs\n- Jangan mengubah, memindahkan, atau menghapus file .fajs secara langsung\n\nUntuk petunjuk selengkapnya, lihat beranda proyek Github. Apakah Anda masih perlu mengaktifkan fungsi obfuscation Js?")) {
 			localStorage.setItem("FileAdmin_Settings_Obfuscator", "1");
-			ID("obfuscateBtn").innerText = "关闭混淆"
+			ID("obfuscateBtn").innerText = "matikan kebingungan"
 		}
 	}
 }
@@ -1449,7 +1449,7 @@ function setObfuscate() {
 /* 重载编辑器和文件 */
 function reloadEditor() {
 	if (textEditor.getValue() != lastSaveContent) {
-		if (confirm("您有内容还没有保存哦，确实要刷新嘛？")) {
+		if (confirm("Anda memiliki konten yang belum disimpan, apakah Anda benar-benar ingin menyegarkan?")) {
 			viewFile(fileEditing, true)
 		}
 	} else {
@@ -1523,7 +1523,7 @@ function startSearch() {
 			showMenu("search");
 			ID("searchResult").innerHTML = searchResultHtml;
 			if (searchResultHtml == "") {
-				ID("searchResult").innerHTML = '<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';
+				ID("searchResult").innerHTML = '<div style="padding:50px 0;opacity:.5;text-align:center">Tidak ditemukan file yang cocok ㄟ( ▔, ▔ )ㄏ</div>';
 			}
 		})
 	} else {
@@ -1538,7 +1538,7 @@ function startSearch() {
 				ID("replaceBtn").style.display = "inline-block"
 			}
 			if (searchResultHtml == "") {
-				ID("searchResult").innerHTML = '<div style="padding:50px 0;opacity:.5;text-align:center">没有找到符合条件的文件 ㄟ( ▔, ▔ )ㄏ</div>';
+				ID("searchResult").innerHTML = '<div style="padding:50px 0;opacity:.5;text-align:center">Tidak ditemukan file yang cocok ㄟ( ▔, ▔ )ㄏ</div>';
 				ID("replaceBtn").style.display = "none"
 			}
 		})
@@ -1566,10 +1566,10 @@ function loadSearchMode(ele) {
 
 /* 在点击替换时显示警告后发送请求 */
 function startChange() {
-	if (confirm("替换操作具有危险性且不支持撤销，强烈建议执行前仔细核对文件列表并对整个目录打包备份。是否确认要继续 (⊙_⊙)？")) {
+	if (confirm("Operasi penggantian berbahaya dan tidak mendukung undo. Sangat disarankan untuk memeriksa daftar file dengan hati-hati dan mengemas seluruh direktori untuk pencadangan sebelum dijalankan. Apakah anda yakin ingin melanjutkan (⊙_⊙)？")) {
 		showModule("loading");
 		request("replace", "type=" + encodeURIComponent(ID("searchType").value) + "&find=" + encodeURIComponent(ID("searchContent").value) + "&replace=" + encodeURIComponent(ID("searchReplaceContent").value) + "&dir=" + encodeURIComponent(searchDir), function(c, d) {
-			alert("在" + d + "个文件中完成了替换操作 (*^▽^*)");
+			alert("在" + d + "Menyelesaikan operasi yang diganti dalam file (*^▽^*)");
 			openFileFinder();
 		})
 	}
@@ -1628,10 +1628,10 @@ function loadThemeList(){
         });
         showModule("skin");
         showMenu("skin");
-        if(!localStorage.FileAdmin_Settings_Theme_Name){localStorage.FileAdmin_Settings_Theme_Name="原汁原味";}
+        if(!localStorage.FileAdmin_Settings_Theme_Name){localStorage.FileAdmin_Settings_Theme_Name="Autentik";}
         if($(".themeBox[data-theme^='"+localStorage.FileAdmin_Settings_Theme_Name+"']")){$(".themeBox[data-theme^='"+localStorage.FileAdmin_Settings_Theme_Name+"']").classList.add("selected");}
     }).catch(function(err){
-        alert("连接到主题系统时出现问题，请检查设备网络连接并确认未使用 VPN。\n"+err);
+        alert("Terjadi masalah saat menghubungkan ke sistem tema, harap periksa koneksi jaringan perangkat dan pastikan tidak sedang digunakan VPN。\n"+err);
         history.back(-1);
     });
 }
@@ -1658,10 +1658,10 @@ function chkupd() {
 	showModule("loading");
 	request("chkupd", null, function(c, d, o) {
 		if (o == "1001") {
-			alert("您的FileAdmin已是最新版啦~");
+			alert("FileAdmin Anda adalah versi terbaru~");
 			loadFileList(dirOperating, true)
 		} else if (o == "1002") {
-			alert("获取更新失败，您的服务器网络环境可能无法访问氢软API服务器 (；′⌒`)");
+			alert("Gagal mendapatkan pembaruan, lingkungan jaringan server Anda mungkin tidak dapat mengakses server API Hydrosoft (；′⌒`)");
 			loadFileList(dirOperating, true)
 		} else {
 			showModule("updinfo");
@@ -1678,7 +1678,7 @@ function applupd() {
 		if (c == 200) {
 			location.reload();
 		} else {
-			alert("更新失败惹..");
+			alert("pembaharuan gagal..");
 			history.back();
 			showMenu("updinfo")
 		}
@@ -1693,10 +1693,11 @@ function applupd() {
 		<meta name="viewport" content="width=device-width">
 		<link rel="icon" href="//asset.simsoft.top/branding/projects/fileadmin.png">
 		<link rel="stylesheet" href="?a=css">
+		<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 	</head>
 	<body>
 		<div class="title">
-			<div class="appName" onclick="chkupd()">File<b>Admin</b><div id="versionNote">正在获取</div></div>
+			<div class="appName" onclick="chkupd()">File<b>Admin</b><div id="versionNote">mengambil</div></div>
 			<svg id="skinBtn" onclick="loadThemeList()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M37 17V37M11 37V44H37V37M11 37H4V17C4 14 6 10.5 9 8C12 5.5 18 4 18 4H30C30 4 36 5.5 39 8C42 10.5 44 14 44 17V37H37M11 37V17" stroke="#333" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 4C30 7.31371 27.3137 10 24 10C20.6863 10 18 7.31371 18 4" stroke="#333" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 			<svg id="logoutBtn" onclick="logout()" width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path d="M23.9917 6L6 6L6 42H24" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 33L42 24L33 15" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 23.9917H42" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</div>
@@ -1710,62 +1711,62 @@ function applupd() {
 
 		<!--登录页-->
 		<div class="module login" data-module="login">
-			<div class="loginTitle">登录 FileAdmin</div>
+			<div class="loginTitle">Gabung FileAdmin</div>
 			<input id="passwordManagerUsername">
-			<input autofocus id="loginPassword" placeholder="请输入密码 (/▽＼)" type="password" onkeydown="loginCheckEnter(event)"><button onclick="login()" class="loginBtn">→</button>
+			<input autofocus id="loginPassword" placeholder="silakan masukkan kata sandi (/▽＼)" type="password" onkeydown="loginCheckEnter(event)"><button onclick="login()" class="loginBtn">→</button>
 		</div>
 		
 		<!--文件列表页-->
 		<div class="module files" data-module="files">
-			<div class="addressBar"><button title="根目录" onclick="dirOperating='/';loadFileList('/')">/</button><button title="回退" onclick="history.back(-1)"><</button><div id="addressBar" onclick="editAddressBar()" oncontextmenu="event.stopPropagation();event.preventDefault();navigator.clipboard.writeText(dirOperating);alert('当前路径已复制到剪切板 ( •̀ ω •́ )✧')">/</div></div>
+			<div class="addressBar"><button title="Direktori akar" onclick="dirOperating='/';loadFileList('/')">/</button><button title="kembali" onclick="history.back(-1)"><</button><div id="addressBar" onclick="editAddressBar()" oncontextmenu="event.stopPropagation();event.preventDefault();navigator.clipboard.writeText(dirOperating);alert('Jalur saat ini telah disalin ke clipboard ( •̀ ω •́ )✧')">/</div></div>
 			<br><div id="fileList" onclick="event.stopPropagation();" onmousedown="if(event.button==0){startHoverSelect(this)}"></div>
 		</div>
 		<div class="menu" data-menu="files-noselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
-			<button onclick="loadFileList(dirOperating,true)">刷新<contextmenukey>F5</contextmenukey></button>
-			<button onclick="showMenu('files-upload')">上传</button>
-			<button onclick="zipCurrentDir()">打包</button>
-			<button onclick="showMenu('files-newfile')">新建</button>
-			<button onclick="openFileFinder();searchDir=dirOperating;dirOperating=''" class="big">查找文件</button>
-			<button onclick="getDiskSpaceInfo()" class="big">占用情况</button>
-			<button onclick="filePaste()" id="pasteBtn" style="display:none">粘贴<contextmenukey>Ctrl + V</contextmenukey></button>
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">pilih semua<contextmenukey>Ctrl + A</contextmenukey></button>
+			<button onclick="loadFileList(dirOperating,true)">refres<contextmenukey>F5</contextmenukey></button>
+			<button onclick="showMenu('files-upload')">upload</button>
+			<button onclick="zipCurrentDir()">kompres</button>
+			<button onclick="showMenu('files-newfile')">buat file baru</button>
+			<button onclick="openFileFinder();searchDir=dirOperating;dirOperating=''" class="big">cari file</button>
+			<button onclick="getDiskSpaceInfo()" class="big">info disk</button>
+			<button onclick="filePaste()" id="pasteBtn" style="display:none">tempel<contextmenukey>Ctrl + V</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-singleselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
-			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
-			<button onclick="renameFile();">改名<contextmenukey>F2</contextmenukey></button>
-			<button onclick="downCurrFile();">下载</button>
-			<button onclick="setMoveFiles();">剪切<contextmenukey>Ctrl + X</contextmenukey></button>
-			<button onclick="setCopyFiles();">复制<contextmenukey>Ctrl + C</contextmenukey></button>
-			<button onclick="delFile();">删除<contextmenukey>Delete</contextmenukey></button>
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">pilih semua<contextmenukey>Ctrl + A</contextmenukey></button>
+			<button onclick="fileSelected=[];loadFileSelected();" class="big">hapus centang</button>
+			<button onclick="renameFile();">ganti Nama<contextmenukey>F2</contextmenukey></button>
+			<button onclick="downCurrFile();">unduh</button>
+			<button onclick="setMoveFiles();">untuk memotong<contextmenukey>Ctrl + X</contextmenukey></button>
+			<button onclick="setCopyFiles();">menyalin<contextmenukey>Ctrl + C</contextmenukey></button>
+			<button onclick="delFile();">menghapus<contextmenukey>Delete</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-multiselect" onclick="event.stopPropagation();">
-			<button onclick="fileSelected=fileListOperating;loadFileSelected();">全选<contextmenukey>Ctrl + A</contextmenukey></button>
-			<button onclick="fileSelected=[];loadFileSelected();" class="big">取消选中</button>
-			<button onclick="setMoveFiles();">剪切<contextmenukey>Ctrl + X</contextmenukey></button>
-			<button onclick="setCopyFiles();">复制<contextmenukey>Ctrl + C</contextmenukey></button>
-			<button onclick="delFile();">删除<contextmenukey>Delete</contextmenukey></button>
+			<button onclick="fileSelected=fileListOperating;loadFileSelected();">pilih semua<contextmenukey>Ctrl + A</contextmenukey></button>
+			<button onclick="fileSelected=[];loadFileSelected();" class="big">hapus centang</button>
+			<button onclick="setMoveFiles();">untuk memotong<contextmenukey>Ctrl + X</contextmenukey></button>
+			<button onclick="setCopyFiles();">menyalin<contextmenukey>Ctrl + C</contextmenukey></button>
+			<button onclick="delFile();">menghapus<contextmenukey>Delete</contextmenukey></button>
 		</div>
 		<div class="menu" data-menu="files-upload">
-			<button class="big" onclick="ID('filesUploadInput').click()">上传文件</button>
-			<button class="big" onclick="ID('folderUploadInput').click()">上传目录</button>
-			<button onclick="loadFileMenu();">取消</button>
+			<button class="big" onclick="ID('filesUploadInput').click()">unggah file</button>
+			<button class="big" onclick="ID('folderUploadInput').click()">unggah direktori</button>
+			<button onclick="loadFileMenu();">Membatalkan</button>
 		</div>
 		<div class="menu" data-menu="files-newfile">
-			<button onclick="newDir()" class="big">新建目录</button>
-			<button onclick="newFile()" class="big">新建文件</button>
-			<button onclick="loadFileMenu();">取消</button>
+			<button onclick="newDir()" class="big">direktori baru</button>
+			<button onclick="newFile()" class="big">buat file baru</button>
+			<button onclick="loadFileMenu();">Membatalkan</button>
 		</div>
 		
-		<!--文件上传器-->
+		<!--文件upload器-->
 		<div class="module upload" data-module="upload">
-			<div style="font-size:1.5em;text-align:center;">正在上传 ψ(._. )></div>
+			<div style="font-size:1.5em;text-align:center;">mengunggah ψ(._. )></div>
 			<div class="uploadProgress"><div id="uploadProgressBar"></div></div>
-			<div class="uploadText">当前上传：<span id="uploadText-CurrFile"></span></div>
-			<div class="uploadText">当前进度：<span id="uploadText-CurrProg"></span></div>
-			<div class="uploadText">当前速度：<span id="uploadText-CurrSpeed"></span></div>
-			<div class="uploadText">目标目录：根目录<span id="uploadText-DestDir"></span></div>
-			<div class="uploadText">等待上传：<span id="uploadText-Waiting"></span> 个文件</div>
+			<div class="uploadText">Unggahan saat ini:<span id="uploadText-CurrFile"></span></div>
+			<div class="uploadText">Kemajuan saat ini:<span id="uploadText-CurrProg"></span></div>
+			<div class="uploadText">Kecepatan saat ini:<span id="uploadText-CurrSpeed"></span></div>
+			<div class="uploadText">Direktori target: direktori root<span id="uploadText-DestDir"></span></div>
+			<div class="uploadText">Menunggu unggahan:<span id="uploadText-Waiting"></span> file</div>
 		</div>
 		
 		<!--纯文本编辑器-->
@@ -1810,66 +1811,66 @@ function applupd() {
 		</div>
 		<div class="menu" data-menu="texteditor">
 			<button onclick="setObfuscate()" id="obfuscateBtn" class="big"></button>
-			<button onclick="saveFile()" id="saveBtn"><span id="saveMenuText">保存</span><span id="saveContextMenuText">保存</span><contextmenukey>Ctrl + S</contextmenukey></button>
-			<button onclick="reloadEditor()">刷新<contextmenukey>F5</contextmenukey></button>
-			<button onclick="setWrap(this)">换行</button>
-			<button onclick="editEditorFontSize()">字体</button>
-			<button onclick="window.open('.'+dirOperating+fileEditing)">预览</button>
-			<button onclick="history.back()">返回<contextmenukey>ESC</contextmenukey></button>
+			<button onclick="saveFile()" id="saveBtn"><span id="saveMenuText">save</span><span id="saveContextMenuText">save</span><contextmenukey>Ctrl + S</contextmenukey></button>
+			<button onclick="reloadEditor()">refres<contextmenukey>F5</contextmenukey></button>
+			<button onclick="setWrap(this)">garis baru</button>
+			<button onclick="editEditorFontSize()">font</button>
+			<button onclick="window.open('.'+dirOperating+fileEditing)">pratinjau</button>
+			<button onclick="history.back()">kembali<contextmenukey>ESC</contextmenukey></button>
 		</div>
 		<!--图片预览器-->
 		<div class="module imgviewer" data-module="imgviewer"><img id="imgviewer"></div>
 		<div class="menu" data-menu="imgviewer">
-			<button onclick="location=imageViewingUrl" class="big">下载图片</button>
-			<button onclick="ID('imgviewer').src='';history.back();">返回</button>
+			<button onclick="location=imageViewingUrl" class="big">unduh gambar</button>
+			<button onclick="ID('imgviewer').src='';history.back();">kembali</button>
 		</div>
 		<!--视频播放器-->
 		<div class="module vidviewer" data-module="vidviewer"><video controls id="vidviewer" autoplay></video></div>
 		<div class="menu" data-menu="vidviewer">
-			<button onclick="location=vidViewingUrl" class="big">下载视频</button>
-			<button onclick="ID('vidviewer').src='';history.back();">返回</button>
+			<button onclick="location=vidViewingUrl" class="big">Unduh video</button>
+			<button onclick="ID('vidviewer').src='';history.back();">kembali</button>
 		</div>
 		
 		<!--重量级文件搜索器-->
 		<div class="module search" data-module="search">
 			<div class="addressBar" id="searchAddrBar"></div><br>
 			<div id="searchOptnArea" style="padding:10px">
-				<div><span>查找内容</span><input id="searchContent" autocomplete="off" placeholder="输入要搜索的文件名/文件内容 q(≧▽≦q)"></div>
-				<div><span>查找格式</span><input value="html php css js" id="searchType" autocomplete="off" placeholder="空格分隔，留空则查找所有文件 ( •̀ ω •́ )✧"></div>
-				<div id="replaceOptnInput" style="display:none"><span>替换内容</span><input id="searchReplaceContent" placeholder="输入要替换为的文件内容 §(*￣▽￣*)§"></div>
-				<div><span>工作模式</span><select id="searchMode" onchange="loadSearchMode(this)"><option value="1">仅匹配文件名</option><option value="2">匹配文件内容</option><option value="3">查找并替换文件内容</option></select></div>
-				<div id="replaceHidden"><span>区分大小写</span><select id="searchCase"><option value="1">开启</option><option value="2">关闭</option></select></div>
+				<div><span>menemukan konten</span><input id="searchContent" autocomplete="off" placeholder="Masukkan nama file/isi file yang akan dicari q(≧▽≦q)"></div>
+				<div><span>format pencarian</span><input value="html php css js" id="searchType" autocomplete="off" placeholder="Ruang dipisahkan, biarkan kosong untuk menemukan semua file ( •̀ ω •́ )✧"></div>
+				<div id="replaceOptnInput" style="display:none"><span>mengganti konten</span><input id="searchReplaceContent" placeholder="Masukkan konten file yang akan diganti §(*￣▽￣*)§"></div>
+				<div><span>Modus operasi</span><select id="searchMode" onchange="loadSearchMode(this)"><option value="1">hanya cocok dengan nama file</option><option value="2">mencocokkan konten file</option><option value="3">Temukan dan ganti konten file</option></select></div>
+				<div id="replaceHidden"><span>file tersembunyi</span><select id="searchCase"><option value="1">menyalakan</option><option value="2">penutup</option></select></div>
 			</div><br>
 			<div id="searchResult"></div>
 		</div>
 		<div class="menu" data-menu="search">
-			<button onclick="startSearch()" class="big">开始查找</button>
-			<button onclick="startChange()" style="display:none" class="big" id="replaceBtn">确认替换</button>
-			<button onclick="dirOperating='/';history.back();">退出</button>
+			<button onclick="startSearch()" class="big">mulai mencari</button>
+			<button onclick="startChange()" style="display:none" class="big" id="replaceBtn">konfirmasi penggantian</button>
+			<button onclick="dirOperating='/';history.back();">berhenti</button>
 		</div>
 			
 		<!--更新信息-->
 		<div class="module updinfo" data-module="updinfo">
-			<div style="font-size:1.5em;text-align:center;padding:10px;">检测到更新</div>
+			<div style="font-size:1.5em;text-align:center;padding:10px;">pembaruan terdeteksi</div>
 			<div id="updinfo"></div>
 		</div>
 		<div class="menu" data-menu="updinfo">
-			<button onclick="applupd()" class="big">应用更新</button>
-			<button onclick="history.back()">取消</button>
+			<button onclick="applupd()" class="big">pembaruan aplikasi</button>
+			<button onclick="history.back()">Membatalkan</button>
 		</div>
 		
 		<!--主题样式-->
 		<div class="module skin" data-module="skin">
-			<div style="font-size:1.5em;text-align:center;padding:10px;">主题样式</div>
+			<div style="font-size:1.5em;text-align:center;padding:10px;">gaya tema</div>
 			<div id="themeMain"></div>
 		</div>
 		<div class="menu" data-menu="skin">
-			<button onclick="history.back();">保存</button>
+			<button onclick="history.back();">save</button>
 		</div>
 		
 		<input type="file" style="display:none" multiple webkitdirectory id="folderUploadInput" onchange="addDirToUploads(this)">
 		<div id="filesUploadInputContainer" ondragleave="this.style=''">
-		    <div><span>(•ω•`)</span>扔给我即可上传<br>支持同时上传多个文件哦</div>
+		    <div><span>(•ω•`)</span>drop untuk upload<br>unggah banyak</div>
 			<input type="file" multiple id="filesUploadInput" onchange="addFilesToUploads(this)">
 		</div>
 		
