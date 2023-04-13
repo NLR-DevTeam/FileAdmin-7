@@ -1,103 +1,102 @@
-# FileAdmin
-一款体验极佳的轻量级PHP文件管理器
+#FileAdmin
+Manajer file PHP ringan dengan pengalaman luar biasa
 
-项目由 NLR DevTeam 开发与维护 // [加入我们](https://join.nlrdev.top)
+Proyek ini dikembangkan dan dikelola oleh NLR DevTeam // [Bergabunglah dengan kami](https://join.nlrdev.top)
 
-项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用其任何代码
+Pendahulu dari proyek ini adalah [SimAdmin](https://github.com/YanJi314/SimAdmin), tetapi tidak menggunakan kodenya
 
-本项目基本功能已开发完成，进入缓慢迭代阶段，如果您有Bug反馈或新功能建议请提交Issue~
+Fungsi dasar dari proyek ini telah dikembangkan dan memasuki tahap iterasi lambat. Jika Anda memiliki umpan balik bug atau saran fungsi baru, kirimkan Masalah~
 
-如果这个项目有帮助到你，点个 Star 再走呗 owo
+Jika proyek ini bermanfaat bagi Anda, klik Bintang dan lanjutkan
 
-## 特色
-- 直接使用浏览器完成所有常见文件操作
-- 内置符合 Windows 操作习惯的[快捷键](#使用)
-- 无广告、无统计、无付费
-- 支持自动检查更新、一键进行本体更新
-- 轻量级，无需进行大量配置；单文件，不在环境内创建任何其他文件
-- 内置由 ACE-Editor 提供的强大编辑器
-- 全自动、无干扰的 [Js 代码混淆](#Js混淆)，有效防止源代码被盗
-- 可能是最易于使用移动设备使用的文件管理器
+## fitur
+- Selesaikan semua operasi file umum secara langsung menggunakan browser
+- Built-in [tombol pintas] (#gunakan) yang sesuai dengan kebiasaan pengoperasian Windows
+- Tidak ada iklan, tidak ada statistik, tidak ada pembayaran
+- Mendukung pemeriksaan pembaruan otomatis dan pembaruan ontologi satu-klik
+- Ringan, tidak memerlukan konfigurasi ekstensif; file tunggal, tidak membuat file lain di dalam lingkungan
+- Editor kuat bawaan yang disediakan oleh ACE-Editor
+- Sepenuhnya otomatis dan non-intrusif [kebingungan kode Js] (kebingungan #Js), secara efektif mencegah kode sumber dicuri
+- Mungkin pengelola file termudah untuk digunakan di ponsel
 
-## 兼容性
-- 服务端：完美兼容PHP 7.x - 8.x。
-- 浏览器：仅兼容 Google Chrome / Microsoft Edge 的最新版本。
+## Kompatibilitas
+- Server: sangat kompatibel dengan PHP 7.x - 8.x.
+- Browser: Hanya kompatibel dengan Google Chrome / Microsoft Edge versi terbaru.
 
-实测兼容多数宝塔分销虚拟主机及Kangle虚拟主机，部分没有真实文件系统的特殊环境可能无法运行。
+Pengujian sebenarnya kompatibel dengan sebagian besar host virtual distribusi Pagoda dan host virtual Kangle, dan beberapa lingkungan khusus tanpa sistem file nyata mungkin tidak dapat dijalankan.
+## Install
+- Unduh versi instalasi FileAdmin langsung dari [Hydrosoft API](https://api.simsoft.top/fileadmin/download/). **Anda juga dapat mengunduh versi lain selain versi penginstalan, lihat bagian "[versi](#versi)" dari artikel ini untuk detailnya**
+- Unggah fileadmin.php yang baru saja Anda unduh langsung ke host Anda.
+- Anda dapat mengganti nama file jika menurut Anda nama file aslinya tidak aman. Cobalah untuk menginstalnya di direktori root situs web Anda.
+- **[Penting] Buka file ini, ubah variabel $PASSWORD pada baris pertama, dan masukkan kata sandi Anda sendiri. Kegagalan untuk mengubah pengaturan ini bisa berbahaya karena orang lain dapat dengan bebas melihat dan memodifikasi file Anda. **
 
-## 安装
-- 从[氢软API](https://api.simsoft.top/fileadmin/download/)直接下载FileAdmin安装版。**您也可以下载安装版之外的其他版本，详见本文“[版本](#版本)”章节**
-- 到你的主机直接上传刚才下载的fileadmin.php。
-- 如果认为原文件名不安全，您可以对此文件进行重命名。尽量将其安装在您的网站根目录。
-- **[重要]打开此文件，在第一行修改$PASSWORD变量，输入您自己设定的密码。不更改此处设置会导致他人可以随意查看并修改您的文件，非常危险。**
+## menggunakan
+- FileAdmin mendefinisikan berbagai tombol pintas yang nyaman bagi pengguna.
 
-## 使用
-- FileAdmin为用户定义了多种方便使用的快捷键。
-
-|快捷键|对应页面|功能|
+|Tombol pintasan|Halaman terkait|Fungsi|
 |--|--|--|
-|/|密码输入页面|聚焦密码输入框|
-|/|文件管理页|编辑文件路径|
-|Ctrl+A|文件管理页|选中所有文件|
-|Ctrl+C|文件管理页|复制选中文件|
-|Ctrl+X|文件管理页|剪切选中文件|
-|Ctrl+V|文件管理页|当面板剪切板中存在文件（即菜单中显示“粘贴”按钮时）粘贴先前在面板中复制/剪切的文件；当面板剪切板中无项目时，自动从系统剪切板中获取文件（如有）并上传|
-|Delete|文件管理页|删除选中的文件|
-|F5|文件管理页|刷新文件列表|
-|F2|文件管理页|对选中的文件重命名|
-|ESC|文件管理页|返回上级目录|
-|Ctrl+S|文本编辑器|保存文件|
-|Ctrl+Z|文本编辑器|撤销上一步操作|
-|Ctrl+Y|文本编辑器|恢复被撤销的更改|
-|Ctrl+F|文本编辑器|查找或替换内容|
-|F5|文本编辑器|刷新文本编辑器|
-|ESC|文本编辑器|退出文本编辑器|
+|/|Halaman masukan kata sandi|fokus kotak masukan kata sandi|
+|/|Halaman Manajemen Berkas|Edit Jalur Berkas|
+|Ctrl+A|Halaman manajemen file|Pilih semua file|
+|Ctrl+C|Halaman manajemen file|Salin file yang dipilih|
+|Ctrl+X|Halaman manajemen file|Potong file yang dipilih|
+|Ctrl+V|Halaman manajemen file|Ketika ada file di clipboard panel (yaitu, ketika tombol "Tempel" ditampilkan di menu), tempel file yang sebelumnya disalin/dipotong di panel; jika tidak ada item di papan klip panel, Dapatkan file secara otomatis (jika ada) dari papan klip sistem dan unggah|
+|Hapus|Halaman manajemen file|Hapus file yang dipilih|
+|F5|Halaman manajemen file|Refresh daftar file|
+|F2|Halaman manajemen file|Ubah nama file yang dipilih|
+|ESC|Halaman manajemen file|Kembali ke direktori induk|
+|Ctrl+S|Editor Teks|Simpan Berkas|
+|Ctrl+Z|Editor Teks|Urungkan Tindakan Terakhir|
+|Ctrl+Y|Editor Teks|Kembalikan Perubahan yang Dibatalkan|
+|Ctrl+F|Editor Teks|Temukan atau Ganti Konten|
+|F5|Editor Teks|Segarkan Editor Teks|
+|ESC|Editor Teks|Keluar dari Editor Teks|
 
-- FileAdmin也自带了一些有助于提升效率的鼠标快捷操作
+- FileAdmin juga dilengkapi dengan beberapa pintasan mouse yang membantu meningkatkan efisiensi
 
-|鼠标操作|功能|
+|Operasi Mouse|Fungsi|
 |--|--|
-|单击文件|未进入选中模式时，打开此文件；进入选中模式时，选中/取消选中此文件|
-|右键文件|未进入选中模式时，选中此文件并进入选中模式|
-|在文件列表按下鼠标并滑动|多选或取消选中鼠标滑过的文件|
-|在空白区域单击鼠标|取消选中所有文件|
+|Klik file|Buka file ini saat tidak dalam mode yang dipilih; centang/hapus centang file ini saat dalam mode yang dipilih|
+|Klik kanan pada file|Ketika mode yang dipilih tidak dimasukkan, pilih file ini dan masuk ke mode yang dipilih|
+|Tekan dan geser mouse di daftar file|Pilih beberapa atau batalkan pilihan file yang digeser mouse|
+|Klik mouse di area kosong|Hapus centang semua file|
 
-- FileAdmin内置了从本仓库获取源码并自动更新本体程序的功能，在任意界面点击左上方的“FileAdmin”字样即可检查更新。部分大陆地区的主机/服务器可能不支持此功能。
+- FileAdmin memiliki fungsi bawaan untuk mendapatkan kode sumber dari gudang ini dan memperbarui program ontologi secara otomatis. Klik kata "FileAdmin" di kiri atas antarmuka apa pun untuk memeriksa pembaruan. Host/server di beberapa wilayah daratan mungkin tidak mendukung fitur ini.
 
-## Js混淆
-FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者方便保护自己开发的源代码。开启此功能前请仔细阅读下方说明：
-- Js混淆会使您的Js文件存储占用成倍上涨，且可能导致文件保存缓慢
-- Js混淆可能会导致部分代码无法运行，请务必自行进行充分测试
-- 您可能难以调试混淆后的Js代码
-- FA并不具备解除混淆的能力，所以Js混淆开启后，会在当前目录生成一个.fajs文件用于存储Js源文件
-- 请务必使用防火墙屏蔽他人对.fajs文件的访问
-- 请勿直接修改、移动或删除.fajs文件，否则会导致您无法编辑Js源码
+## Kebingungan Js
+FileAdmin memiliki obfuscator Js (Javascript Obfuscator) bawaan yang kuat, yang memudahkan pengembang untuk melindungi kode sumber yang mereka kembangkan. Silakan baca instruksi berikut dengan seksama sebelum mengaktifkan fungsi ini:
+- Kebingungan Js akan menggandakan penggunaan penyimpanan file Js Anda, dan dapat menyebabkan penyimpanan file lambat
+-Js kebingungan dapat menyebabkan beberapa kode gagal dijalankan, harap pastikan untuk mengujinya sendiri sepenuhnya
+- Mungkin sulit bagi Anda untuk men-debug kode Js yang disamarkan
+- FA tidak memiliki kemampuan untuk melakukan de-obfuscate, jadi setelah Js obfuscation diaktifkan, file .fajs akan dibuat di direktori saat ini untuk menyimpan file sumber Js
+- Pastikan menggunakan firewall untuk memblokir akses orang lain ke file .fajs
+- Jangan langsung memodifikasi, memindahkan, atau menghapus file .fajs, jika tidak, Anda tidak akan dapat mengedit kode sumber Js
 
-附常用防火墙配置方式：
-- 宝塔免费防火墙URL过滤规则：`\.(fajs)`
-- Cloudflare防火墙阻止规则：`(http.request.full_uri contains ".fajs")`
+Terlampir adalah metode konfigurasi firewall umum:
+- Aturan penyaringan URL firewall gratis Pagoda: `\.(fajs)`
+- Aturan pemblokiran firewall Cloudflare: `(http.request.full_uri berisi ".fajs")`
 
-其余防火墙配置同理
+Konfigurasi firewall lainnya sama
 
-## 官网
-- 官网：https://fa.nlrdev.top/
-- 介绍：https://www.bilibili.com/video/BV1XZ4y1m7WK
-- 捐赠：https://i.simsoft.top/#donate
+## situs web resmi
+- Situs web resmi: https://fa.nlrdev.top/
+- Pendahuluan: https://www.bilibili.com/video/BV1XZ4y1m7WK
+- Donasi: https://i.simsoft.top/#donasi
 
-## 版本
+## Versi: sekarang
 
-FileAdmin 目前共有三个版本开放安装。
-- 安装版：旨在使您获得最小化的代码体积。[ [点击下载](https://api.simsoft.top/fileadmin/download/) ]
-- 维护版：从Github直接获取源码，包含完整的注释和缩进。[ [点击下载](https://api.simsoft.top/fileadmin/download/maintain.php) ]
-- 安装版：氢软官方的实时开发版，可获知最新的开发进度。[ [点击下载](https://api.simsoft.top/fileadmin/download/dev.php) ]
+Saat ini ada tiga versi FileAdmin yang terbuka untuk instalasi.
+- Versi terinstal: dirancang untuk memungkinkan Anda mendapatkan ukuran kode terkecil. [[Klik untuk mendownload](https://api.simsoft.top/fileadmin/download/)]
+- Rilis pemeliharaan: Dapatkan kode sumber langsung dari Github, termasuk komentar dan lekukan lengkap. [[Klik untuk mendownload](https://api.simsoft.top/fileadmin/download/maintain.php)]
+- Versi terinstal: Versi pengembangan real-time resmi Hydrosoft, tempat Anda dapat mempelajari kemajuan pengembangan terbaru. [[Klik untuk mendownload](https://api.simsoft.top/fileadmin/download/dev.php)]
 
-Tip：无论选择哪个版本，内嵌的自动更新皆以安装版发版为准，且会使用安装版更新覆盖其他版本。如需长期使用非安装版的版本，请直接从上方渠道手动更新而非使用自动更新。
+Tips: Apa pun versi yang Anda pilih, pembaruan otomatis tersemat tunduk pada rilis versi yang diinstal, dan akan menggunakan pembaruan versi yang diinstal untuk mencakup versi lainnya. Jika Anda perlu menggunakan versi non-instal untuk waktu yang lama, perbarui secara manual langsung dari saluran di atas alih-alih menggunakan pembaruan otomatis.
 
-## 版权&免责
-- 本程序使用AGPL-3.0协议开源，任何二开作品需以相同协议开源，不推荐用于商业用途。
-- 本程序若因使用不当造成的任何损失，开发者不负任何责任。
+## Hak Cipta & Penafian
+- Program ini bersumber terbuka menggunakan protokol AGPL-3.0. Setiap karya rilis kedua harus bersumber terbuka di bawah protokol yang sama. Penggunaan komersial tidak disarankan.
+- Pengembang tidak bertanggung jawab atas kerugian yang disebabkan oleh penyalahgunaan program ini.
 
-## 感谢
-- [星辰云](https://starxn.com)提供开发环境支持
-- [XIAYM](https://github.com/XIAYM-gh)提供开发环境支持
-- [Javascript Obfuscator](https://obfuscator.io)提供Js混淆技术支持
+## bersyukur
+- [Star Cloud](https://starxn.com) menyediakan dukungan lingkungan pengembangan
+- [XIAYM](https://github.com/XIAYM-gh) memberikan dukungan lingkungan pengembangan
+- [Javascript Obfuscator](https://obfuscator.io) memberikan dukungan teknis kebingungan Js
