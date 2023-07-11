@@ -89,7 +89,7 @@ FileAdmin内置了强大的Js混淆器（Javascript Obfuscator），使开发者
 FileAdmin 目前共有三个版本开放安装。
 - 安装版：旨在使您获得最小化的代码体积。[ [点击下载](https://api.simsoft.top/fileadmin/download/) ]
 - 维护版：从Github直接获取源码，包含完整的注释和缩进。[ [点击下载](https://api.simsoft.top/fileadmin/download/maintain.php) ]
-- 安装版：氢软官方的实时开发版，可获知最新的开发进度。[ [点击下载](https://api.simsoft.top/fileadmin/download/dev.php) ]
+- 开发版：氢软官方的实时开发版，可获知最新的开发进度。[ [点击下载](https://api.simsoft.top/fileadmin/download/dev.php) ]
 
 Tip：无论选择哪个版本，内嵌的自动更新皆以安装版发版为准，且会使用安装版更新覆盖其他版本。如需长期使用非安装版的版本，请直接从上方渠道手动更新而非使用自动更新。
 
