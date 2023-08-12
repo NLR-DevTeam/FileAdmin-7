@@ -1366,37 +1366,7 @@ function saveFile(forceDisableObfuscator) {
 	ID("loadingAnimations").classList.add("shown");
 	if (!forceDisableObfuscator && fileEditing.split(".")[fileEditing.split(".").length - 1].toLowerCase() == "js" && localStorage.getItem("FileAdmin_Settings_Obfuscator") == "1") {
 		try {
-			let obfuscated = JavaScriptObfuscator.obfuscate(textEditor.getValue(), {
-                compact: true,
-                controlFlowFlattening: true,
-                controlFlowFlatteningThreshold: 1,
-                deadCodeInjection: true,
-                deadCodeInjectionThreshold: 1,
-                debugProtection: true,
-                debugProtectionInterval: 4000,
-                disableConsoleOutput: true,
-                identifierNamesGenerator: 'hexadecimal',
-                log: false,
-                numbersToExpressions: true,
-                renameGlobals: false,
-                selfDefending: true,
-                simplify: true,
-                splitStrings: true,
-                splitStringsChunkLength: 5,
-                stringArray: true,
-                stringArrayCallsTransform: true,
-                stringArrayEncoding: ['rc4'],
-                stringArrayIndexShift: true,
-                stringArrayRotate: true,
-                stringArrayShuffle: true,
-                stringArrayWrappersCount: 5,
-                stringArrayWrappersChainedCalls: true,    
-                stringArrayWrappersParametersMaxCount: 5,
-                stringArrayWrappersType: 'function',
-                stringArrayThreshold: 1,
-                transformObjectKeys: true,
-                unicodeEscapeSequence: false
-			})._obfuscatedCode;
+			let obfuscated = JavaScriptObfuscator.obfuscate(textEditor.getValue(), {optionsPreset:"medium-obfuscation"})._obfuscatedCode;
 			request("fajssave", "name=" + dirOperating + fileEditing + "&original=" + encodeURIComponent(textEditor.getValue()) + "&obfuscate=" + encodeURIComponent(obfuscated), function(code) {
 				ID("loadingAnimations").classList.remove("shown");
 				if (code == 200) {
