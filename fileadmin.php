@@ -1,4 +1,4 @@
-<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.14;
+<?php $PASSWORD="TYPE-YOUR-PASSWORD-HERE"; $VERSION=7.15;
 
 
 	/* 设置不进行报错以免影响运行 */
