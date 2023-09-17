@@ -1,11 +1,11 @@
-# FileAdmin
+# FileAdmin 7.x
 一款体验极佳的轻量级PHP文件管理器
 
 项目由 NLR DevTeam 开发与维护 // [加入我们](https://join.nlrdev.top)
 
 项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用其任何代码
 
-本项目基本功能已开发完成，进入缓慢迭代阶段，如果您有Bug反馈或新功能建议请提交Issue~
+作者正在开发 FileAdmin INFINITY ( FA 8.x ) ，7.x 相关问题将暂缓处理
 
 如果这个项目有帮助到你，点个 Star 再走呗 owo
 
