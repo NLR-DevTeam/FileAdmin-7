@@ -1,11 +1,17 @@
+# 🎉🎉🎉 Try FileAdmin 8
+
+**FileAdmin 现已全新升级！代码完全重构，给您焕然一新的体验。**
+
+**项目官网：https://fileadmin.top/**
+
+**您也可以在下方继续阅读 FileAdmin 7 相关信息 👇**
+
 # FileAdmin 7.x
 一款体验极佳的轻量级PHP文件管理器
 
 项目由 NLR DevTeam 开发与维护 // [加入我们](https://join.nlrdev.top)
 
 项目的前身是[SimAdmin](https://github.com/YanJi314/SimAdmin)，但本身并不使用其任何代码
-
-作者正在开发 FileAdmin INFINITY ( FA 8.x ) ，7.x 相关问题将暂缓处理
 
 如果这个项目有帮助到你，点个 Star 再走呗 owo
 
