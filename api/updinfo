@@ -1,3 +1,12 @@
+<div style="background:#1e9fff;color:white;border-radius:5px;padding: 15px;text-align:justify;">
+    <b style="font-size:1.1em;margin-bottom:10px;display:block">🎉 FileAdmin 8 现已发布 ✨</b>
+    <div style="font-size:.95em">
+        FileAdmin 项目现已完全重构，欢迎体验 FileAdmin 8，享受焕然一新的全新极致体验。
+        <a href="https://fileadmin.top" style="color:white;display:block;margin:8px 0;">🔗 点我前往 FileAdmin 8 官方网站 &gt;</a>
+        您当前正在使用 FileAdmin 7，此版本仍受到官方支持，但不再进行功能更新。<b>注意！在当前页面升级仅能更新到 FileAdmin 7 的最新版本，如需试用 FileAdmin 8，请前往官网下载使用 ~</b> 感谢每位用户一直以来的支持！
+    </div>
+</div>
+
 <p><b>本次更新：</b></p>
 <li>7.15 优化混淆器设定内容</li>
 
